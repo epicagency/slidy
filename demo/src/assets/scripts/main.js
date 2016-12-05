@@ -31,9 +31,11 @@ class Epic {
 
   init() {
     let slider = new Slidy('.slider', {
-      transition: this.sliderTransition,
+      transition: this.simpleTransition,
       beforeInit: this.sliderBeforeInit,
       afterInit: this.sliderAfterInit,
+      beforeSlide: this.sliderBeforeSlide,
+      afterSlide: this.sliderAfterSlide,
       // auto: true,
       // pause: true,
       touch: true,
@@ -44,17 +46,6 @@ class Epic {
     document.getElementById('destroy').addEventListener('click', () => {
       slider.destroy();
     });
-
-    // More testing/demo
-    // new Slidy('.foo');
-    // new Slidy('.sliders');
-    // new Slidy(document.querySelector('.foo'));
-    // new Slidy(document.querySelector('.slider'));
-    // new Slidy(document.querySelector('.sliders'));
-    // new Slidy(document.querySelectorAll('.foo'));
-    // new Slidy(document.querySelectorAll('.slider'));
-    // new Slidy(document.querySelectorAll('.sliders'));
-
   }
 
   sliderBeforeInit(slider) {
@@ -65,41 +56,70 @@ class Epic {
     console.info('sliderAfterInit', slider);
   }
 
-  sliderTransition(currentSlide, newSlide, direction) {
+  sliderBeforeSlide(currentIndex, newIndex) {
+    console.info('sliderBeforeSlider');
+    this.items[newIndex].classList.add('is-next');
+  }
+
+  sliderAfterSlide(currentIndex, oldIndex) {
+    console.info('sliderAfterSlide');
+    this.items[oldIndex].classList.remove('is-current');
+    this.items[currentIndex].classList.remove('is-next');
+    this.items[currentIndex].classList.add('is-current');
+  }
+
+  simpleTransition(currentSlide, newSlide) {
+    console.log('simpleTransition');
     return new Promise((resolve) => {
-      let duration = 1;
-      let width = document.querySelector('.slider').offsetWidth;
-      let height = document.querySelector('.slider').offsetHeight;
-      let to = (direction === 'next') ? -width : width;
-      let from = (direction === 'next') ? width : -width;
+      const duration = 2;
+      const tl = new TimelineLite({
+        paused: true,
+        onComplete: resolve,
+      });
+      tl.to(newSlide, duration, { opacity: 1 });
+      tl.set(currentSlide, { opacity: 0 });
+      tl.play();
+    });
+  }
 
-      let currentContent = currentSlide.querySelector('.slider__slide__content');
-      let newContent = newSlide.querySelector('.slider__slide__content');
+  advancedTransition(currentSlide, newSlide, direction) {
+    return new Promise((resolve) => {
+      const duration = 1;
+      const width = document.querySelector('.slider').offsetWidth;
+      const height = document.querySelector('.slider').offsetHeight;
+      const to = (direction === 'next') ? -width : width;
+      const from = (direction === 'next') ? width : -width;
 
-      let tl = new TimelineLite({
+      const currentContent = currentSlide.querySelector('.slider__slide__content');
+      const newContent = newSlide.querySelector('.slider__slide__content');
+
+      const tl = new TimelineLite({
         paused: true,
         onComplete: resolve,
       });
       tl.add('start');
+      tl.set(currentSlide, { x: 0, y: 0 });
+
       if (direction === 'next') {
-        tl.set(currentSlide, { x: 0, y: 0 });
         tl.set(newSlide, { x: from, y: 0 });
-        tl.set(newContent, { y: 50, autoAlpha: 0 });
-        tl.to(currentContent, duration * .4, { y: 50, autoAlpha: 0, ease: Back.easeIn }, 'start');
-        // tl.add('slide');
+      } else {
+        tl.set(newSlide, { x: 0, y: height });
+      }
+
+      tl.set(newContent, { y: 50, autoAlpha: 0 });
+      tl.to(currentContent, duration * .4, { y: 50, autoAlpha: 0, ease: Back.easeIn }, 'start');
+
+      if (direction === 'next') {
+        tl.set(newSlide, { x: from, y: 0 });
         tl.to(currentSlide, duration * .8, { x: to, ease: Power4.easeInOut }, 'start+=.1');
         tl.to(newSlide, duration * .8, { x: 0, ease: Power4.easeInOut }, 'start+=.1');
-        tl.to(newContent, duration * .4, { y: 0, autoAlpha: 1, ease: Back.easeOut }, '-=.3');
       } else {
-        tl.set(currentSlide, { x: 0, y: 0 });
         tl.set(newSlide, { x: 0, y: height });
-        tl.set(newContent, { y: 50, autoAlpha: 0 });
-        tl.to(currentContent, duration * .4, { y: 50, autoAlpha: 0, ease: Back.easeIn }, 'start');
-        // tl.add('slide');
         tl.to(currentSlide, duration * .8, { y: -height, ease: Power4.easeInOut }, 'start+=.1');
         tl.to(newSlide, duration * .8, { y: 0, ease: Power4.easeInOut }, 'start+=.1');
-        tl.to(newContent, duration * .4, { y: 0, autoAlpha: 1, ease: Back.easeOut }, '-=.3');
       }
+
+      tl.to(newContent, duration * .4, { y: 0, autoAlpha: 1, ease: Back.easeOut }, '-=.3');
       tl.play();
     });
   }

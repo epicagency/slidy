@@ -1,0 +1,18 @@
+{
+  "preset": "node-style-guide",
+  "requireCurlyBraces": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "try",
+    "catch"
+  ],
+  "validateIndentation": 2,
+  "requireSemicolons": true,
+  "requireCamelCaseOrUpperCaseIdentifiers": {
+    "ignoreProperties": true
+  },
+  "excludeFiles": ["src/vendor/**"]
+}

@@ -1,0 +1,38 @@
+/*
+ * Functions
+ */
+
+
+/*
+ * Tools
+ */
+
+/// Remove the unit of a length
+/// @param {Number} $number - Number to remove unit from
+/// @return {Number} - Unitless number
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+
+// Calculate a ratio
+// @param {Number} $target - Target size
+// @param {Number} $context - Context size
+@function calc-ratio($target, $context) {
+  @return strip-unit($target / $context);
+}
+
+
+// Calculate a ratio into percentage
+// @param {Number} $target - Target size
+// @param {Number} $context - Context size
+@function calc-percent($target, $context) {
+  @return percentage(calc-ratio($target, $context));
+}
+
+@function get-font-size($tag) {
+  @return map-get($font-sizes, $tag);
+}

@@ -1,0 +1,15 @@
+### Custom ###
+
+.babelrc
+.editorconfig
+.env
+.eslintignore
+.eslintrc
+.jscsrc
+/demo
+/gulp
+/src
+/test
+gulpfile.js
+slidy.sublime-project
+slidy.sublime-workspace

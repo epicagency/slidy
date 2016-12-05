@@ -1,0 +1,101 @@
+{
+  "name": "epic-slidy",
+  "version": "0.0.0",
+  "description": "An EPIC slider",
+  "homepage": "https://git.epic.net/epic/slidy.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://git.epic.net/epic/slidy.git"
+  },
+  "author": {
+    "name": "Thierry Michel",
+    "email": "thierry@epic.net",
+    "url": "http://epic.net"
+  },
+  "keywords": [
+    "epic",
+    "slider",
+    "gallery",
+    "carousel",
+    "DOM",
+    "browser",
+    "touch",
+    "responsive"
+  ],
+  "bugs": {
+    "url": "https://git.epic.net/epic/slidy/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "6.9.1"
+  },
+  "scripts": {
+    "babel:compile": "babel src --out-dir lib --ignore vendor",
+    "babel:watch": "babel src --watch --out-dir lib --ignore vendor",
+    "build": "npm run lint && npm run clean && npm run copy && npm run babel:compile",
+    "clean": "rimraf lib/*",
+    "copy": "cp -r src/ lib/",
+    "demo": "gulp dev",
+    "eslint": "./node_modules/eslint/bin/eslint.js",
+    "jscs": "./node_modules/jscs/bin/jscs",
+    "lint": "jscs src && eslint src",
+    "prepublish": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "npm run clean && npm run copy && npm run babel:watch"
+  },
+  "dependencies": {
+    "hammerjs": "^2.0.8",
+    "lodash": "^4.17.2",
+    "tiny-emitter": "^1.1.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.5.3",
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-latest": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.18.2",
+    "browserify": "^13.1.1",
+    "del": "^2.2.2",
+    "dotenv": "^2.0.0",
+    "eslint": "^3.11.1",
+    "event-stream": "^3.3.4",
+    "glob": "^7.1.1",
+    "gsap": "^1.19.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-cached": "^1.1.1",
+    "gulp-file-include": "^1.0.0",
+    "gulp-header": "^1.8.8",
+    "gulp-if": "^2.0.0",
+    "gulp-imagemin": "^3.0.3",
+    "gulp-postcss": "^6.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-rev": "^7.0.0",
+    "gulp-rev-replace": "^0.4.3",
+    "gulp-sass": "^2.3.1",
+    "gulp-sourcemaps": "^2.2.1",
+    "gulp-strip-debug": "^1.1.0",
+    "gulp-svgmin": "^1.2.2",
+    "gulp-svgstore": "^6.0.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "jscs": "^3.0.7",
+    "json-sass": "^1.3.5",
+    "lodash": "^4.17.2",
+    "lodash.assign": "^4.0.2",
+    "require-dir": "^0.3.0",
+    "rimraf": "^2.5.4",
+    "stringify": "^5.1.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream2": "^0.1.1",
+    "watchify": "^3.7.0",
+    "yargs": "^6.0.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify"
+      ]
+    ]
+  }
+}

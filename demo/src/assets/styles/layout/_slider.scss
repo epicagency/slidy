@@ -1,0 +1,48 @@
+body {
+  margin: 2em;
+  background-color: $color-bg;
+}
+
+.slider {
+  @extend %list-nostyle;
+
+  position: relative;
+  width: 620px;
+  margin: 0 auto;
+}
+
+.slider__slide {
+  position: relative;
+
+  img {
+    display: block;
+  }
+
+  div {
+    position: absolute;
+    left: 0;
+    bottom: 1em;
+    width: 100%;
+    color: gray;
+    font-size: 1.5em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+// Slidy
+
+.slidy {
+  position: relative;
+  overflow: hidden;
+  width: 620px;
+  background-color: white;
+}
+
+.slidy__item {
+  position: absolute;
+
+  + .slidy__item {
+    transform: translateX(100%);
+  }
+}

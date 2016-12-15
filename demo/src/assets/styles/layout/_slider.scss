@@ -49,16 +49,17 @@ body {
 .slidy__item {
   position: absolute;
 
-  &.is-current {
-    z-index: 1;
-  }
+  // &.is-current {
+  //   z-index: 1;
+  // }
 
-  &.is-next {
-    z-index: 2;
-  }
+  // &.is-next {
+  //   z-index: 2;
+  // }
 
   + .slidy__item {
-    opacity: 0;
+    // opacity: 0;
+    transform: translateX(100%)
   }
 }
 

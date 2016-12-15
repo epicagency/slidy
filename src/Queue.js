@@ -71,7 +71,7 @@ export class Queue {
     const newSlide = items[newIndex];
 
     this._slidy.newIndex = newIndex;
-    this._dispatcher.emit('beforeSlide');
+    this._dispatcher.emit('beforeSlide', direction);
 
     this._isAnimating = true;
 
@@ -81,7 +81,7 @@ export class Queue {
         this._slidy.currentIndex = newIndex;
         this._queue.shift();
         this._isAnimating = false;
-        this._dispatcher.emit('afterSlide');
+        this._dispatcher.emit('afterSlide', direction);
         this.play();
       });
   }

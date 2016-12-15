@@ -36,8 +36,9 @@ class Epic {
       afterInit: this.sliderAfterInit,
       beforeSlide: this.sliderBeforeSlide,
       afterSlide: this.sliderAfterSlide,
-      auto: true,
-      pause: true,
+      auto: false,
+      // pause: true,
+      click: true,
       touch: true,
       controls: true,
       nav: true,
@@ -56,13 +57,13 @@ class Epic {
     console.info('sliderAfterInit', slider);
   }
 
-  sliderBeforeSlide(currentIndex, newIndex) {
-    console.info('sliderBeforeSlider');
+  sliderBeforeSlide(currentIndex, newIndex, direction) {
+    console.info('sliderBeforeSlider', direction);
     this.items[newIndex].classList.add('is-next');
   }
 
-  sliderAfterSlide(currentIndex, oldIndex) {
-    console.info('sliderAfterSlide');
+  sliderAfterSlide(currentIndex, oldIndex, direction) {
+    console.info('sliderAfterSlide', direction);
     this.items[oldIndex].classList.remove('is-current');
     this.items[currentIndex].classList.remove('is-next');
     this.items[currentIndex].classList.add('is-current');

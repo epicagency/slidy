@@ -66,10 +66,18 @@ export class Slidy {
 
     this._dispatcher = new Emitter();
     // Public events
-    this._dispatcher.on('beforeInit', this.beforeInit.bind(this));
-    this._dispatcher.on('afterInit', this.afterInit.bind(this));
-    this._dispatcher.on('beforeSlide', this.beforeSlide.bind(this));
-    this._dispatcher.on('afterSlide', this.afterSlide.bind(this));
+    this._dispatcher.on('beforeInit', () => {
+      this.beforeInit();
+    });
+    this._dispatcher.on('afterInit', () => {
+      this.afterInit();
+    });
+    this._dispatcher.on('beforeSlide', (direction) => {
+      this.beforeSlide(direction);
+    });
+    this._dispatcher.on('afterSlide', (direction) => {
+      this.afterSlide(direction);
+    });
 
     this.init();
     this.bind();
@@ -335,15 +343,15 @@ export class Slidy {
     }
   }
 
-  beforeSlide() {
+  beforeSlide(direction) {
     if (this._opts.beforeSlide) {
-      this._opts.beforeSlide.call(this, this.currentIndex, this.newIndex);
+      this._opts.beforeSlide.call(this, this.currentIndex, this.newIndex, direction);
     }
   }
 
-  afterSlide() {
+  afterSlide(direction) {
     if (this._opts.afterSlide) {
-      this._opts.afterSlide.call(this, this.currentIndex, this.oldIndex);
+      this._opts.afterSlide.call(this, this.currentIndex, this.oldIndex, direction);
     }
   }
 

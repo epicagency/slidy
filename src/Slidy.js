@@ -345,13 +345,23 @@ export class Slidy {
 
   beforeSlide(direction) {
     if (this._opts.beforeSlide) {
-      this._opts.beforeSlide.call(this, this.currentIndex, this.newIndex, direction);
+      this._opts.beforeSlide.call(
+        this,
+        this.currentIndex,
+        this.newIndex,
+        direction
+      );
     }
   }
 
   afterSlide(direction) {
     if (this._opts.afterSlide) {
-      this._opts.afterSlide.call(this, this.currentIndex, this.oldIndex, direction);
+      this._opts.afterSlide.call(
+        this,
+        this.currentIndex,
+        this.oldIndex,
+        direction
+      );
     }
   }
 

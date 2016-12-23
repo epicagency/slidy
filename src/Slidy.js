@@ -385,7 +385,11 @@ export class Slidy {
     this._el.removeEventListener('mouseenter', this.onEnter);
     this._el.removeEventListener('mouseleave', this.onLeave);
     this._el.removeEventListener('click', this.onClick);
-    this._mc.destroy();
+
+    // Remove hammer manager
+    if (this._mc) {
+      this._mc.destroy();
+    }
 
     // Remove controls
     if (this._controls) {

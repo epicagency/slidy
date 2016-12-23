@@ -381,12 +381,15 @@ export class Slidy {
   }
 
   destroy() {
+    // Remove interval
+    this.stop();
+
     // Remove listeners
     this._el.removeEventListener('mouseenter', this.onEnter);
     this._el.removeEventListener('mouseleave', this.onLeave);
     this._el.removeEventListener('click', this.onClick);
 
-    // Remove hammer manager
+    // Remove Hammer.manager
     if (this._mc) {
       this._mc.destroy();
     }

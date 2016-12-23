@@ -49,13 +49,20 @@ export class Slidy {
       interval: 2000, // Integer: time between 2 transitions
       nav: false, // Boolean: create navigation
       pause: true, // Boolean: pause on hover
-      touch: true, // Boolean: enable tap/swipe
+      swipe: false, // Boolean: enable swipe
+      tap: false, // Boolean: enable tap
+      touch: false, // Boolean: enable BOTH tap/swipe (deprecated)
       transition: null,
     }, opts);
 
     if (this._opts.transition === null) {
       console.error('Slidy: you should define a transition!');
       return;
+    }
+
+    if (this._opts.touch) {
+      this._opts.swipe = true;
+      this._opts.tap = true;
     }
 
     this._currentIndex = this._opts.index;
@@ -195,15 +202,23 @@ export class Slidy {
       this._el.addEventListener('click', this.onClick);
     }
 
-    if (this._opts.touch && Modernizr.touchevents) {
-      this._mc = new Hammer.Manager(this._el);
+    if ((this._opts.tap || this._opts.swipe) && Modernizr.touchevents) {
+      const options = {
+        recognizers: [],
+      };
+      this._mc = new Hammer.Manager(this._el, options);
+    }
+
+    if (this._opts.tap && Modernizr.touchevents) {
       let tap = new Hammer.Tap();
       this._mc.add(tap);
       this._mc.on('tap', this.onTap);
+    }
 
-      let swipe = new Hammer.Swipe();
+    if (this._opts.swipe && Modernizr.touchevents) {
+      let swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
       this._mc.add(swipe);
-      this._mc.on('swipe', this.onSwipe);
+      this._mc.on('swipeleft swiperight', this.onSwipe);
     }
   }
 

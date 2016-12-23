@@ -38,10 +38,11 @@ class Epic {
       afterSlide: this.sliderAfterSlide,
       auto: false,
       // pause: true,
-      click: true,
-      touch: true,
-      controls: true,
-      nav: true,
+      click: false,
+      tap: true,
+      swipe: true,
+      // controls: true,
+      // nav: true,
     });
 
     document.getElementById('destroy').addEventListener('click', () => {

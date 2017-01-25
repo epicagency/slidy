@@ -42,7 +42,7 @@ class Epic {
       tap: true,
       swipe: true,
       // controls: true,
-      // nav: true,
+      nav: '<div class="foo"><button>${thumb}</button></div>',
     });
 
     document.getElementById('destroy').addEventListener('click', () => {

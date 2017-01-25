@@ -73,6 +73,39 @@ and you will get this:
 </div><!-- end .slidy-outer -->
 ```
 
+## Config / options
+
+| Option | Values | Default | Description |
+| --- | --- | --- | --- |
+| auto | Boolean | false | Auto-start |
+| click | Boolean | true | Enable next slide on click |
+| controls | Boolean | false | Next / prev buttons |
+| height | 'auto' or [integer] | 'auto' | Auto or pixel height |
+| index | [integer] | 0 | Initial index |
+| interval | [integer] | 2000 | Time (ms) betweeen 2 transitions |
+| nav | Boolean, 'number', 'thumb' or 'template string' | false | Display a navigation with numbers / thumbs within custom template (see examples) |
+| pause | Boolean | true | Pause on hover |
+| swipe | Boolean | false | Enable horizontal swipe |
+| tap | Boolean | false | Enable next slide on tap |
+| touch | Boolean | false | Enable BOTH tap/swipe (deprecated) |
+| transition | Function | null | Animation function which returns a promise |
+
+
+### nav details
+
+* `nav: false` -> no navigation
+* `nav: true` -> navigation with numbers (1, 2, 3, …)
+* `nav: 'number'` -> same as `true`
+* `nav: 'thumb'` -> navigation with thumbs ([image-name]_thumb.ext)
+* `nav: '<div>${number}</div>'` -> custom "number" navigation
+* `nav: '<div>${thumb}</div>'` -> custom "thumb" navigation
+
+> If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
+
+
+
+
+
 -----
 
 ## License

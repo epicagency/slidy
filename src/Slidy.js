@@ -8,8 +8,9 @@ require('./vendor/modernizr-touch');
 
 const Emitter = require('tiny-emitter');
 const Hammer = require('hammerjs');
-const forEach = require('lodash/forEach');
+const bind = require('lodash/bind');
 const debounce = require('lodash/debounce');
+const forEach = require('lodash/forEach');
 
 import { Controls } from './Controls';
 import { Nav } from './Nav';
@@ -190,9 +191,9 @@ export class Slidy {
     this.onClick = this.click.bind(this);
     this.onTap = this.tap.bind(this);
     this.onSwipe = this.swipe.bind(this);
-    this.onResize = this.resize.bind(this);
+    this.onResize = bind(debounce(this.resize, 100), this);
 
-    window.addEventListener('resize', debounce(this.onResize, 100));
+    window.addEventListener('resize', this.onResize);
 
     if (this._opts.pause && this._opts.auto) {
       this._el.addEventListener('mouseenter', this.onEnter);
@@ -384,7 +385,11 @@ export class Slidy {
     // Remove interval
     this.stop();
 
+    // Empty queue
+    this._queue.empty();
+
     // Remove listeners
+    window.removeEventListener('resize', this.onResize);
     this._el.removeEventListener('mouseenter', this.onEnter);
     this._el.removeEventListener('mouseleave', this.onLeave);
     this._el.removeEventListener('click', this.onClick);

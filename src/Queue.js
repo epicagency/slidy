@@ -23,6 +23,10 @@ export class Queue {
     }
   }
 
+  empty() {
+    this._queue = [];
+  }
+
   play() {
     if (this._queue.length === 0) {
       return;

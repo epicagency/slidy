@@ -1,12 +1,28 @@
 const forEach = require('lodash/forEach');
 const indexOf = require('lodash/indexOf');
 
+import parseTpl from './utils/parse-es6-template';
+import { parents } from './utils/$';
 
 export class Nav {
   constructor(slidy) {
     this._slidy = slidy;
-    this._outer = this._slidy.outer;
-    this._slides = this._slidy.items;
+    this._outer = slidy.outer;
+    this._slides = slidy.items;
+
+    const type = slidy.options.nav;
+
+    if (/\${(number|thumb)}/.test(type)) {
+      this._type = 'template';
+      this._template = type;
+    } else if (type === 'thumb') {
+      this._type = 'thumb';
+    } else if (type === 'number' || type === true) {
+      this._type = 'number';
+    } else {
+      console.error('Slidy: wrong value for "nav" option');
+      return;
+    }
 
     this._dispatcher = this._slidy.dispatcher;
     this._dispatcher.on('beforeSlide', this.clearActive.bind(this));
@@ -22,11 +38,53 @@ export class Nav {
 
     let html = '';
     forEach(this._slides, (slide, i) => {
-      // Override 1, 2, 3,… if data-slidy-nav attribute
-      const content = ('slidyNav' in slide.dataset) ?
-        slide.dataset.slidyNav :
-        i + 1;
-      html += `<li class="slidy-nav__item"><button>${content}</button></li>`;
+      let content;
+
+      if ('slidyNav' in slide.dataset) {
+        // Overrided content if data-slidy-nav attribute
+        if (this._type === 'template') {
+          content = parseTpl(
+            this._template,
+            {
+              number: slide.dataset.slidyNav,
+              thumb: slide.dataset.slidyNav,
+            }
+          );
+        } else {
+          content = `<button>${slide.dataset.slidyNav}</button>`;
+        }
+      } else {
+        let number;
+        let thumb;
+
+        // Check for template, thumb or number…
+        switch(this._type) {
+          case 'template':
+            number = i + 1;
+            thumb = this.createThumb(slide);
+            content = parseTpl(
+              this._template,
+              {
+                number: number,
+                thumb: thumb,
+              }
+            );
+            break;
+
+          case 'thumb':
+            thumb = this.createThumb(slide);
+            content = `<button>${thumb}</button>`;
+            break;
+
+          case 'number':
+          default:
+            number = i + 1;
+            content = `<button>${number}</button>`;
+            break;
+        }
+      }
+
+      html += `<li class="slidy-nav__item">${content}</li>`;
     });
 
     this._el.innerHTML = html;
@@ -34,6 +92,12 @@ export class Nav {
     this._items = this._el.querySelectorAll('li');
 
     this.setActive();
+  }
+
+  createThumb(slide) {
+    const src = slide.querySelector('img').getAttribute('src');
+    const thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
+    return `<img src="${thumb}">`;
   }
 
   bind() {
@@ -45,14 +109,20 @@ export class Nav {
     const currentItem = this._el.querySelector('.is-active');
     if (currentItem) {
       currentItem.classList.remove('is-active');
-      currentItem.querySelector('button').removeAttribute('disabled');
+      const button = currentItem.querySelector('button');
+      if (button) {
+        button.disabled = false;
+      }
     }
   }
 
   setActive() {
     const newItem = this._items[this._slidy.newIndex];
     newItem.classList.add('is-active');
-    newItem.querySelector('button').setAttribute('disabled', true);
+    const button = newItem.querySelector('button');
+    if (button) {
+      button.disabled = true;
+    }
   }
 
   bindNav() {
@@ -60,11 +130,9 @@ export class Nav {
   }
 
   click(e) {
-    const clicked = e.target;
-    if (clicked.nodeName === 'BUTTON') {
-      const newIndex = indexOf(this._el.children, clicked.parentNode);
-      this._slidy.slideTo(newIndex);
-    }
+    const clicked = parents(e.target, 'slidy-nav__item');
+    const newIndex = indexOf(this._el.children, clicked);
+    this._slidy.slideTo(newIndex);
   }
 
   destroy() {

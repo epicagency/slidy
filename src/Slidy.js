@@ -132,6 +132,10 @@ export class Slidy {
     this._oldIndex = i;
   }
 
+  get options() {
+    return this._opts;
+  }
+
   get dispatcher() {
     return this._dispatcher;
   }
@@ -230,7 +234,7 @@ export class Slidy {
    */
 
   /**
-   * Pevious, next or "byIndex" navigation
+   * Previous, next or "byIndex" navigation
    */
   slidePrev() {
     let newIndex = this._currentIndex - 1;
@@ -283,6 +287,51 @@ export class Slidy {
     clearInterval(this._t);
   }
 
+
+  destroy() {
+    // Remove interval
+    this.stop();
+
+    // Empty queue
+    this._queue.empty();
+
+    // Remove listeners
+    window.removeEventListener('resize', this.onResize);
+    this._el.removeEventListener('mouseenter', this.onEnter);
+    this._el.removeEventListener('mouseleave', this.onLeave);
+    this._el.removeEventListener('click', this.onClick);
+
+    // Remove Hammer.manager
+    if (this._mc) {
+      this._mc.destroy();
+    }
+
+    // Remove controls
+    if (this._controls) {
+      this._controls.destroy();
+    }
+
+    // Remove nav
+    if (this._nav) {
+      this._nav.destroy();
+    }
+
+    // Remove HTML wrapper
+    this._outer.before(this._el);
+    this._outer.parentNode.removeChild(this._outer);
+
+    // Remove CSS classes
+    this._el.classList.remove('slidy');
+    forEach(this._items, (slide) => {
+      slide.classList.remove('slidy__item');
+      slide.removeAttribute('style');
+      forEach(slide.children, (child) => {
+        child.removeAttribute('style');
+      });
+    });
+
+    this._el.removeAttribute('style');
+  }
 
 
   /**
@@ -347,6 +396,7 @@ export class Slidy {
   /**
    * Callbacks
    */
+
   beforeInit() {
     if (this._opts.beforeInit) {
       this._opts.beforeInit.call(this, this._el);
@@ -379,50 +429,5 @@ export class Slidy {
         direction
       );
     }
-  }
-
-  destroy() {
-    // Remove interval
-    this.stop();
-
-    // Empty queue
-    this._queue.empty();
-
-    // Remove listeners
-    window.removeEventListener('resize', this.onResize);
-    this._el.removeEventListener('mouseenter', this.onEnter);
-    this._el.removeEventListener('mouseleave', this.onLeave);
-    this._el.removeEventListener('click', this.onClick);
-
-    // Remove Hammer.manager
-    if (this._mc) {
-      this._mc.destroy();
-    }
-
-    // Remove controls
-    if (this._controls) {
-      this._controls.destroy();
-    }
-
-    // Remove nav
-    if (this._nav) {
-      this._nav.destroy();
-    }
-
-    // Remove HTML wrapper
-    this._outer.before(this._el);
-    this._outer.parentNode.removeChild(this._outer);
-
-    // Remove CSS classes
-    this._el.classList.remove('slidy');
-    forEach(this._items, (slide) => {
-      slide.classList.remove('slidy__item');
-      slide.removeAttribute('style');
-      forEach(slide.children, (child) => {
-        child.removeAttribute('style');
-      });
-    });
-
-    this._el.removeAttribute('style');
   }
 }

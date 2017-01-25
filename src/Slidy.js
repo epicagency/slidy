@@ -38,7 +38,7 @@ export class Slidy {
       console.warn('Slidy: multiple elements matching!');
     }
 
-    this._el = el[0];
+    this._el = el[0] || el;
 
     // Check and get options
     this._opts = Object.assign({

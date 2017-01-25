@@ -51,14 +51,18 @@ export class Nav {
             }
           );
         } else {
-          content = `<button>${slide.dataset.slidyNav}</button>`;
+          content = `<button>
+            <span>
+              ${slide.dataset.slidyNav}
+            </span>
+          </button>`;
         }
       } else {
         let number;
         let thumb;
 
         // Check for template, thumb or number…
-        switch(this._type) {
+        switch (this._type) {
           case 'template':
             number = i + 1;
             thumb = this.createThumb(slide);
@@ -73,13 +77,21 @@ export class Nav {
 
           case 'thumb':
             thumb = this.createThumb(slide);
-            content = `<button>${thumb}</button>`;
+            content = `<button>
+              <span>
+                ${thumb}
+              </span>
+            </button>`;
             break;
 
           case 'number':
           default:
             number = i + 1;
-            content = `<button>${number}</button>`;
+            content = `<button>
+              <span>
+                ${number}
+              </span>
+            </button>`;
             break;
         }
       }

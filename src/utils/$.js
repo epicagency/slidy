@@ -19,7 +19,7 @@ export function nextSiblings(el) {
 }
 
 export function parents(el, className) {
-  for ( ; el && el !== document; el = el.parentNode ) {
+  for (; el && el !== document; el = el.parentNode) {
     if (el.classList.contains(className)) {
       return el;
     }

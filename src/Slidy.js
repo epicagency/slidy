@@ -278,7 +278,7 @@ export class Slidy {
               return a - b;
             })
             .slice(0, 1);
-      }
+      };
 
       const heights = [];
       forEach(this._items, (item) => {

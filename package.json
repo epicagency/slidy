@@ -38,8 +38,7 @@
     "demo": "gulp dev",
     "dev": "npm run clean && npm run copy && npm run babel:watch",
     "eslint": "./node_modules/eslint/bin/eslint.js",
-    "jscs": "./node_modules/jscs/bin/jscs",
-    "lint": "jscs src && eslint src",
+    "lint": "eslint src",
     "prepublish": "npm run build",
     "test": "echo \"Warning: no test specified\" && exit 0"
   },

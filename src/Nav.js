@@ -143,8 +143,10 @@ export class Nav {
 
   click(e) {
     const clicked = parents(e.target, 'slidy-nav__item');
-    const newIndex = indexOf(this._el.children, clicked);
-    this._slidy.slideTo(newIndex);
+    if (clicked !== null) {
+      const newIndex = indexOf(this._el.children, clicked);
+      this._slidy.slideTo(newIndex);
+    }
   }
 
   destroy() {

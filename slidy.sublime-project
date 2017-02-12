@@ -1,11 +1,29 @@
 {
-	"folders":
-	[
-		{
-			"path": "src"
-		},
-		{
-			"path": "demo/src/assets"
-		}
-	]
+  "SublimeLinter":
+  {
+    "linters":
+    {
+      "phpcs":
+      {
+        "@disable": true
+      },
+      "scss":
+      {
+        "@disable": true
+      },
+      "sass":
+      {
+        "@disable": false
+      }
+    }
+  },
+  "folders":
+  [
+    {
+      "path": "src"
+    },
+    {
+      "path": "demo/src/assets"
+    }
+  ]
 }

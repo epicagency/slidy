@@ -80,6 +80,9 @@ export class Slidy {
     this._dispatcher.on('afterInit', () => {
       this.afterInit();
     });
+    this._dispatcher.on('afterResize', () => {
+      this.afterResize();
+    });
     this._dispatcher.on('beforeSlide', (direction) => {
       this.beforeSlide(direction);
     });
@@ -367,6 +370,7 @@ export class Slidy {
    */
   resize() {
     this.reset();
+    this._dispatcher.emit('afterResize');
   }
 
   /**
@@ -429,6 +433,12 @@ export class Slidy {
   afterInit() {
     if (this._opts.afterInit) {
       this._opts.afterInit.call(this, this._el);
+    }
+  }
+
+  afterResize() {
+    if (this._opts.afterResize) {
+      this._opts.afterResize.call(this, this._el);
     }
   }
 

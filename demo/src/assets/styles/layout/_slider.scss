@@ -1,3 +1,6 @@
+$white: #fff;
+$gray: #808080;
+
 body {
   margin: 2em;
   background-color: $color-bg;
@@ -20,10 +23,10 @@ body {
 
   div {
     position: absolute;
-    left: 0;
     bottom: 1em;
+    left: 0;
     width: 100%;
-    color: gray;
+    color: $gray;
     font-size: 1.5em;
     text-align: center;
     text-transform: uppercase;
@@ -43,7 +46,7 @@ body {
   position: relative;
   overflow: hidden;
   width: 620px;
-  background-color: white;
+  background-color: $white;
 }
 
 .slidy__item {
@@ -59,15 +62,15 @@ body {
 
   + .slidy__item {
     // opacity: 0;
-    transform: translateX(100%)
+    transform: translateX(100%);
   }
 }
 
 .slidy-controls {
   position: absolute;
-  overflow: hidden;
   top: 50%;
   left: -4em;
+  overflow: hidden;
   width: calc(100% + 8em);
   transform: translateY(-50%);
 }

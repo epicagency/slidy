@@ -34,6 +34,7 @@ class Epic {
       transition: this.advancedTransition2,
       beforeInit: this.sliderBeforeInit,
       afterInit: this.sliderAfterInit,
+      afterResize: this.sliderAfterResize,
       beforeSlide: this.sliderBeforeSlide,
       afterSlide: this.sliderAfterSlide,
       auto: false,
@@ -56,6 +57,10 @@ class Epic {
 
   sliderAfterInit(slider) {
     console.info('sliderAfterInit', slider);
+  }
+
+  sliderAfterResize(slider) {
+    console.info('sliderAfterResize', slider);
   }
 
   sliderBeforeSlide(currentIndex, newIndex, direction) {

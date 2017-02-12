@@ -269,7 +269,7 @@ export class Slidy {
       // Check if items have height
       // if not, check first node
       // then remove 0 height, sort ASC, get the lowest height
-      const process = function(arr) {
+      const getMinHeight = function(arr) {
         return arr
             .filter((item) => {
               return item > 0;
@@ -281,14 +281,15 @@ export class Slidy {
       };
 
       const heights = [];
+      const hasNoHeight = this._items[0].offsetHeight === 0;
       forEach(this._items, (item) => {
-        if (item.offsetHeight === 0 && item.hasChildNodes()) {
+        if (hasNoHeight && item.hasChildNodes()) {
           heights.push(item.firstElementChild.offsetHeight);
         } else {
           heights.push(item.offsetHeight);
         }
       });
-      this._el.style.height = process(heights) + 'px';
+      this._el.style.height = getMinHeight(heights) + 'px';
     }
   }
 

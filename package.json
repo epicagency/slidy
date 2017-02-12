@@ -36,12 +36,12 @@
     "clean": "rimraf lib/*",
     "copy": "cp -r src/ lib/",
     "demo": "gulp dev",
+    "dev": "npm run clean && npm run copy && npm run babel:watch",
     "eslint": "./node_modules/eslint/bin/eslint.js",
     "jscs": "./node_modules/jscs/bin/jscs",
     "lint": "jscs src && eslint src",
     "prepublish": "npm run build",
-    "test": "echo \"Warning: no test specified\" && exit 0",
-    "watch": "npm run clean && npm run copy && npm run babel:watch"
+    "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "dependencies": {
     "hammerjs": "^2.0.8",

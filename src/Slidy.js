@@ -266,7 +266,29 @@ export class Slidy {
    */
   reset() {
     if (this._opts.height === 'auto') {
-      this._el.style.height = this._items[0].offsetHeight + 'px';
+      // Check if items have height
+      // if not, check first node
+      // then remove 0 height, sort ASC, get the lowest height
+      const process = function(arr) {
+        return arr
+            .filter((item) => {
+              return item > 0;
+            })
+            .sort((a, b) => {
+              return a - b;
+            })
+            .slice(0, 1);
+      }
+
+      const heights = [];
+      forEach(this._items, (item) => {
+        if (item.offsetHeight === 0 && item.hasChildNodes()) {
+          heights.push(item.firstElementChild.offsetHeight);
+        } else {
+          heights.push(item.offsetHeight);
+        }
+      });
+      this._el.style.height = process(heights) + 'px';
     }
   }
 

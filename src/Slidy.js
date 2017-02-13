@@ -269,6 +269,9 @@ export class Slidy {
    */
   reset() {
     if (this._opts.height === 'auto') {
+      // Reset inline height
+      this._el.style.height = '';
+
       // Check if items have height
       // if not, check first node
       // then remove 0 height, sort ASC, get the lowest height

@@ -42,6 +42,7 @@ export class Nav {
 
       if ('slidyNav' in slide.dataset) {
         // Overrided content if data-slidy-nav attribute
+        // data-slidy-nav value will replace ${number} and ${thumb}
         if (this._type === 'template') {
           content = parseTpl(
             this._template,
@@ -62,17 +63,21 @@ export class Nav {
         let thumb;
 
         // Check for template, thumb or number…
+        const dataTpl = {};
         switch (this._type) {
           case 'template':
-            number = i + 1;
-            thumb = this.createThumb(slide);
-            content = parseTpl(
-              this._template,
-              {
-                number: number,
-                thumb: thumb,
-              }
-            );
+
+            // We can have both number and thumb into the template string
+            // or nothing…
+            if(/\${number}/.test(this._template)) {
+              dataTpl.number = i + 1;
+            }
+
+            if(/\${thumb}/.test(this._template)) {
+              dataTpl.thumb = this.createThumb(slide);
+            }
+
+            content = parseTpl(this._template, dataTpl);
             break;
 
           case 'thumb':

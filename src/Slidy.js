@@ -73,6 +73,7 @@ export class Slidy {
     this._length = this._items.length;
 
     this._dispatcher = new Emitter();
+
     // Public events
     this._dispatcher.on('beforeInit', () => {
       this.beforeInit();
@@ -203,7 +204,7 @@ export class Slidy {
     window.addEventListener('resize', this.onResize);
 
     if (this._opts.pause && this._opts.auto) {
-      this._el.addEventListener('mouseenter', this.onEnter);
+      this._outer.addEventListener('mouseenter', this.onEnter);
     }
 
     if (this._opts.click && !Modernizr.touchevents) {
@@ -410,15 +411,15 @@ export class Slidy {
    * Enabled via "auto" + "pause" options
    */
   enter() {
-    this._el.removeEventListener('mouseenter', this.onEnter);
+    this._outer.removeEventListener('mouseenter', this.onEnter);
     this.stop();
-    this._el.addEventListener('mouseleave', this.onLeave);
+    this._outer.addEventListener('mouseleave', this.onLeave);
   }
 
   leave() {
-    this._el.removeEventListener('mouseleave', this.onLeave);
+    this._outer.removeEventListener('mouseleave', this.onLeave);
     this.start();
-    this._el.addEventListener('mouseenter', this.onEnter);
+    this._outer.addEventListener('mouseenter', this.onEnter);
   }
 
 

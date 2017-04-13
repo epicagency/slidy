@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://git.epic.net/epic/slidy/issues"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN UNLICENSE",
   "engines": {
     "node": "6.9.1"
   },

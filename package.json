@@ -2,10 +2,11 @@
   "name": "epic-slidy",
   "version": "0.1.7",
   "description": "An EPIC slider",
-  "homepage": "https://git.epic.net/epic/slidy",
+  "main": "index.js",
+  "homepage": "https://github.com/epicagency/slidy",
   "repository": {
     "type": "git",
-    "url": "https://git.epic.net/epic/slidy"
+    "url": "git@github.com:epicagency/slidy.git"
   },
   "author": {
     "name": "Thierry Michel",
@@ -23,7 +24,7 @@
     "responsive"
   ],
   "bugs": {
-    "url": "https://git.epic.net/epic/slidy/issues"
+    "url": "https://github.com/epicagency/slidy/issues"
   },
   "license": "SEE LICENSE IN UNLICENSE",
   "engines": {

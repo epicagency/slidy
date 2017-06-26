@@ -83,13 +83,13 @@ and you will get this:
 | height | 'auto' or [integer] | 'auto' | Auto or pixel height |
 | index | [integer] | 0 | Initial index |
 | interval | [integer] | 2000 | Time (ms) betweeen 2 transitions |
+| namesapce | String | 'slidy' | CSS custom [class]namespace |
 | nav | Boolean, 'number', 'thumb' or 'template string' | false | Display a navigation with numbers / thumbs within custom template (see examples) |
 | pause | Boolean | true | Pause on hover |
 | swipe | Boolean | false | Enable horizontal swipe |
 | tap | Boolean | false | Enable next slide on tap |
 | touch | Boolean | false | Enable BOTH tap/swipe (deprecated) |
 | transition | Function | null | Animation function which returns a promise |
-
 
 ### nav details
 
@@ -101,10 +101,6 @@ and you will get this:
 * `nav: '<div>${thumb}</div>'` -> custom "thumb" navigation
 
 > If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
-
-
-
-
 
 -----
 

@@ -40,6 +40,7 @@ class Epic {
       auto: false,
       // pause: true,
       click: false,
+      namespace: 'my-slidy',
       tap: true,
       swipe: true,
       // controls: true,

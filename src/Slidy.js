@@ -48,6 +48,7 @@ export class Slidy {
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
+      namespace: 'slidy', // String: custom namespace
       nav: false, // Boolean: create navigation
       pause: true, // Boolean: pause on hover
       swipe: false, // Boolean: enable swipe
@@ -144,6 +145,10 @@ export class Slidy {
     return this._dispatcher;
   }
 
+  get namespace() {
+    return this._opts.namespace;
+  }
+
 
 
   /**
@@ -158,10 +163,10 @@ export class Slidy {
     this._outer.append(this._el);
 
     // Add CSS classes
-    this._outer.classList.add('slidy-outer');
-    this._el.classList.add('slidy');
+    this._outer.classList.add(`${this.namespace}-outer`);
+    this._el.classList.add(this.namespace);
     forEach(this._items, (slide) => {
-      slide.classList.add('slidy__item');
+      slide.classList.add(`${this.namespace}__item`);
     });
 
     if (this._opts.click) {
@@ -351,9 +356,9 @@ export class Slidy {
     this._outer.parentNode.removeChild(this._outer);
 
     // Remove CSS classes
-    this._el.classList.remove('slidy');
+    this._el.classList.remove(this.namespace);
     forEach(this._items, (slide) => {
-      slide.classList.remove('slidy__item');
+      slide.classList.remove(`${this.namespace}__item`);
       slide.removeAttribute('style');
       forEach(slide.children, (child) => {
         child.removeAttribute('style');

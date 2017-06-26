@@ -34,7 +34,7 @@ export class Nav {
 
   init() {
     this._el = document.createElement('ol');
-    this._el.classList.add('slidy-nav');
+    this._el.classList.add(`${this._slidy.namespace}-nav`);
 
     let html = '';
     forEach(this._slides, (slide, i) => {
@@ -101,7 +101,7 @@ export class Nav {
         }
       }
 
-      html += `<li class="slidy-nav__item">${content}</li>`;
+      html += `<li class="${this._slidy.namespace}-nav__item">${content}</li>`;
     });
 
     this._el.innerHTML = html;
@@ -147,7 +147,7 @@ export class Nav {
   }
 
   click(e) {
-    const clicked = parents(e.target, 'slidy-nav__item');
+    const clicked = parents(e.target, `${this._slidy.namespace}-nav__item`);
     if (clicked !== null) {
       const newIndex = indexOf(this._el.children, clicked);
       this._slidy.slideTo(newIndex);

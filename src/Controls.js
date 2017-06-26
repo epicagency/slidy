@@ -11,15 +11,15 @@ export class Controls {
 
   init() {
     this._el = document.createElement('div');
-    this._el.classList.add('slidy-controls');
+    this._el.classList.add(`${this._slidy.namespace}-controls`);
 
     this._prev = document.createElement('button');
     this._prev.textContent = '<';
-    this._prev.classList.add('slidy-controls__item--prev');
+    this._prev.classList.add(`${this._slidy.namespace}-controls__item--prev`);
 
     this._next = document.createElement('button');
     this._next.textContent = '>';
-    this._next.classList.add('slidy-controls__item--next');
+    this._next.classList.add(`${this._slidy.namespace}-controls__item--next`);
 
     this._el.append(this._prev);
     this._el.append(this._next);

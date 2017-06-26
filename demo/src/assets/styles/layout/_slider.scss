@@ -36,20 +36,20 @@ body {
 // Slidy
 
 
-.slidy-outer {
+.my-slidy-outer {
   position: relative;
   width: 620px;
   margin: 0 auto;
 }
 
-.slidy {
+.my-slidy {
   position: relative;
   overflow: hidden;
   width: 620px;
   background-color: $white;
 }
 
-.slidy__item {
+.my-slidy__item {
   position: absolute;
 
   // &.is-current {
@@ -60,13 +60,13 @@ body {
   //   z-index: 2;
   // }
 
-  + .slidy__item {
+  + .my-slidy__item {
     // opacity: 0;
     transform: translateX(100%);
   }
 }
 
-.slidy-controls {
+.my-slidy-controls {
   position: absolute;
   top: 50%;
   left: -4em;
@@ -75,11 +75,11 @@ body {
   transform: translateY(-50%);
 }
 
-.slidy-controls__item--prev {
+.my-slidy-controls__item--prev {
   float: left;
 }
 
-.slidy-controls__item--next {
+.my-slidy-controls__item--next {
   float: right;
 }
 
@@ -95,7 +95,7 @@ body {
   }
 }
 
-.slidy-nav {
+.my-slidy-nav {
   @extend %list-nostyle;
 
   display: flex;
@@ -103,7 +103,7 @@ body {
   margin-top: 1em;
 }
 
-.slidy-nav__item {
+.my-slidy-nav__item {
   button {
     border: 1px solid $white;
     padding: .75em 1em;

@@ -44,6 +44,7 @@ class Epic {
       click: false,
       loop: false,
       namespace: 'my-slidy',
+      pagination: '//',
       tap: true,
       swipe: true,
       controls: true,

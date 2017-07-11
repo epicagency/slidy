@@ -13,6 +13,7 @@ const forEach = require('lodash/forEach');
 
 import { Controls } from './Controls';
 import { Nav } from './Nav';
+import { Pagination } from './Pagination';
 import { Queue } from './Queue';
 
 export class Slidy {
@@ -52,7 +53,8 @@ export class Slidy {
       interval: 2000, // Integer: time between 2 transitions
       loop: true, // Boolean: enable/disable loop
       namespace: 'slidy', // String: custom namespace
-      nav: false, // Boolean: create navigation
+      nav: false, // Mixed: create navigation (number, thumb, custom)
+      pagination: false, // Mixed: create pagination (1[separator]10)
       pause: true, // Boolean: pause on hover
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap
@@ -187,6 +189,11 @@ export class Slidy {
     // Add nav
     if (this._opts.nav) {
       this._nav = new Nav(this);
+    }
+
+    // Add pagination
+    if (this._opts.pagination) {
+      this._pagination = new Pagination(this, this._opts.pagination);
     }
 
     if (this._opts.height === 'auto') {

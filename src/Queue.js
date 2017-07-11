@@ -14,8 +14,8 @@ export class Queue {
     }
 
     this._queue.push({
-      move: move,
-      index: index,
+      move,
+      index,
     });
 
     if (!this._isAnimating) {
@@ -32,10 +32,10 @@ export class Queue {
       return;
     }
 
-    const move = this._queue[0].move;
-    const items = this._slidy.items;
-    const len = items.length;
-    const currentIndex = this._slidy.currentIndex;
+    const [{ move }] = this._queue;
+    const { items } = this._slidy;
+    const { length } = items;
+    const { currentIndex } = this._slidy;
     let newIndex;
     let direction;
 
@@ -46,12 +46,12 @@ export class Queue {
       if (move === 'prev') {
         newIndex = currentIndex - 1;
         if (newIndex < 0) {
-          newIndex = len - 1;
+          newIndex = length - 1;
         }
       }
       if (move === 'next') {
         newIndex = currentIndex + 1;
-        if (newIndex === len) {
+        if (newIndex === length) {
           newIndex = 0;
         }
       }
@@ -61,12 +61,13 @@ export class Queue {
     if (newIndex === currentIndex) {
       this._queue.shift();
       this.play();
+
       return;
     }
 
     // Get direction
     if (move === 'to') {
-      direction = (newIndex > currentIndex) ? 'next' : 'prev';
+      direction = newIndex > currentIndex ? 'next' : 'prev';
     } else {
       direction = move;
     }

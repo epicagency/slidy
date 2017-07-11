@@ -3,7 +3,6 @@
  */
 
 /* global Modernizr */
-
 require('./vendor/modernizr-touch');
 
 const Emitter = require('tiny-emitter');
@@ -17,20 +16,23 @@ import { Nav } from './Nav';
 import { Queue } from './Queue';
 
 export class Slidy {
-
   /**
    * Slidy constructor
-   * @param  {HTMLElement|string} el - Slider container (element or selector)
-   * @param  {Object} opts - Configuration settings
+   * @param   {HTMLElement|string} el   Slider container (element or selector)
+   * @param   {Object}             opts Configuration settings
+   * @returns {undefined}
    */
   constructor(el, opts) {
+    /* eslint-disable no-param-reassign */
     // Check and get element(s)
     if (typeof el === 'string') {
       el = document.querySelectorAll(el);
     }
+    /* eslint-enable no-param-reassign */
 
     if (!el || el.length === 0) {
       console.error('Slidy: no element matching!');
+
       return;
     }
 
@@ -48,6 +50,7 @@ export class Slidy {
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
+      loop: true, // Boolean: enable/disable loop
       namespace: 'slidy', // String: custom namespace
       nav: false, // Boolean: create navigation
       pause: true, // Boolean: pause on hover
@@ -59,6 +62,7 @@ export class Slidy {
 
     if (this._opts.transition === null) {
       console.error('Slidy: you should define a transition!');
+
       return;
     }
 
@@ -67,6 +71,7 @@ export class Slidy {
       this._opts.tap = true;
     }
 
+    this._debounceDelay = 100;
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
     this._oldIndex = this._oldIndex;
@@ -95,8 +100,6 @@ export class Slidy {
     this.init();
     this.bind();
   }
-
-
 
   /**
    * Getters/setters
@@ -149,10 +152,11 @@ export class Slidy {
     return this._opts.namespace;
   }
 
-
-
   /**
    * Init & binding
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   init() {
     this._dispatcher.emit('beforeInit');
@@ -177,7 +181,7 @@ export class Slidy {
 
     // Add controls
     if (this._opts.controls) {
-      this._controls = new Controls(this);
+      this._controls = new Controls(this, {loop: this._opts.loop});
     }
 
     // Add nav
@@ -185,10 +189,10 @@ export class Slidy {
       this._nav = new Nav(this);
     }
 
-    if (this._opts.height !== 'auto') {
-      this._el.style.height = this._opts.height + 'px';
-    } else {
+    if (this._opts.height === 'auto') {
       this.reset();
+    } else {
+      this._el.style.height = `${this._opts.height}px`;
     }
 
     if (this._opts.auto) {
@@ -204,7 +208,7 @@ export class Slidy {
     this.onClick = this.click.bind(this);
     this.onTap = this.tap.bind(this);
     this.onSwipe = this.swipe.bind(this);
-    this.onResize = bind(debounce(this.resize, 100), this);
+    this.onResize = bind(debounce(this.resize, this._debounceDelay), this);
 
     window.addEventListener('resize', this.onResize);
 
@@ -220,51 +224,84 @@ export class Slidy {
       const options = {
         recognizers: [],
       };
+
       this._mc = new Hammer.Manager(this._el, options);
     }
 
     if (this._opts.tap && Modernizr.touchevents) {
-      let tap = new Hammer.Tap();
+      const tap = new Hammer.Tap();
+
       this._mc.add(tap);
       this._mc.on('tap', this.onTap);
     }
 
     if (this._opts.swipe && Modernizr.touchevents) {
-      let swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
+      const swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
+
       this._mc.add(swipe);
       this._mc.on('swipeleft swiperight', this.onSwipe);
     }
   }
-
-
 
   /**
    * API
    */
 
   /**
-   * Previous, next or "byIndex" navigation
+   * Navigate to previous slide
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   slidePrev() {
     let newIndex = this._currentIndex - 1;
+
     if (newIndex < 0) {
+      if (!this._opts.loop) {
+        return;
+      }
       newIndex = this._length - 1;
     }
     this.slide('prev');
   }
 
+  /**
+   * Navigate to next slide
+   *
+   * @returns {undefined}
+   * @memberof Slidy
+   */
   slideNext() {
     let newIndex = this._currentIndex + 1;
+
     if (newIndex === this._length) {
+      if (!this._opts.loop) {
+        return;
+      }
       newIndex = 0;
     }
     this.slide('next');
   }
 
+  /**
+   * Navigate to slide by index
+   *
+   * @param {number} index slide index
+   * @returns {undefined}
+   * @memberof Slidy
+   */
   slideTo(index) {
     this.slide('to', index);
   }
 
+  /**
+   * Add move to the queue
+   *
+   * @param {string} move prev|next|to
+   * @param {number} [index=null] slide index
+   * @returns {undefined}
+   * @memberof Slidy
+   */
   slide(move, index = null) {
     this._queue.add(move, index);
   }
@@ -272,6 +309,9 @@ export class Slidy {
   /**
    * Height calculation if auto.
    * Called on 'init' and 'resize'
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   reset() {
     if (this._opts.height === 'auto') {
@@ -281,19 +321,16 @@ export class Slidy {
       // Check if items have height
       // if not, check first node
       // then remove 0 height, sort ASC, get the lowest height
-      const getMinHeight = function(arr) {
+      const getMinHeight = function getMinHeight(arr) {
         return arr
-            .filter((item) => {
-              return item > 0;
-            })
-            .sort((a, b) => {
-              return a - b;
-            })
+            .filter((item) => item > 0)
+            .sort((a, b) => a - b)
             .slice(0, 1);
       };
 
       const heights = [];
       const hasNoHeight = this._items[0].offsetHeight === 0;
+
       forEach(this._items, (item) => {
         if (hasNoHeight && item.hasChildNodes()) {
           heights.push(item.firstElementChild.offsetHeight);
@@ -301,13 +338,16 @@ export class Slidy {
           heights.push(item.offsetHeight);
         }
       });
-      this._el.style.height = getMinHeight(heights) + 'px';
+      this._el.style.height = `${getMinHeight(heights)}px`;
     }
   }
 
   /**
    * Start autoplay
    * Enabled via "auto" and used by "pause" options
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   start() {
     this.slideNext();
@@ -317,11 +357,13 @@ export class Slidy {
   /**
    * Pause autoplay
    * Used by "pause" options
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   stop() {
     clearInterval(this._t);
   }
-
 
   destroy() {
     // Remove interval
@@ -376,6 +418,9 @@ export class Slidy {
   /**
    * RWD reset
    * Mainly for height…
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   resize() {
     this.reset();
@@ -385,6 +430,9 @@ export class Slidy {
   /**
    * Click on slider to go to the next slide
    * Enabled via "click" option,
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   click() {
     this.slideNext();
@@ -393,6 +441,9 @@ export class Slidy {
   /**
    * Same as click but for touch devices
    * Enabled via "touch" option
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   tap() {
     this.slideNext();
@@ -401,6 +452,10 @@ export class Slidy {
   /**
    * Complement gesture for "tap"
    * Enabled via "touch" option
+   *
+   * @param {TouchEvent} e touch event
+   * @returns {undefined}
+   * @memberof Slidy
    */
   swipe(e) {
     if (e.direction === Hammer.DIRECTION_LEFT) {
@@ -414,6 +469,9 @@ export class Slidy {
   /**
    * Play/pause on hover
    * Enabled via "auto" + "pause" options
+   *
+   * @returns {undefined}
+   * @memberof Slidy
    */
   enter() {
     this._outer.removeEventListener('mouseenter', this.onEnter);

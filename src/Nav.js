@@ -21,12 +21,11 @@ export class Nav {
       this._type = 'number';
     } else {
       console.error('Slidy: wrong value for "nav" option');
+
       return;
     }
 
     this._dispatcher = this._slidy.dispatcher;
-    this._dispatcher.on('beforeSlide', this.clearActive.bind(this));
-    this._dispatcher.on('beforeSlide', this.setActive.bind(this));
 
     this.init();
     this.bind();
@@ -37,6 +36,7 @@ export class Nav {
     this._el.classList.add(`${this._slidy.namespace}-nav`);
 
     let html = '';
+
     forEach(this._slides, (slide, i) => {
       let content;
 
@@ -64,24 +64,25 @@ export class Nav {
 
         // Check for template, thumb or number…
         const dataTpl = {};
+
         switch (this._type) {
           case 'template':
 
             // We can have both number and thumb into the template string
             // or nothing…
-            if(/\${number}/.test(this._template)) {
+            if (/\${number}/.test(this._template)) {
               dataTpl.number = i + 1;
             }
 
-            if(/\${thumb}/.test(this._template)) {
-              dataTpl.thumb = this.createThumb(slide);
+            if (/\${thumb}/.test(this._template)) {
+              dataTpl.thumb = Nav.createThumb(slide);
             }
 
             content = parseTpl(this._template, dataTpl);
             break;
 
           case 'thumb':
-            thumb = this.createThumb(slide);
+            thumb = Nav.createThumb(slide);
             content = `<button>
               <span>
                 ${thumb}
@@ -111,22 +112,27 @@ export class Nav {
     this.setActive();
   }
 
-  createThumb(slide) {
+  static createThumb(slide) {
     const src = slide.querySelector('img').getAttribute('src');
     const thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
+
     return `<img src="${thumb}">`;
   }
 
   bind() {
     this.onClick = this.click.bind(this);
+    this._dispatcher.on('beforeSlide', this.clearActive.bind(this));
+    this._dispatcher.on('beforeSlide', this.setActive.bind(this));
     this.bindNav();
   }
 
   clearActive() {
     const currentItem = this._el.querySelector('.is-active');
+
     if (currentItem) {
       currentItem.classList.remove('is-active');
       const button = currentItem.querySelector('button');
+
       if (button) {
         button.disabled = false;
       }
@@ -135,8 +141,11 @@ export class Nav {
 
   setActive() {
     const newItem = this._items[this._slidy.newIndex];
+
     newItem.classList.add('is-active');
+
     const button = newItem.querySelector('button');
+
     if (button) {
       button.disabled = true;
     }
@@ -148,8 +157,10 @@ export class Nav {
 
   click(e) {
     const clicked = parents(e.target, `${this._slidy.namespace}-nav__item`);
+
     if (clicked !== null) {
       const newIndex = indexOf(this._el.children, clicked);
+
       this._slidy.slideTo(newIndex);
     }
   }

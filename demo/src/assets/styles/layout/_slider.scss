@@ -93,6 +93,10 @@ body {
   &:hover {
     background-color: fade-out($black, .5);
   }
+
+  &:disabled {
+    opacity: .5;
+  }
 }
 
 .my-slidy-nav {

@@ -83,6 +83,7 @@ and you will get this:
 | height | 'auto' or [integer] | 'auto' | Auto or pixel height |
 | index | [integer] | 0 | Initial index |
 | interval | [integer] | 2000 | Time (ms) betweeen 2 transitions |
+| loop | Boolean | true | loop … or not |
 | namesapce | String | 'slidy' | CSS custom [class]namespace |
 | nav | Boolean, 'number', 'thumb' or 'template string' | false | Display a navigation with numbers / thumbs within custom template (see examples) |
 | pause | Boolean | true | Pause on hover |

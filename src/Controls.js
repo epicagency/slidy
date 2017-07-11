@@ -1,6 +1,7 @@
 export class Controls {
-  constructor(slidy) {
+  constructor(slidy, opts) {
     this._slidy = slidy;
+    this._opts = opts;
     this._outer = this._slidy.outer;
 
     this._dispatcher = this._slidy.dispatcher;
@@ -24,11 +25,15 @@ export class Controls {
     this._el.append(this._prev);
     this._el.append(this._next);
     this._outer.append(this._el);
+
+    this.update();
   }
 
   bind() {
     this.onPrevClick = this.prevClick.bind(this);
     this.onNextClick = this.nextClick.bind(this);
+
+    this._dispatcher.on('beforeSlide', this.update.bind(this));
 
     this.bindControls();
   }
@@ -44,6 +49,34 @@ export class Controls {
 
   nextClick() {
     this._slidy.slideNext();
+  }
+
+  static disable(el) {
+    el.setAttribute('disabled', '');
+    el.classList.add('is-disabled');
+  }
+
+  static enable(el) {
+    el.removeAttribute('disabled');
+    el.classList.remove('is-disabled');
+  }
+
+  update() {
+    if (!this._opts.loop) {
+      const { newIndex } = this._slidy;
+      const { length } = this._slidy.items;
+
+      Controls.enable(this._prev);
+      Controls.enable(this._next);
+
+      if (newIndex === 0) {
+        Controls.disable(this._prev);
+      }
+
+      if (newIndex === length - 1) {
+        Controls.disable(this._next);
+      }
+    }
   }
 
   destroy() {

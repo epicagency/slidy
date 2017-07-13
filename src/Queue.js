@@ -1,6 +1,5 @@
 export class Queue {
   constructor(slidy, transition) {
-    console.log('Queue:init');
     this._slidy = slidy;
     this._transition = transition;
     this._dispatcher = this._slidy.dispatcher;

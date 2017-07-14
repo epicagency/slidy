@@ -400,6 +400,11 @@ export class Slidy {
       this._nav.destroy();
     }
 
+    // Remove pagination
+    if (this._pagination) {
+      this._pagination.destroy();
+    }
+
     // Remove HTML wrapper
     this._outer.before(this._el);
     this._outer.parentNode.removeChild(this._outer);

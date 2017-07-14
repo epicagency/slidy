@@ -7,23 +7,33 @@ require('./vendor/modernizr-touch');
 
 const Emitter = require('tiny-emitter');
 const Hammer = require('hammerjs');
-const bind = require('lodash/bind');
-const debounce = require('lodash/debounce');
-const forEach = require('lodash/forEach');
 
+import {
+  bind,
+  debounce,
+  forEach,
+} from 'lodash';
 import { Controls } from './Controls';
 import { Nav } from './Nav';
 import { Pagination } from './Pagination';
 import { Queue } from './Queue';
 
+/**
+ * Slidy main class
+ *
+ * @export
+ * @class Slidy
+ */
 export class Slidy {
   /**
    * Slidy constructor
-   * @param   {HTMLElement|string} el   Slider container (element or selector)
-   * @param   {Object}             opts Configuration settings
+   * @param   {HTMLElement|string} el             Slider container (element or selector)
+   * @param   {Object}             opts           Configuration settings
+   * @param   {*}                  [context=null] Optional context, available through `this.context`
+   * @param   {Object}             [data=null]    Additional optional data
    * @returns {undefined}
    */
-  constructor(el, opts) {
+  constructor(el, opts, context = null, data = null) {
     /* eslint-disable no-param-reassign */
     // Check and get element(s)
     if (typeof el === 'string') {
@@ -73,6 +83,9 @@ export class Slidy {
       this._opts.tap = true;
     }
 
+    this._context = context;
+    this._data = data;
+
     this._debounceDelay = 100;
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
@@ -116,6 +129,14 @@ export class Slidy {
 
   get items() {
     return this._items;
+  }
+
+  get context() {
+    return this._context;
+  }
+
+  get data() {
+    return this._data;
   }
 
   get currentIndex() {

@@ -1,4 +1,16 @@
+/**
+* Create controls.
+*
+* @export
+* @class Controls
+*/
 export class Controls {
+  /**
+   * Creates an instance of Controls.
+   * @param {Slidy}  slidy slidy instance
+   * @param {Object} opts  options
+   * @memberof Controls
+   */
   constructor(slidy, opts) {
     this._slidy = slidy;
     this._opts = opts;
@@ -10,6 +22,12 @@ export class Controls {
     this.bind();
   }
 
+  /**
+   * Init component.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   init() {
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-controls`);
@@ -29,6 +47,12 @@ export class Controls {
     this.update();
   }
 
+  /**
+   * Bind event handlers.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   bind() {
     this.onPrevClick = this.prevClick.bind(this);
     this.onNextClick = this.nextClick.bind(this);
@@ -38,29 +62,69 @@ export class Controls {
     this.bindControls();
   }
 
+  /**
+   * Bind controls handlers
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   bindControls() {
     this._prev.addEventListener('click', this.onPrevClick);
     this._next.addEventListener('click', this.onNextClick);
   }
 
+  /**
+   * On prev click.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   prevClick() {
     this._slidy.slidePrev();
   }
 
+  /**
+   * On next click.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   nextClick() {
     this._slidy.slideNext();
   }
 
+  /**
+   * Disable control.
+   *
+   * @static
+   * @param {HTMLElement} el control to disable
+   * @returns {undefined}
+   * @memberof Controls
+   */
   static disable(el) {
     el.setAttribute('disabled', '');
     el.classList.add('is-disabled');
   }
 
+  /**
+   * Enable control.
+   *
+   * @static
+   * @param {HTMLElement} el control to enable
+   * @returns {undefined}
+   * @memberof Controls
+   */
   static enable(el) {
     el.removeAttribute('disabled');
     el.classList.remove('is-disabled');
   }
 
+  /**
+   * Update controls.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   update() {
     if (!this._opts.loop) {
       const { newIndex } = this._slidy;
@@ -79,6 +143,12 @@ export class Controls {
     }
   }
 
+  /**
+   * Destroy component.
+   *
+   * @returns {undefined}
+   * @memberof Controls
+   */
   destroy() {
     this._el.parentNode.removeChild(this._el);
   }

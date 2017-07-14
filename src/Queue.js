@@ -1,4 +1,16 @@
+/**
+ * Create queue.
+ *
+ * @export
+ * @class Queue
+ */
 export class Queue {
+  /**
+   * Creates an instance of Queue.
+   * @param {Slidy} slidy slidy instance
+   * @param {function} transition function that returns a promise
+   * @memberof Queue
+   */
   constructor(slidy, transition) {
     this._slidy = slidy;
     this._transition = transition;
@@ -7,6 +19,14 @@ export class Queue {
     this._queue = [];
   }
 
+  /**
+   * Add "move" to queue
+   *
+   * @param {string} move  prev|next|to
+   * @param {number} index slide index
+   * @returns {undefined}
+   * @memberof Queue
+   */
   add(move, index) {
     if (this._queue.length > 1) {
       this._queue.length = 1;
@@ -22,10 +42,22 @@ export class Queue {
     }
   }
 
+  /**
+   * Empty queue.
+   *
+   * @returns {undefined}
+   * @memberof Queue
+   */
   empty() {
     this._queue = [];
   }
 
+  /**
+   * Play queue.
+   *
+   * @returns {undefined}
+   * @memberof Queue
+   */
   play() {
     if (this._queue.length === 0) {
       return;

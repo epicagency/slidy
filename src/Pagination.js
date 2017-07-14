@@ -1,4 +1,16 @@
+/**
+ * Create a pagination.
+ *
+ * @export
+ * @class Pagination
+ */
 export class Pagination {
+  /**
+   * Creates an instance of Pagination.
+   * @param {Slidy}          slidy slidy instance
+   * @param {boolean|string} opts  navigation seperator
+   * @memberof Pagination
+   */
   constructor(slidy, opts) {
     this._slidy = slidy;
     this._opts = opts;
@@ -10,6 +22,12 @@ export class Pagination {
     this.bind();
   }
 
+  /**
+   * Init component.
+   *
+   * @returns {undefined}
+   * @memberof Pagination
+   */
   init() {
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-pagination`);
@@ -34,14 +52,32 @@ export class Pagination {
     this.update();
   }
 
+  /**
+   * Bind event handlers.
+   *
+   * @returns {undefined}
+   * @memberof Pagination
+   */
   bind() {
     this._dispatcher.on('beforeSlide', this.update.bind(this));
   }
 
+  /**
+   * Update current index.
+   *
+   * @returns {undefined}
+   * @memberof Pagination
+   */
   update() {
     this._current.textContent = this._slidy.newIndex + 1;
   }
 
+  /**
+   * Destroy component.
+   *
+   * @returns {undefined}
+   * @memberof Pagination
+   */
   destroy() {
     this._el.parentNode.removeChild(this._el);
   }

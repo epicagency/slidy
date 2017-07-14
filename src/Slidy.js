@@ -1,5 +1,5 @@
 /**
- * Slidy main file
+ * Slidy main file.
  */
 
 /* global Modernizr */
@@ -19,14 +19,14 @@ import { Pagination } from './Pagination';
 import { Queue } from './Queue';
 
 /**
- * Slidy main class
+ * Slidy main class.
  *
  * @export
  * @class Slidy
  */
 export class Slidy {
   /**
-   * Slidy constructor
+   * Creates an instance of Slidy.
    * @param   {HTMLElement|string} el             Slider container (element or selector)
    * @param   {Object}             opts           Configuration settings
    * @param   {*}                  [context=null] Optional context, available through `this.context`
@@ -35,7 +35,7 @@ export class Slidy {
    */
   constructor(el, opts, context = null, data = null) {
     /* eslint-disable no-param-reassign */
-    // Check and get element(s)
+    // Check and get element(s).
     if (typeof el === 'string') {
       el = document.querySelectorAll(el);
     }
@@ -53,7 +53,7 @@ export class Slidy {
 
     this._el = el[0] || el;
 
-    // Check and get options
+    // Check and get options.
     this._opts = Object.assign({
       auto: false, // Boolean: start slider automaticaly
       click: true, // Boolean: enable click on slider
@@ -95,7 +95,7 @@ export class Slidy {
 
     this._dispatcher = new Emitter();
 
-    // Public events
+    // Public events.
     this._dispatcher.on('beforeInit', () => {
       this.beforeInit();
     });
@@ -117,7 +117,7 @@ export class Slidy {
   }
 
   /**
-   * Getters/setters
+   * Getters/setters.
    */
   get outer() {
     return this._outer;
@@ -176,7 +176,7 @@ export class Slidy {
   }
 
   /**
-   * Init & binding
+   * Init component.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -184,12 +184,12 @@ export class Slidy {
   init() {
     this._dispatcher.emit('beforeInit');
 
-    // Add HTML wrapper
+    // Add HTML wrapper.
     this._outer = document.createElement('div');
     this._el.before(this._outer);
     this._outer.append(this._el);
 
-    // Add CSS classes
+    // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);
     this._el.classList.add(this.namespace);
     forEach(this._items, (slide) => {
@@ -202,27 +202,29 @@ export class Slidy {
 
     this._queue = new Queue(this, this._opts.transition);
 
-    // Add controls
+    // Add controls.
     if (this._opts.controls) {
       this._controls = new Controls(this, {loop: this._opts.loop});
     }
 
-    // Add nav
+    // Add nav.
     if (this._opts.nav) {
       this._nav = new Nav(this);
     }
 
-    // Add pagination
+    // Add pagination.
     if (this._opts.pagination) {
       this._pagination = new Pagination(this, this._opts.pagination);
     }
 
+    // Set height.
     if (this._opts.height === 'auto') {
       this.reset();
     } else {
       this._el.style.height = `${this._opts.height}px`;
     }
 
+    // Start auto mode.
     if (this._opts.auto) {
       setTimeout(this.start.bind(this), this._opts.interval);
     }
@@ -230,6 +232,13 @@ export class Slidy {
     this._dispatcher.emit('afterInit');
   }
 
+
+  /**
+   * Bind event handlers.
+   *
+   * @returns {undefined}
+   * @memberof Slidy
+   */
   bind() {
     this.onEnter = this.enter.bind(this);
     this.onLeave = this.leave.bind(this);
@@ -272,11 +281,11 @@ export class Slidy {
   }
 
   /**
-   * API
+   * API.
    */
 
   /**
-   * Navigate to previous slide
+   * Navigate to previous slide.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -294,7 +303,7 @@ export class Slidy {
   }
 
   /**
-   * Navigate to next slide
+   * Navigate to next slide.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -312,7 +321,7 @@ export class Slidy {
   }
 
   /**
-   * Navigate to slide by index
+   * Navigate to slide by index.
    *
    * @param {number} index slide index
    * @returns {undefined}
@@ -323,7 +332,7 @@ export class Slidy {
   }
 
   /**
-   * Add move to the queue
+   * Add move to the queue.
    *
    * @param {string} move prev|next|to
    * @param {number} [index=null] slide index
@@ -336,19 +345,19 @@ export class Slidy {
 
   /**
    * Height calculation if auto.
-   * Called on 'init' and 'resize'
+   * Called on 'init' and 'resize'.
    *
    * @returns {undefined}
    * @memberof Slidy
    */
   reset() {
     if (this._opts.height === 'auto') {
-      // Reset inline height
+      // Reset inline height.
       this._el.style.height = '';
 
       // Check if items have height
       // if not, check first node
-      // then remove 0 height, sort ASC, get the lowest height
+      // then remove 0 height, sort ASC, get the lowest height.
       const getMinHeight = function getMinHeight(arr) {
         return arr
             .filter((item) => item > 0)
@@ -371,8 +380,8 @@ export class Slidy {
   }
 
   /**
-   * Start autoplay
-   * Enabled via "auto" and used by "pause" options
+   * Start autoplay.
+   * Enabled via "auto" and used by "pause" options.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -383,8 +392,8 @@ export class Slidy {
   }
 
   /**
-   * Pause autoplay
-   * Used by "pause" options
+   * Pause autoplay.
+   * Used by "pause" options.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -393,44 +402,50 @@ export class Slidy {
     clearInterval(this._t);
   }
 
+  /**
+   * Destroy component.
+   *
+   * @returns {undefined}
+   * @memberof Slidy
+   */
   destroy() {
-    // Remove interval
+    // Remove interval.
     this.stop();
 
-    // Empty queue
+    // Empty queue.
     this._queue.empty();
 
-    // Remove listeners
+    // Remove listeners.
     window.removeEventListener('resize', this.onResize);
     this._el.removeEventListener('mouseenter', this.onEnter);
     this._el.removeEventListener('mouseleave', this.onLeave);
     this._el.removeEventListener('click', this.onClick);
 
-    // Remove Hammer.manager
+    // Remove Hammer.manager.
     if (this._mc) {
       this._mc.destroy();
     }
 
-    // Remove controls
+    // Remove controls.
     if (this._controls) {
       this._controls.destroy();
     }
 
-    // Remove nav
+    // Remove nav.
     if (this._nav) {
       this._nav.destroy();
     }
 
-    // Remove pagination
+    // Remove pagination.
     if (this._pagination) {
       this._pagination.destroy();
     }
 
-    // Remove HTML wrapper
+    // Remove HTML wrapper.
     this._outer.before(this._el);
     this._outer.parentNode.removeChild(this._outer);
 
-    // Remove CSS classes
+    // Remove CSS classes.
     this._el.classList.remove(this.namespace);
     forEach(this._items, (slide) => {
       slide.classList.remove(`${this.namespace}__item`);
@@ -445,11 +460,11 @@ export class Slidy {
 
 
   /**
-   * Events
+   * Events.
    */
 
   /**
-   * RWD reset
+   * RWD reset.
    * Mainly for height…
    *
    * @returns {undefined}
@@ -461,8 +476,8 @@ export class Slidy {
   }
 
   /**
-   * Click on slider to go to the next slide
-   * Enabled via "click" option,
+   * Click on slider to go to the next slide.
+   * Enabled via "click" option.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -472,8 +487,8 @@ export class Slidy {
   }
 
   /**
-   * Same as click but for touch devices
-   * Enabled via "touch" option
+   * Same as click but for touch devices.
+   * Enabled via "touch" option.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -483,8 +498,8 @@ export class Slidy {
   }
 
   /**
-   * Complement gesture for "tap"
-   * Enabled via "touch" option
+   * Complement gesture for "tap".
+   * Enabled via "touch" option.
    *
    * @param {TouchEvent} e touch event
    * @returns {undefined}
@@ -500,8 +515,8 @@ export class Slidy {
   }
 
   /**
-   * Play/pause on hover
-   * Enabled via "auto" + "pause" options
+   * Play/pause on hover.
+   * Enabled via "auto" + "pause" options.
    *
    * @returns {undefined}
    * @memberof Slidy
@@ -521,7 +536,7 @@ export class Slidy {
 
 
   /**
-   * Callbacks
+   * Callbacks.
    */
 
   beforeInit() {

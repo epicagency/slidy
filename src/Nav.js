@@ -4,7 +4,18 @@ const indexOf = require('lodash/indexOf');
 import parseTpl from './utils/parse-es6-template';
 import { parents } from './utils/$';
 
+/**
+ * Create navigation.
+ *
+ * @export
+ * @class Nav
+ */
 export class Nav {
+  /**
+   * Creates an instance of Nav.
+   * @param {Slidy} slidy slidy instance
+   * @memberof Nav
+   */
   constructor(slidy) {
     this._slidy = slidy;
     this._outer = slidy.outer;
@@ -31,6 +42,12 @@ export class Nav {
     this.bind();
   }
 
+  /**
+   * Init component.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
   init() {
     this._el = document.createElement('ol');
     this._el.classList.add(`${this._slidy.namespace}-nav`);
@@ -112,6 +129,14 @@ export class Nav {
     this.setActive();
   }
 
+  /**
+   * Create thumbnail.
+   *
+   * @static
+   * @param {HTMLElement} slide slide from slider
+   * @returns {string} Thumbnail HTML string
+   * @memberof Nav
+   */
   static createThumb(slide) {
     const src = slide.querySelector('img').getAttribute('src');
     const thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
@@ -119,6 +144,12 @@ export class Nav {
     return `<img src="${thumb}">`;
   }
 
+  /**
+   * Bind event handlers.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
   bind() {
     this.onClick = this.click.bind(this);
     this._dispatcher.on('beforeSlide', this.clearActive.bind(this));
@@ -126,6 +157,22 @@ export class Nav {
     this.bindNav();
   }
 
+  /**
+   * Bind nav handlers.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
+  bindNav() {
+    this._el.addEventListener('click', this.onClick);
+  }
+
+  /**
+   * Clear active nav item.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
   clearActive() {
     const currentItem = this._el.querySelector('.is-active');
 
@@ -139,6 +186,12 @@ export class Nav {
     }
   }
 
+  /**
+   * Set active nav item.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
   setActive() {
     const newItem = this._items[this._slidy.newIndex];
 
@@ -151,10 +204,13 @@ export class Nav {
     }
   }
 
-  bindNav() {
-    this._el.addEventListener('click', this.onClick);
-  }
-
+  /**
+   * On nav item click
+   *
+   * @param {Event} e click event
+   * @returns {undefined}
+   * @memberof Nav
+   */
   click(e) {
     const clicked = parents(e.target, `${this._slidy.namespace}-nav__item`);
 
@@ -165,6 +221,12 @@ export class Nav {
     }
   }
 
+  /**
+   * Destroy component.
+   *
+   * @returns {undefined}
+   * @memberof Nav
+   */
   destroy() {
     this._el.parentNode.removeChild(this._el);
   }

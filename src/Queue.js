@@ -20,7 +20,7 @@ export class Queue {
   }
 
   /**
-   * Add "move" to queue
+   * Add "move" to queue.
    *
    * @param {string} move  prev|next|to
    * @param {number} index slide index
@@ -70,7 +70,7 @@ export class Queue {
     let newIndex;
     let direction;
 
-    // Get the newIndex according to "move type"
+    // Get the newIndex according to "move type".
     if (move === 'to') {
       newIndex = this._queue[0].index;
     } else {
@@ -88,7 +88,7 @@ export class Queue {
       }
     }
 
-    // If same than current -> dequeue + next
+    // If same than current -> dequeue + next.
     if (newIndex === currentIndex) {
       this._queue.shift();
       this.play();
@@ -96,28 +96,36 @@ export class Queue {
       return;
     }
 
-    // Get direction
+    // Get direction.
     if (move === 'to') {
       direction = newIndex > currentIndex ? 'next' : 'prev';
     } else {
       direction = move;
     }
 
+    // Get slides.
     const currentSlide = items[currentIndex];
     const newSlide = items[newIndex];
 
+    // Set new index.
     this._slidy.newIndex = newIndex;
+
+    // Start slide.
     this._dispatcher.emit('beforeSlide', direction);
-
+    // Update status and active class.
     this._isAnimating = true;
-
+    currentSlide.classList.remove('is-active');
     this._transition.call(this._slidy, currentSlide, newSlide, direction)
       .then(() => {
+        // Update indexes, queue, status and active class.
         this._slidy.oldIndex = currentIndex;
         this._slidy.currentIndex = newIndex;
         this._queue.shift();
         this._isAnimating = false;
+        newSlide.classList.add('is-active');
+        // End slide.
         this._dispatcher.emit('afterSlide', direction);
+        // Play next queued transition.
         this.play();
       });
   }

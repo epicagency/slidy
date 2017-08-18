@@ -89,7 +89,7 @@ export class Slidy {
     this._debounceDelay = 100;
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
-    this._oldIndex = this._oldIndex;
+    this._oldIndex = null;
     this._items = this._el.children;
     this._length = this._items.length;
 
@@ -204,6 +204,9 @@ export class Slidy {
     forEach(this._items, (slide) => {
       slide.classList.add(`${this.namespace}__item`);
     });
+
+    // Set active class on currentIndex.
+    this._items[this._currentIndex].classList.add('is-active');
 
     if (this._opts.click) {
       this._el.style.cursor = 'pointer';

@@ -184,17 +184,19 @@ export class Slidy {
   init() {
     this._dispatcher.emit('beforeInit');
 
-    // Add HTML wrapper.
-    this._outer = document.createElement('div');
-    this._el.before(this._outer);
-    this._outer.append(this._el);
-
     // Set height.
+    // To get the most 'correct' auto-height,
+    // do it before applying anything…
     if (this._opts.height === 'auto') {
       this.reset();
     } else {
       this._el.style.height = `${this._opts.height}px`;
     }
+
+    // Add HTML wrapper.
+    this._outer = document.createElement('div');
+    this._el.before(this._outer);
+    this._outer.append(this._el);
 
     // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);

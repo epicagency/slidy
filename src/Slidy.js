@@ -189,6 +189,13 @@ export class Slidy {
     this._el.before(this._outer);
     this._outer.append(this._el);
 
+    // Set height.
+    if (this._opts.height === 'auto') {
+      this.reset();
+    } else {
+      this._el.style.height = `${this._opts.height}px`;
+    }
+
     // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);
     this._el.classList.add(this.namespace);
@@ -215,13 +222,6 @@ export class Slidy {
     // Add pagination.
     if (this._opts.pagination) {
       this._pagination = new Pagination(this, this._opts.pagination);
-    }
-
-    // Set height.
-    if (this._opts.height === 'auto') {
-      this.reset();
-    } else {
-      this._el.style.height = `${this._opts.height}px`;
     }
 
     // Start auto mode.
@@ -357,11 +357,11 @@ export class Slidy {
 
       // Check if items have height
       // if not, check first node
-      // then remove 0 height, sort ASC, get the lowest height.
+      // then remove 0 height, sort DESC, get the highest height.
       const getMinHeight = function getMinHeight(arr) {
         return arr
             .filter((item) => item > 0)
-            .sort((a, b) => a - b)
+            .sort((a, b) => b - a)
             .slice(0, 1);
       };
 

@@ -66,6 +66,7 @@ export class Slidy {
       nav: false, // Mixed: create navigation (number, thumb, custom)
       pagination: false, // Mixed: create pagination (1[separator]10)
       pause: true, // Boolean: pause on hover
+      resize: true, // Boolean: enable resize event and callback
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap
       touch: false, // Boolean: enable BOTH tap/swipe (deprecated)
@@ -102,9 +103,11 @@ export class Slidy {
     this._dispatcher.on('afterInit', () => {
       this.afterInit();
     });
-    this._dispatcher.on('afterResize', () => {
-      this.afterResize();
-    });
+    if (this._opts.resize) {
+      this._dispatcher.on('afterResize', () => {
+        this.afterResize();
+      });
+    }
     this._dispatcher.on('beforeSlide', (direction) => {
       this.beforeSlide(direction);
     });
@@ -237,7 +240,6 @@ export class Slidy {
     this._dispatcher.emit('afterInit');
   }
 
-
   /**
    * Bind event handlers.
    *
@@ -250,9 +252,12 @@ export class Slidy {
     this.onClick = this.click.bind(this);
     this.onTap = this.tap.bind(this);
     this.onSwipe = this.swipe.bind(this);
-    this.onResize = bind(debounce(this.resize, this._debounceDelay), this);
 
-    window.addEventListener('resize', this.onResize);
+    if (this._opts.resize) {
+      this.onResize = bind(debounce(this.resize, this._debounceDelay), this);
+
+      window.addEventListener('resize', this.onResize);
+    }
 
     if (this._opts.pause && this._opts.auto) {
       this._outer.addEventListener('mouseenter', this.onEnter);
@@ -421,7 +426,9 @@ export class Slidy {
     this._queue.empty();
 
     // Remove listeners.
-    window.removeEventListener('resize', this.onResize);
+    if (this._opts.resize) {
+      window.removeEventListener('resize', this.onResize);
+    }
     this._el.removeEventListener('mouseenter', this.onEnter);
     this._el.removeEventListener('mouseleave', this.onLeave);
     this._el.removeEventListener('click', this.onClick);

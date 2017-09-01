@@ -2,8 +2,6 @@
  * Slidy main file.
  */
 
-/* global Modernizr */
-require('./vendor/modernizr-touch');
 
 const Emitter = require('tiny-emitter');
 const Hammer = require('hammerjs');
@@ -13,6 +11,7 @@ import {
   debounce,
   forEach,
 } from 'lodash';
+import * as detect from './utils/detect';
 import { Controls } from './Controls';
 import { Nav } from './Nav';
 import { Pagination } from './Pagination';
@@ -263,11 +262,11 @@ export class Slidy {
       this._outer.addEventListener('mouseenter', this.onEnter);
     }
 
-    if (this._opts.click && !Modernizr.touchevents) {
+    if (this._opts.click && !detect.touchevents) {
       this._el.addEventListener('click', this.onClick);
     }
 
-    if ((this._opts.tap || this._opts.swipe) && Modernizr.touchevents) {
+    if ((this._opts.tap || this._opts.swipe) && detect.touchevents) {
       const options = {
         recognizers: [],
       };
@@ -275,14 +274,14 @@ export class Slidy {
       this._mc = new Hammer.Manager(this._el, options);
     }
 
-    if (this._opts.tap && Modernizr.touchevents) {
+    if (this._opts.tap && detect.touchevents) {
       const tap = new Hammer.Tap();
 
       this._mc.add(tap);
       this._mc.on('tap', this.onTap);
     }
 
-    if (this._opts.swipe && Modernizr.touchevents) {
+    if (this._opts.swipe && detect.touchevents) {
       const swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
 
       this._mc.add(swipe);

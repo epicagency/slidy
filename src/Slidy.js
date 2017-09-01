@@ -350,7 +350,12 @@ export class Slidy {
    * @memberof Slidy
    */
   slide(move, index = null) {
-    this._queue.add(move, index);
+    if (this._queue) {
+      this._queue.add(move, index);
+    } else {
+      // Prevent 'persistent' auto
+      this.stop();
+    }
   }
 
   /**
@@ -424,6 +429,7 @@ export class Slidy {
 
     // Empty queue.
     this._queue.empty();
+    delete this._queue;
 
     // Remove listeners.
     if (this._opts.resize) {
@@ -436,21 +442,25 @@ export class Slidy {
     // Remove Hammer.manager.
     if (this._mc) {
       this._mc.destroy();
+      delete this._mc;
     }
 
     // Remove controls.
     if (this._controls) {
       this._controls.destroy();
+      delete this._controls;
     }
 
     // Remove nav.
     if (this._nav) {
       this._nav.destroy();
+      delete this._nav;
     }
 
     // Remove pagination.
     if (this._pagination) {
       this._pagination.destroy();
+      delete this._pagination;
     }
 
     // Remove HTML wrapper.

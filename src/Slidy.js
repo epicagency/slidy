@@ -57,6 +57,7 @@ export class Slidy {
       auto: false, // Boolean: start slider automaticaly
       click: true, // Boolean: enable click on slider
       controls: false, // Boolean: create prev/next buttons
+      debounce: 100, // Integer: debounce delay on resize
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
@@ -86,7 +87,7 @@ export class Slidy {
     this._context = context;
     this._data = data;
 
-    this._debounceDelay = 100;
+    this._debounceDelay = this._opts.debounce;
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
     this._oldIndex = null;

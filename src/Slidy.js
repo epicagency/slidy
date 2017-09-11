@@ -92,6 +92,7 @@ export class Slidy {
     this._oldIndex = null;
     this._items = this._el.children;
     this._length = this._items.length;
+    this._hasPause = false;
 
     this._dispatcher = new Emitter();
 
@@ -260,6 +261,7 @@ export class Slidy {
 
     if (this._opts.pause && this._opts.auto) {
       this._outer.addEventListener('mouseenter', this.onEnter);
+      this._hasPause = true;
     }
 
     if (this._opts.click && !detect.touchevents) {
@@ -397,12 +399,21 @@ export class Slidy {
    * Start autoplay.
    * Enabled via "auto" and used by "pause" options.
    *
+   * @param {number} delay delay before slideNext
+   * @param {boolean} auto autoloop or not
    * @returns {undefined}
    * @memberof Slidy
    */
-  start() {
-    this.slideNext();
-    this._t = setInterval(this.slideNext.bind(this), this._opts.interval);
+  start(delay = this._opts.interval, auto = this._opts.auto) {
+    setTimeout(() => {
+      this.slideNext();
+      if (!this._hasPause && this._opts.pause) {
+        this._outer.addEventListener('mouseenter', this.onEnter);
+      }
+      if (auto) {
+        this._t = setInterval(this.slideNext.bind(this), this._opts.interval);
+      }
+    }, delay);
   }
 
   /**
@@ -413,6 +424,9 @@ export class Slidy {
    * @memberof Slidy
    */
   stop() {
+    if (this._hasPause) {
+      this._outer.removeEventListener('mouseenter', this.onEnter);
+    }
     clearInterval(this._t);
   }
 

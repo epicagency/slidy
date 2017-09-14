@@ -438,12 +438,16 @@ export class Slidy {
    * @memberof Slidy
    */
   destroy() {
+    this._destroyed = true;
+
     // Remove interval.
     this.stop();
 
     // Empty queue.
-    this._queue.empty();
-    delete this._queue;
+    if (this._queue) {
+      this._queue.empty();
+      delete this._queue;
+    }
 
     // Remove listeners.
     if (this._opts.resize) {
@@ -479,7 +483,9 @@ export class Slidy {
 
     // Remove HTML wrapper.
     this._outer.before(this._el);
-    this._outer.parentNode.removeChild(this._outer);
+    if (this._outer.parentNode) {
+      this._outer.parentNode.removeChild(this._outer);
+    }
 
     // Remove CSS classes.
     this._el.classList.remove(this.namespace);
@@ -507,8 +513,10 @@ export class Slidy {
    * @memberof Slidy
    */
   resize() {
-    this.reset();
-    this._dispatcher.emit('afterResize');
+    if (!this._destroyed) {
+      this.reset();
+      this._dispatcher.emit('afterResize');
+    }
   }
 
   /**

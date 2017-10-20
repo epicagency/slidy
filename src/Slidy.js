@@ -97,6 +97,10 @@ export class Slidy {
 
     this._dispatcher = new Emitter();
 
+    // Binding
+    this.start = this.start.bind(this);
+    this.slideNext = this.slideNext.bind(this);
+
     // Public events.
     this._dispatcher.on('beforeInit', () => {
       this.beforeInit();
@@ -235,7 +239,7 @@ export class Slidy {
 
     // Start auto mode.
     if (this._opts.auto) {
-      setTimeout(this.start.bind(this), this._opts.interval);
+      this.t2 = setTimeout(this.start, this._opts.interval);
     }
 
     this._dispatcher.emit('afterInit');
@@ -406,13 +410,14 @@ export class Slidy {
    * @memberof Slidy
    */
   start(delay = this._opts.interval, auto = this._opts.auto) {
-    setTimeout(() => {
+    this._t2 = setTimeout(() => {
       this.slideNext();
       if (!this._hasPause && this._opts.pause) {
         this._outer.addEventListener('mouseenter', this.onEnter);
       }
       if (auto) {
-        this._t = setInterval(this.slideNext.bind(this), this._opts.interval);
+        clearInterval(this._t1);
+        this._t1 = setInterval(this.slideNext, this._opts.interval);
       }
     }, delay);
   }
@@ -428,7 +433,8 @@ export class Slidy {
     if (this._hasPause) {
       this._outer.removeEventListener('mouseenter', this.onEnter);
     }
-    clearInterval(this._t);
+    clearInterval(this._t2);
+    clearInterval(this._t1);
   }
 
   /**

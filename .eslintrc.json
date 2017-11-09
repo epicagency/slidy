@@ -100,7 +100,7 @@
     "no-lone-blocks": 2,
     "no-lonely-if": 2,
     "no-loop-func": 2,
-    "no-magic-numbers": [1, {
+    "no-magic-numbers": [0, {
       "ignore": [-1, 0, 1],
       "ignoreArrayIndexes": true
     }],

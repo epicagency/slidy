@@ -1,3 +1,5 @@
+import zeroFill from 'zero-fill';
+
 /**
  * Create a pagination.
  *
@@ -11,12 +13,12 @@ export class Pagination {
    * @param {boolean|string} opts  navigation seperator
    * @memberof Pagination
    */
-  constructor(slidy, opts) {
+  constructor(slidy) {
     this._slidy = slidy;
-    this._opts = opts;
-    this._outer = this._slidy.outer;
+    this._opts = slidy.options;
+    this._outer = slidy.outer;
 
-    this._dispatcher = this._slidy.dispatcher;
+    this._dispatcher = slidy.dispatcher;
 
     this.init();
     this.bind();
@@ -33,15 +35,15 @@ export class Pagination {
     this._el.classList.add(`${this._slidy.namespace}-pagination`);
 
     this._current = document.createElement('span');
-    this._current.textContent = this._slidy.currentIndex + 1;
+    this._current.textContent = this.format(this._slidy.currentIndex + 1);
     this._current.classList.add(`${this._slidy.namespace}-pagination__current`);
 
     this._separator = document.createElement('span');
-    this._separator.textContent = this._opts === true ? '/' : this._opts;
+    this._separator.textContent = this._opts.pagination === true ? '/' : this._opts.pagination;
     this._separator.classList.add(`${this._slidy.namespace}-pagination__separator`);
 
     this._total = document.createElement('span');
-    this._total.textContent = this._slidy.items.length;
+    this._total.textContent = this.format(this._slidy.items.length);
     this._total.classList.add(`${this._slidy.namespace}-pagination__total`);
 
     this._el.append(this._current);
@@ -69,7 +71,7 @@ export class Pagination {
    * @memberof Pagination
    */
   update() {
-    this._current.textContent = this._slidy.newIndex + 1;
+    this._current.textContent = this.format(this._slidy.newIndex + 1);
   }
 
   /**
@@ -80,5 +82,27 @@ export class Pagination {
    */
   destroy() {
     this._el.parentNode.removeChild(this._el);
+  }
+
+  /**
+   * Format number (zerofill or not)
+   *
+   * @param {Number} number number to format
+   * @returns {Number} formatted number
+   * @memberof Pagination
+   */
+  format(number) {
+    console.info('format', this._opts.zerofill);
+    if (this._opts.zerofill === false) {
+      return number;
+    }
+
+    const length = this._opts.zerofill === true ?
+    this._slidy.items.length.toString(10).length :
+    this._opts.zerofill;
+
+    console.info('format', length, number);
+
+    return zeroFill(length, number);
   }
 }

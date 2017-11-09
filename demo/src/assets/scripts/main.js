@@ -44,12 +44,14 @@ class Epic {
       click: false,
       loop: false,
       namespace: 'my-slidy',
-      pagination: '//',
+      pagination: '-',
       tap: true,
       swipe: true,
       controls: true,
       // eslint-disable-next-line no-template-curly-in-string
-      nav: '<div class="foo"><button>${thumb}</button></div>',
+      // nav: '<div class="foo"><button>${thumb}</button></div>',
+      nav: true,
+      zerofill: 4,
     });
 
     document.getElementById('destroy').addEventListener('click', () => {

@@ -70,7 +70,8 @@ export class Slidy {
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap
       touch: false, // Boolean: enable BOTH tap/swipe (deprecated)
-      transition: null,
+      transition: null, // Function: transition which returns a resolved promise
+      zerofill: false, // Mixed(Boolean | number): '1' -> '01' for navigation/pagination
     }, opts);
 
     if (this._opts.transition === null) {
@@ -234,7 +235,7 @@ export class Slidy {
 
     // Add pagination.
     if (this._opts.pagination) {
-      this._pagination = new Pagination(this, this._opts.pagination);
+      this._pagination = new Pagination(this);
     }
 
     // Start auto mode.

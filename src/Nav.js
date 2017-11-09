@@ -1,3 +1,4 @@
+import zeroFill from 'zero-fill';
 const forEach = require('lodash/forEach');
 const indexOf = require('lodash/indexOf');
 
@@ -18,10 +19,11 @@ export class Nav {
    */
   constructor(slidy) {
     this._slidy = slidy;
+    this._opts = slidy.options;
     this._outer = slidy.outer;
     this._slides = slidy.items;
 
-    const type = slidy.options.nav;
+    const type = this._opts.nav;
 
     if (/\${(number|thumb)}/.test(type)) {
       this._type = 'template';
@@ -88,7 +90,7 @@ export class Nav {
             // We can have both number and thumb into the template string
             // or nothing…
             if (/\${number}/.test(this._template)) {
-              dataTpl.number = i + 1;
+              dataTpl.number = this.format(i + 1);
             }
 
             if (/\${thumb}/.test(this._template)) {
@@ -109,7 +111,7 @@ export class Nav {
 
           case 'number':
           default:
-            number = i + 1;
+            number = this.format(i + 1);
             content = `<button>
               <span>
                 ${number}
@@ -142,6 +144,25 @@ export class Nav {
     const thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
 
     return `<img src="${thumb}">`;
+  }
+
+  /**
+   * Format number (zerofill or not)
+   *
+   * @param {Number} number number to format
+   * @returns {Number} formatted number
+   * @memberof Nav
+   */
+  format(number) {
+    if (this._opts.zerofill === false) {
+      return number;
+    }
+
+    const length = this._opts.zerofill === true ?
+      this._slidy.items.length.toString(10).length :
+      this._opts.zerofill;
+
+    return zeroFill(length, number);
   }
 
   /**

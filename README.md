@@ -92,6 +92,7 @@ and you will get this:
 | tap | Boolean | false | Enable next slide on tap |
 | touch | Boolean | false | Enable BOTH tap/swipe (deprecated) |
 | transition | Function | null | Animation function which returns a promise |
+| zerofill | Boolean, [integer] | false | 'Zerofill' (1 -> 01) numbers for both nav or pagination |
 
 ### nav details
 

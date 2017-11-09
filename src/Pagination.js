@@ -92,7 +92,6 @@ export class Pagination {
    * @memberof Pagination
    */
   format(number) {
-    console.info('format', this._opts.zerofill);
     if (this._opts.zerofill === false) {
       return number;
     }
@@ -100,8 +99,6 @@ export class Pagination {
     const length = this._opts.zerofill === true ?
     this._slidy.items.length.toString(10).length :
     this._opts.zerofill;
-
-    console.info('format', length, number);
 
     return zeroFill(length, number);
   }

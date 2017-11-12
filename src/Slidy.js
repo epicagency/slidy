@@ -270,11 +270,11 @@ export class Slidy {
       this._hasPause = true;
     }
 
-    if (this._opts.click && !detect.touchevents) {
+    if (this._opts.click && !detect.touchevents()) {
       this._el.addEventListener('click', this.onClick);
     }
 
-    if ((this._opts.tap || this._opts.swipe) && detect.touchevents) {
+    if ((this._opts.tap || this._opts.swipe) && detect.touchevents()) {
       const options = {
         recognizers: [],
       };
@@ -282,14 +282,14 @@ export class Slidy {
       this._mc = new Hammer.Manager(this._el, options);
     }
 
-    if (this._opts.tap && detect.touchevents) {
+    if (this._opts.tap && detect.touchevents()) {
       const tap = new Hammer.Tap();
 
       this._mc.add(tap);
       this._mc.on('tap', this.onTap);
     }
 
-    if (this._opts.swipe && detect.touchevents) {
+    if (this._opts.swipe && detect.touchevents()) {
       const swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
 
       this._mc.add(swipe);

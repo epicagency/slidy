@@ -7,7 +7,7 @@ function get(path, obj, fb = `$\{${path}}`) {
 }
 
 function parseTpl(template, map, fallback) {
-  return template.replace(/\$\{.+?}/g, (match) => {
+  return template.replace(/\$\{.+?}/g, match => {
     const path = match.substr(2, match.length - 3).trim();
 
     return get(path, map, fallback);

@@ -1,0 +1,12 @@
+{
+  "gulp": {
+    "scripts": {
+      "files": [
+        "main"
+      ],
+      "folders": [
+        "utils"
+      ]
+    }
+  }
+}

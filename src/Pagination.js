@@ -97,8 +97,8 @@ export class Pagination {
     }
 
     const length = this._opts.zerofill === true ?
-    this._slidy.items.length.toString(10).length :
-    this._opts.zerofill;
+      this._slidy.items.length.toString(10).length :
+      this._opts.zerofill;
 
     return zeroFill(length, number);
   }

@@ -114,10 +114,10 @@ export class Slidy {
         this.afterResize();
       });
     }
-    this._dispatcher.on('beforeSlide', (direction) => {
+    this._dispatcher.on('beforeSlide', direction => {
       this.beforeSlide(direction);
     });
-    this._dispatcher.on('afterSlide', (direction) => {
+    this._dispatcher.on('afterSlide', direction => {
       this.afterSlide(direction);
     });
 
@@ -210,7 +210,7 @@ export class Slidy {
     // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);
     this._el.classList.add(this.namespace);
-    forEach(this._items, (slide) => {
+    forEach(this._items, slide => {
       slide.classList.add(`${this.namespace}__item`);
     });
 
@@ -382,15 +382,15 @@ export class Slidy {
       // then remove 0 height, sort DESC, get the highest height.
       const getMinHeight = function getMinHeight(arr) {
         return arr
-            .filter((item) => item > 0)
-            .sort((a, b) => b - a)
-            .slice(0, 1);
+          .filter(item => item > 0)
+          .sort((a, b) => b - a)
+          .slice(0, 1);
       };
 
       const heights = [];
       const hasNoHeight = this._items[0].offsetHeight === 0;
 
-      forEach(this._items, (item) => {
+      forEach(this._items, item => {
         if (hasNoHeight && item.hasChildNodes()) {
           heights.push(item.firstElementChild.offsetHeight);
         } else {
@@ -496,10 +496,10 @@ export class Slidy {
 
     // Remove CSS classes.
     this._el.classList.remove(this.namespace);
-    forEach(this._items, (slide) => {
+    forEach(this._items, slide => {
       slide.classList.remove(`${this.namespace}__item`);
       slide.removeAttribute('style');
-      forEach(slide.children, (child) => {
+      forEach(slide.children, child => {
         child.removeAttribute('style');
       });
     });

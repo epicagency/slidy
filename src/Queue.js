@@ -16,6 +16,7 @@ export class Queue {
     this._transition = transition;
     this._dispatcher = this._slidy.dispatcher;
     this._isAnimating = false;
+    this._max = 1;
     this._queue = [];
   }
 
@@ -28,8 +29,8 @@ export class Queue {
    * @memberof Queue
    */
   add(move, index) {
-    if (this._queue.length > 1) {
-      this._queue.length = 1;
+    if (this._queue.length > this._max) {
+      this._queue.length = this._max;
     }
 
     this._queue.push({

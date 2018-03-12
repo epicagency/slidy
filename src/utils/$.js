@@ -18,7 +18,7 @@ export function insertAfter(referenceNode, newNode) {
  * @returns {HTMLCollection} siblings collection
  */
 export function siblings(el) {
-  return Array.prototype.filter.call(el.parentNode.children, (child) => child !== el);
+  return Array.prototype.filter.call(el.parentNode.children, child => child !== el);
 }
 
 /**

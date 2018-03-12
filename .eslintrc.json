@@ -15,7 +15,7 @@
     "array-callback-return": 2,
     "array-bracket-spacing": 2,
     "arrow-body-style": 2,
-    "arrow-parens": 2,
+    "arrow-parens": [2, "as-needed"],
     "arrow-spacing": 2,
     "block-scoped-var": 2,
     "block-spacing": 2,
@@ -101,7 +101,7 @@
     "no-lonely-if": 2,
     "no-loop-func": 2,
     "no-magic-numbers": [0, {
-      "ignore": [-1, 0, 1],
+      "ignore": [0, 1],
       "ignoreArrayIndexes": true
     }],
     "no-mixed-operators": 2,
@@ -134,7 +134,7 @@
     "no-unsafe-negation": 2,
     "no-unmodified-loop-condition": 2,
     "no-unneeded-ternary": 2,
-    "no-unused-expressions": 2,
+    "no-unused-expressions": [2, { "allowShortCircuit": true }],
     "no-useless-call": 2,
     "no-useless-computed-key": 2,
     "no-useless-concat": 2,

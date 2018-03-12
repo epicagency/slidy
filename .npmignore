@@ -2,13 +2,15 @@
 
 .babelrc
 .editorconfig
+.epicrc.json
 .eslintignore
-.eslintrc
-.jscsrc
+.eslintrc.json
+/.vscode
 /demo
-/gulp
+/docs
+/build
 /src
 /test
-gulpfile.js
+gulpfile.babel.js
 slidy.sublime-project
 slidy.sublime-workspace

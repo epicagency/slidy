@@ -25,7 +25,7 @@ class Epic {
   }
 
   static domReady() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       document.addEventListener('DOMContentLoaded', resolve);
     });
   }
@@ -45,6 +45,7 @@ class Epic {
       loop: false,
       namespace: 'my-slidy',
       pagination: '-',
+      queue: 5,
       tap: true,
       swipe: true,
       controls: true,
@@ -86,7 +87,7 @@ class Epic {
   simpleTransition(currentSlide, newSlide) {
     console.log('simpleTransition');
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const duration = 2;
       const tl = new TimelineLite({
         paused: true,
@@ -100,7 +101,7 @@ class Epic {
   }
 
   advancedTransition(currentSlide, newSlide, direction) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const duration = 1;
       const width = document.querySelector('.slider').offsetWidth;
       const height = document.querySelector('.slider').offsetHeight;
@@ -173,7 +174,7 @@ class Epic {
   }
 
   advancedTransition2(currentSlide, newSlide, direction) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const duration = 1;
       const width = document.querySelector('.slider').offsetWidth;
       const to = direction === 'next' ? -width : width;

@@ -16,8 +16,8 @@ export class Queue {
     this._transition = transition;
     this._dispatcher = this._slidy.dispatcher;
     this._isAnimating = false;
-    this._max = 1;
-    this._queue = [];
+    this._max = this._slidy._opts.queue;
+    this._items = [];
   }
 
   /**
@@ -29,11 +29,11 @@ export class Queue {
    * @memberof Queue
    */
   add(move, index) {
-    if (this._queue.length > this._max) {
-      this._queue.length = this._max;
+    if (this._items.length > this._max) {
+      this._items.length = this._max;
     }
 
-    this._queue.push({
+    this._items.push({
       move,
       index,
     });
@@ -50,7 +50,7 @@ export class Queue {
    * @memberof Queue
    */
   empty() {
-    this._queue = [];
+    this._items = [];
   }
 
   /**
@@ -60,11 +60,11 @@ export class Queue {
    * @memberof Queue
    */
   play() {
-    if (this._queue.length === 0) {
+    if (this._items.length === 0) {
       return;
     }
 
-    const [{ move }] = this._queue;
+    const [{ move }] = this._items;
     const { items } = this._slidy;
     const { length } = items;
     const { currentIndex } = this._slidy;
@@ -73,7 +73,7 @@ export class Queue {
 
     // Get the newIndex according to "move type".
     if (move === 'to') {
-      newIndex = this._queue[0].index;
+      newIndex = this._items[0].index;
     } else {
       if (move === 'prev') {
         newIndex = currentIndex - 1;
@@ -91,7 +91,7 @@ export class Queue {
 
     // If same than current -> dequeue + next.
     if (newIndex === currentIndex) {
-      this._queue.shift();
+      this._items.shift();
       this.play();
 
       return;
@@ -121,7 +121,7 @@ export class Queue {
         // Update indexes, queue, status and active class.
         this._slidy.oldIndex = currentIndex;
         this._slidy.currentIndex = newIndex;
-        this._queue.shift();
+        this._items.shift();
         this._isAnimating = false;
         newSlide.classList.add('is-active');
         // End slide.

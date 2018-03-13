@@ -66,6 +66,7 @@ export class Slidy {
       nav: false, // Mixed: create navigation (number, thumb, custom)
       pagination: false, // Mixed: create pagination (1[separator]10)
       pause: true, // Boolean: pause on hover
+      queue: 1, // Integer: queue max items
       resize: true, // Boolean: enable resize event and callback
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap

@@ -86,6 +86,7 @@ and you will get this:
 | loop | Boolean | true | loop … or not |
 | namespace | String | 'slidy' | CSS custom [class]namespace |
 | nav | Boolean, 'number', 'thumb' or 'template string' | false | Display a navigation with numbers / thumbs within custom template (see examples) |
+| queue | [integer] | 1 | Queue max items |
 | pagination | Boolean, 'separator string' | false | Display a pagination |
 | pause | Boolean | true | Pause on hover |
 | swipe | Boolean | false | Enable horizontal swipe |

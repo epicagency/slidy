@@ -33,10 +33,12 @@ export class Controls {
     this._el.classList.add(`${this._slidy.namespace}-controls`);
 
     this._prev = document.createElement('button');
+    this._prev.setAttribute('type', 'button');
     this._prev.textContent = '<';
     this._prev.classList.add(`${this._slidy.namespace}-controls__item--prev`);
 
     this._next = document.createElement('button');
+    this._next.setAttribute('type', 'button');
     this._next.textContent = '>';
     this._next.classList.add(`${this._slidy.namespace}-controls__item--next`);
 

@@ -71,7 +71,7 @@ export class Nav {
             }
           );
         } else {
-          content = `<button>
+          content = `<button type="button">
             <span>
               ${slide.dataset.slidyNav}
             </span>
@@ -102,7 +102,7 @@ export class Nav {
 
           case 'thumb':
             thumb = Nav.createThumb(slide);
-            content = `<button>
+            content = `<button type="button">
               <span>
                 ${thumb}
               </span>
@@ -112,7 +112,7 @@ export class Nav {
           case 'number':
           default:
             number = this.format(i + 1);
-            content = `<button>
+            content = `<button type="button">
               <span>
                 ${number}
               </span>

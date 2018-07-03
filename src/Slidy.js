@@ -68,6 +68,7 @@ export class Slidy {
       pause: true, // Boolean: pause on hover
       queue: 1, // Integer: queue max items
       resize: true, // Boolean: enable resize event and callback
+      reverse: false, // Boolean: reverse directions / controls
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap
       touch: false, // Boolean: enable BOTH tap/swipe (deprecated)
@@ -93,7 +94,7 @@ export class Slidy {
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
     this._oldIndex = null;
-    this._items = this._el.children;
+    this._items = Array.prototype.map.call(this._el.children, (item) => item); // #TODO use Array.from ?
     this._length = this._items.length;
     this._hasPause = false;
 
@@ -305,10 +306,17 @@ export class Slidy {
   /**
    * Navigate to previous slide.
    *
+   * @param {boolean} force force reverse
    * @returns {undefined}
    * @memberof Slidy
    */
-  slidePrev() {
+  slidePrev(force = false) {
+    if (this._opts.reverse && !force) {
+      this.slideNext(true);
+
+      return;
+    }
+
     let newIndex = this._currentIndex - 1;
 
     if (newIndex < 0) {
@@ -323,10 +331,17 @@ export class Slidy {
   /**
    * Navigate to next slide.
    *
+   * @param {boolean} force force reverse
    * @returns {undefined}
    * @memberof Slidy
    */
-  slideNext() {
+  slideNext(force = false) {
+    if (this._opts.reverse && !force) {
+      this.slidePrev(true);
+
+      return;
+    }
+
     let newIndex = this._currentIndex + 1;
 
     if (newIndex === this._length) {

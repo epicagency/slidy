@@ -219,6 +219,12 @@ export class Slidy {
     // Set active class on currentIndex.
     this._items[this._currentIndex].classList.add('is-active');
 
+    // Accessibility
+    this._el.setAttribute('role', 'slider');
+    this._el.setAttribute('aria-valuemin', 1);
+    this._el.setAttribute('aria-valuemax', this._items.length);
+    this._el.setAttribute('aria-valuenow', this._currentIndex + 1);
+
     if (this._opts.click) {
       this._el.style.cursor = 'pointer';
     }
@@ -636,6 +642,9 @@ export class Slidy {
   }
 
   afterSlide(direction) {
+    // Accessibility
+    this._el.setAttribute('aria-valuenow', this.currentIndex + 1);
+
     if (this._opts.afterSlide) {
       this._opts.afterSlide.call(
         this,

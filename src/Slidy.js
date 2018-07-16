@@ -94,7 +94,7 @@ export class Slidy {
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
     this._oldIndex = null;
-    this._items = Array.prototype.map.call(this._el.children, (item) => item); // #TODO use Array.from ?
+    this._items = Array.prototype.map.call(this._el.children, item => item); // #TODO use Array.from ?
     this._length = this._items.length;
     this._hasPause = false;
 

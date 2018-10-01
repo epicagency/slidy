@@ -1,5 +1,7 @@
 # Slidy
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/epicagency/slidy.svg)](https://greenkeeper.io/)
+
 [Read this](http://shouldiuseacarousel.com/) before doing anything… 😛
 
 > to do: install, example, doc, etc…

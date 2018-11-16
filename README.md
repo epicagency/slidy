@@ -79,7 +79,7 @@ and you will get this:
 | --- | --- | --- | --- |
 | auto | Boolean | false | Auto-start |
 | click | Boolean | true | Enable next slide on click |
-| controls | Boolean | false | Next / prev buttons |
+| controls | Boolean or 'template string' | false | Next / prev buttons (see examples) |
 | height | 'auto' or [integer] | 'auto' | Auto or pixel height |
 | index | [integer] | 0 | Initial index |
 | interval | [integer] | 2000 | Time (ms) betweeen 2 transitions |
@@ -94,6 +94,14 @@ and you will get this:
 | touch | Boolean | false | Enable BOTH tap/swipe (deprecated) |
 | transition | Function | null | Animation function which returns a promise |
 | zerofill | Boolean, [integer] | false | 'Zerofill' (1 -> 01) numbers for both nav or pagination |
+
+### controls details
+
+* `controls: false` -> no navigation
+* `controls: true` -> controls with < / >
+* `controls: '<div>${label}</div>'` -> `<div>previous slide</div>` / `<div>next slide</div>`
+
+> If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
 
 ### nav details
 

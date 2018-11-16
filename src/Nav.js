@@ -25,7 +25,7 @@ export class Nav {
 
     const type = this._opts.nav;
 
-    if (/\${(number|thumb)}/.test(type)) {
+    if ((/\${(number|thumb)}/).test(type)) {
       this._type = 'template';
       this._template = type;
     } else if (type === 'thumb') {
@@ -89,11 +89,11 @@ export class Nav {
 
             // We can have both number and thumb into the template string
             // or nothing…
-            if (/\${number}/.test(this._template)) {
+            if ((/\${number}/).test(this._template)) {
               dataTpl.number = this.format(i + 1);
             }
 
-            if (/\${thumb}/.test(this._template)) {
+            if ((/\${thumb}/).test(this._template)) {
               dataTpl.thumb = Nav.createThumb(slide);
             }
 

@@ -233,7 +233,10 @@ export class Slidy {
 
     // Add controls.
     if (this._opts.controls) {
-      this._controls = new Controls(this, {loop: this._opts.loop});
+      this._controls = new Controls(this, {
+        loop: this._opts.loop,
+        controls: this._opts.controls,
+      });
     }
 
     // Add nav.

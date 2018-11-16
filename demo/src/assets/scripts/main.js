@@ -48,7 +48,7 @@ class Epic {
       queue: 5,
       tap: true,
       swipe: true,
-      controls: true,
+      controls: '<div>${label}</div>',
       // eslint-disable-next-line no-template-curly-in-string
       // nav: '<div class="foo"><button>${thumb}</button></div>',
       nav: true,

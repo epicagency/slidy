@@ -1,3 +1,5 @@
+import parseTpl from './utils/parse-es6-template';
+
 /**
 * Create controls.
 *
@@ -29,18 +31,25 @@ export class Controls {
    * @memberof Controls
    */
   init() {
+    console.info(this._opts);
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-controls`);
 
     this._prev = document.createElement('button');
     this._prev.setAttribute('type', 'button');
-    this._prev.textContent = '<';
     this._prev.classList.add(`${this._slidy.namespace}-controls__item--prev`);
 
     this._next = document.createElement('button');
     this._next.setAttribute('type', 'button');
-    this._next.textContent = '>';
     this._next.classList.add(`${this._slidy.namespace}-controls__item--next`);
+
+    if (this._opts.controls === true) {
+      this._prev.textContent = '<';
+      this._next.textContent = '>';
+    } else {
+      this._prev.innerHTML = parseTpl(this._opts.controls, { label: 'previous slide' });
+      this._next.innerHTML = parseTpl(this._opts.controls, { label: 'next slide' });
+    }
 
     this._el.append(this._prev);
     this._el.append(this._next);

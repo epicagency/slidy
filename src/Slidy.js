@@ -6,11 +6,9 @@
 const Emitter = require('tiny-emitter');
 const Hammer = require('hammerjs');
 
-import {
-  bind,
-  debounce,
-  forEach,
-} from 'lodash';
+import bind from 'lodash/bind';
+import debounce from 'lodash/debounce';
+import forEach from 'lodash/forEach';
 import * as detect from './utils/detect';
 import { Controls } from './Controls';
 import { Nav } from './Nav';

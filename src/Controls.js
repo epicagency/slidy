@@ -31,7 +31,6 @@ export class Controls {
    * @memberof Controls
    */
   init() {
-    console.info(this._opts);
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-controls`);
 

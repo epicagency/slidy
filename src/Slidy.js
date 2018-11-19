@@ -380,6 +380,11 @@ export class Slidy {
    * @memberof Slidy
    */
   slide(move, index = null) {
+    if (this._opts.auto) {
+      clearInterval(this._t1);
+      this._t1 = setInterval(this.slideNext, this._opts.interval);
+    }
+
     if (this._queue) {
       this._queue.add(move, index);
     } else {
@@ -457,7 +462,7 @@ export class Slidy {
     if (this._hasPause) {
       this._outer.removeEventListener('mouseenter', this.onEnter);
     }
-    clearInterval(this._t2);
+    clearTimeout(this._t2);
     clearInterval(this._t1);
   }
 

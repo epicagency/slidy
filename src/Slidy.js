@@ -249,7 +249,7 @@ export class Slidy {
 
     // Start auto mode.
     if (this._opts.auto) {
-      this.t2 = setTimeout(this.start, this._opts.interval);
+      this.start();
     }
 
     this._dispatcher.emit('afterInit');

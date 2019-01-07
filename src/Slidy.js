@@ -204,8 +204,8 @@ export class Slidy {
 
     // Add HTML wrapper.
     this._outer = document.createElement('div');
-    this._el.before(this._outer);
-    this._outer.append(this._el);
+    this._el.insertBefore(this._outer);
+    this._outer.appendChild(this._el);
 
     // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);

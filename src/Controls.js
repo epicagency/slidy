@@ -50,9 +50,9 @@ export class Controls {
       this._next.innerHTML = parseTpl(this._opts.controls, { label: 'next slide' });
     }
 
-    this._el.append(this._prev);
-    this._el.append(this._next);
-    this._outer.append(this._el);
+    this._el.appendChild(this._prev);
+    this._el.appendChild(this._next);
+    this._outer.appendChild(this._el);
 
     this.update();
   }

@@ -46,10 +46,10 @@ export class Pagination {
     this._total.textContent = this.format(this._slidy.items.length);
     this._total.classList.add(`${this._slidy.namespace}-pagination__total`);
 
-    this._el.append(this._current);
-    this._el.append(this._separator);
-    this._el.append(this._total);
-    this._outer.append(this._el);
+    this._el.appendChild(this._current);
+    this._el.appendChild(this._separator);
+    this._el.appendChild(this._total);
+    this._outer.appendChild(this._el);
 
     this.update();
   }

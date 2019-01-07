@@ -125,7 +125,7 @@ export class Nav {
     });
 
     this._el.innerHTML = html;
-    this._outer.append(this._el);
+    this._outer.appendChild(this._el);
     this._items = this._el.querySelectorAll('li');
 
     this.setActive();

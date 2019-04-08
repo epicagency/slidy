@@ -140,8 +140,15 @@ export class Nav {
    * @memberof Nav
    */
   static createThumb(slide) {
-    const src = slide.querySelector('img').getAttribute('src');
-    const thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
+    let thumb;
+
+    if ('slidyThumb' in slide.dataset) {
+      thumb = slide.dataset.slidyThumb;
+    } else {
+      const src = slide.querySelector('img').getAttribute('src');
+
+      thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
+    }
 
     return `<img src="${thumb}">`;
   }

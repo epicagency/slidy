@@ -114,11 +114,11 @@ export class Slidy {
         this.afterResize();
       });
     }
-    this._dispatcher.on('beforeSlide', direction => {
-      this.beforeSlide(direction);
+    this._dispatcher.on('beforeSlide', (direction, animate) => {
+      this.beforeSlide(direction, animate);
     });
-    this._dispatcher.on('afterSlide', direction => {
-      this.afterSlide(direction);
+    this._dispatcher.on('afterSlide', (direction, animate) => {
+      this.afterSlide(direction, animate);
     });
 
     this.init();
@@ -364,11 +364,12 @@ export class Slidy {
    * Navigate to slide by index.
    *
    * @param {number} index slide index
+   * @param {boolean} [animate = true] should use transition ?
    * @returns {undefined}
    * @memberof Slidy
    */
-  slideTo(index) {
-    this.slide('to', index);
+  slideTo(index, animate = true) {
+    this.slide('to', index, animate);
   }
 
   /**
@@ -376,17 +377,18 @@ export class Slidy {
    *
    * @param {string} move prev|next|to
    * @param {number} [index=null] slide index
+   * @param {boolean} [animate = true] should use tranistion ?
    * @returns {undefined}
    * @memberof Slidy
    */
-  slide(move, index = null) {
+  slide(move, index = null, animate = true) {
     if (this._opts.auto) {
       clearInterval(this._t1);
       this._t1 = setInterval(this.slideNext, this._opts.interval);
     }
 
     if (this._queue) {
-      this._queue.add(move, index);
+      this._queue.add(move, index, animate);
     } else {
       // Prevent 'persistent' auto
       this.stop();
@@ -636,18 +638,19 @@ export class Slidy {
     }
   }
 
-  beforeSlide(direction) {
+  beforeSlide(direction, animate) {
     if (this._opts.beforeSlide) {
       this._opts.beforeSlide.call(
         this,
         this.currentIndex,
         this.newIndex,
-        direction
+        direction,
+        animate
       );
     }
   }
 
-  afterSlide(direction) {
+  afterSlide(direction, animate) {
     // Accessibility
     this._el.setAttribute('aria-valuenow', this.currentIndex + 1);
 
@@ -656,7 +659,8 @@ export class Slidy {
         this,
         this.currentIndex,
         this.oldIndex,
-        direction
+        direction,
+        animate
       );
     }
   }

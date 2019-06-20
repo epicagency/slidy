@@ -25,10 +25,11 @@ export class Queue {
    *
    * @param {string} move  prev|next|to
    * @param {number} index slide index
+   * @param {boolean} animate should use transition
    * @returns {undefined}
    * @memberof Queue
    */
-  add(move, index) {
+  add(move, index, animate) {
     if (this._items.length > this._max) {
       this._items.length = this._max;
     }
@@ -36,6 +37,7 @@ export class Queue {
     this._items.push({
       move,
       index,
+      animate,
     });
 
     if (!this._isAnimating) {
@@ -64,7 +66,7 @@ export class Queue {
       return;
     }
 
-    const [{ move }] = this._items;
+    const [{ move, animate }] = this._items;
     const { items } = this._slidy;
     const { length } = items;
     const { currentIndex } = this._slidy;
@@ -112,11 +114,14 @@ export class Queue {
     this._slidy.newIndex = newIndex;
 
     // Start slide.
-    this._dispatcher.emit('beforeSlide', direction);
+    this._dispatcher.emit('beforeSlide', direction, animate);
     // Update status and active class.
     this._isAnimating = true;
     currentSlide.classList.remove('is-active');
-    this._transition.call(this._slidy, currentSlide, newSlide, direction)
+
+    const transition = animate ? this._transition : () => Promise.resolve();
+
+    transition.call(this._slidy, currentSlide, newSlide, direction)
       .then(() => {
         // Update indexes, queue, status and active class.
         this._slidy.oldIndex = currentIndex;
@@ -125,7 +130,7 @@ export class Queue {
         this._isAnimating = false;
         newSlide.classList.add('is-active');
         // End slide.
-        this._dispatcher.emit('afterSlide', direction);
+        this._dispatcher.emit('afterSlide', direction, animate);
         // Play next queued transition.
         this.play();
       });

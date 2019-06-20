@@ -58,6 +58,9 @@ class Epic {
     document.getElementById('destroy').addEventListener('click', () => {
       slider.destroy();
     });
+    document.getElementById('skip').addEventListener('click', () => {
+      slider.slideTo(4, false);
+    });
   }
 
   sliderBeforeInit(slider) {

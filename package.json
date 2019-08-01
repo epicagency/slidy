@@ -47,7 +47,6 @@
     "commit-retry": "npx git-cz --retry || exit 0",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "lint": "tslint src/**",
-    "precommit": "lint-staged",
     "prerelease": "npm run build",
     "publish": "git push --follow-tags && npm publish",
     "release": "npm test && standard-version",
@@ -59,7 +58,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run precommit",
+      "pre-commit": "lint-staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },

@@ -9,10 +9,12 @@
 Create a parent with children:
 
 ```html
-<ul class="if-you-want"> <!-- or <div> or … -->
-  <li><img></li> <!-- or <div> or … -->
+<ul class="if-you-want">
+  <!-- or <div> or … -->
+  <li><img /></li>
+  <!-- or <div> or … -->
   <li>
-    <img>
+    <img />
     <div>extra content</div>
   </li>
   …
@@ -31,7 +33,11 @@ new Slidy('.if-you-want', {
   transition: myAmazingAnimation,
 });
 
-const myAmazingAnimation = function myAmazingAnimation(currentSlide, newSlide, direction) {
+const myAmazingAnimation = function myAmazingAnimation(
+  currentSlide,
+  newSlide,
+  direction
+) {
   /**
    * @param {HTMLElement} currentSlide - current slide (.slidy__item)
    * @param {HTMLElement} newSlide - new slide (.slidy__item)
@@ -39,8 +45,7 @@ const myAmazingAnimation = function myAmazingAnimation(currentSlide, newSlide, d
    *
    * Do what you want here and return a promise…
    */
-}
-
+};
 ```
 
 and you will get this:
@@ -48,9 +53,9 @@ and you will get this:
 ```html
 <div class="slidy-outer">
   <ul class="slidy what-you-want">
-    <li class="slidy__item"><img></li>
+    <li class="slidy__item"><img /></li>
     <li class="slidy__item">
-      <img>
+      <img />
       <div>extra content</div>
     </li>
     …
@@ -70,52 +75,64 @@ and you will get this:
     </li>
     …
   </ol>
-</div><!-- end .slidy-outer -->
+</div>
+<!-- end .slidy-outer -->
 ```
 
 ## Config / options
 
-| Option | Values | Default | Description |
-| --- | --- | --- | --- |
-| auto | Boolean | false | Auto-start |
-| click | Boolean | true | Enable next slide on click |
-| controls | Boolean or 'template string' | false | Next / prev buttons (see examples) |
-| height | 'auto' or [integer] | 'auto' | Auto or pixel height |
-| index | [integer] | 0 | Initial index |
-| interval | [integer] | 2000 | Time (ms) betweeen 2 transitions |
-| loop | Boolean | true | loop … or not |
-| namespace | String | 'slidy' | CSS custom [class]namespace |
-| nav | Boolean, 'number', 'thumb' or 'template string' | false | Display a navigation with numbers / thumbs within custom template (see examples) |
-| queue | [integer] | 1 | Queue max items |
-| pagination | Boolean, 'separator string' | false | Display a pagination |
-| pause | Boolean | true | Pause on hover |
-| swipe | Boolean | false | Enable horizontal swipe |
-| tap | Boolean | false | Enable next slide on tap |
-| touch | Boolean | false | Enable BOTH tap/swipe (deprecated) |
-| transition | Function | null | Animation function which returns a promise |
-| zerofill | Boolean, [integer] | false | 'Zerofill' (1 -> 01) numbers for both nav or pagination |
+| Option     | Values                                          | Default | Description                                                                      |
+| ---------- | ----------------------------------------------- | ------- | -------------------------------------------------------------------------------- |
+| auto       | Boolean                                         | false   | Auto-start                                                                       |
+| click      | Boolean                                         | true    | Enable next slide on click                                                       |
+| controls   | Boolean or 'template string'                    | false   | Next / prev buttons (see examples)                                               |
+| debounce   | [integer]                                       | 100     | Debounce delay on resize                                                         |
+| height     | 'auto' or [integer]                             | 'auto'  | Auto or pixel height                                                             |
+| index      | [integer]                                       | 0       | Initial index                                                                    |
+| interval   | [integer]                                       | 2000    | Time (ms) betweeen 2 transitions                                                 |
+| loop       | Boolean                                         | true    | loop … or not                                                                    |
+| namespace  | String                                          | 'slidy' | CSS custom [class]namespace                                                      |
+| nav        | Boolean, 'number', 'thumb' or 'template string' | false   | Display a navigation with numbers / thumbs within custom template (see examples) |
+| queue      | [integer]                                       | 1       | Queue max items                                                                  |
+| pagination | Boolean, 'separator string'                     | false   | Display a pagination                                                             |
+| pause      | Boolean                                         | true    | Pause on hover                                                                   |
+| resize     | Boolean                                         | true    | Enable resize event and callback                                                 |
+| reverse    | Boolean                                         | false   | Reverse directions / controls                                                    |
+| swipe      | Boolean                                         | false   | Enable horizontal swipe                                                          |
+| tap        | Boolean                                         | false   | Enable next slide on tap                                                         |
+| touch      | Boolean                                         | false   | Enable BOTH tap/swipe (deprecated)                                               |
+| transition | Function                                        | null    | Animation function which returns a promise                                       |
+| zerofill   | Boolean, [integer]                              | false   | 'Zerofill' (1 -> 01) numbers for both nav or pagination                          |
 
 ### controls details
 
-* `controls: false` -> no navigation
-* `controls: true` -> controls with < / >
-* `controls: '<div>${label}</div>'` -> `<div>previous slide</div>` / `<div>next slide</div>`
+- `controls: false` -> no navigation
+- `controls: true` -> controls with < / >
+- `controls: '<div>${label}</div>'` -> `<div>previous slide</div>` / `<div>next slide</div>`
 
 > If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
 
 ### nav details
 
-* `nav: false` -> no navigation
-* `nav: true` -> navigation with numbers (1, 2, 3, …)
-* `nav: 'number'` -> same as `true`
-* `nav: 'thumb'` -> navigation with thumbs ([image-name]_thumb.ext)
-* `nav: '<div>${number}</div>'` -> custom "number" navigation
-* `nav: '<div>${thumb}</div>'` -> custom "thumb" navigation
+- `nav: false` -> no navigation
+- `nav: true` -> navigation with numbers (1, 2, 3, …)
+- `nav: 'number'` -> same as `true`
+- `nav: 'thumb'` -> navigation with thumbs ([image-name]\_thumb.ext)
+- `nav: '<div>${number}</div>'` -> custom "number" navigation
+- `nav: '<div>${thumb}</div>'` -> custom "thumb" navigation
 
 > If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
 
------
+---
+
+## How to contribute
+
+If you want to report a bug or if you just want to request for a new feature/improvement, please **follow [those instructions](CONTRIBUTING.md) before**.
+
+Thanks for taking time to contribute to `slidy` :tada: :+1:
+
+---
 
 ## License
 
-MIT © [EPIC team](http://epic.net)
+See [UNLICENSE](UNLICENSE).

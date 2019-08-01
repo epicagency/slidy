@@ -1,4 +1,7 @@
+import Emitter from 'tiny-emitter';
 import zeroFill from 'zero-fill';
+import Slidy from '..';
+import { IOptions } from '../defs';
 
 /**
  * Create a pagination.
@@ -7,30 +10,44 @@ import zeroFill from 'zero-fill';
  * @class Pagination
  */
 export class Pagination {
+  private _slidy: Slidy;
+  private _opts: IOptions;
+  private _outer: HTMLDivElement;
+  private _dispatcher: Emitter;
+  private _el: HTMLDivElement;
+  private _current: HTMLSpanElement;
+  private _separator: HTMLSpanElement;
+  private _total: HTMLSpanElement;
+
   /**
    * Creates an instance of Pagination.
-   * @param {Slidy}          slidy slidy instance
-   * @param {boolean|string} opts  navigation seperator
-   * @memberof Pagination
    */
-  constructor(slidy) {
+  constructor(slidy: Slidy) {
     this._slidy = slidy;
     this._opts = slidy.options;
     this._outer = slidy.outer;
 
     this._dispatcher = slidy.dispatcher;
 
+    if (!this._opts.pagination) {
+      return;
+    }
+
     this.init();
     this.bind();
   }
 
   /**
-   * Init component.
-   *
-   * @returns {undefined}
-   * @memberof Pagination
+   * Destroy component.
    */
-  init() {
+  public destroy() {
+    this._el.parentNode.removeChild(this._el);
+  }
+
+  /**
+   * Init component.
+   */
+  private init() {
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-pagination`);
 
@@ -39,7 +56,7 @@ export class Pagination {
     this._current.classList.add(`${this._slidy.namespace}-pagination__current`);
 
     this._separator = document.createElement('span');
-    this._separator.textContent = this._opts.pagination === true ? '/' : this._opts.pagination;
+    this._separator.textContent = this._opts.pagination === true ? '/' : this._opts.pagination as string;
     this._separator.classList.add(`${this._slidy.namespace}-pagination__separator`);
 
     this._total = document.createElement('span');
@@ -56,42 +73,23 @@ export class Pagination {
 
   /**
    * Bind event handlers.
-   *
-   * @returns {undefined}
-   * @memberof Pagination
    */
-  bind() {
+  private bind() {
     this._dispatcher.on('beforeSlide', this.update.bind(this));
   }
 
   /**
    * Update current index.
-   *
-   * @returns {undefined}
-   * @memberof Pagination
    */
-  update() {
+  private update() {
     this._current.textContent = this.format(this._slidy.newIndex + 1);
   }
 
   /**
-   * Destroy component.
-   *
-   * @returns {undefined}
-   * @memberof Pagination
-   */
-  destroy() {
-    this._el.parentNode.removeChild(this._el);
-  }
-
-  /**
    * Format number (zerofill or not)
-   *
-   * @param {Number} number number to format
-   * @returns {Number} formatted number
-   * @memberof Pagination
    */
-  format(number) {
+  // tslint:disable-next-line:variable-name
+  private format(number: number) {
     if (this._opts.zerofill === false) {
       return number;
     }

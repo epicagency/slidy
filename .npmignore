@@ -1,16 +1,17 @@
 ### Custom ###
 
-.babelrc
-.editorconfig
-.epicrc.json
-.eslintignore
-.eslintrc.json
+/__mocks__
+/__tests__
+/.circleci
 /.vscode
-/demo
-/docs
-/build
+/coverage
 /src
-/test
-gulpfile.babel.js
-slidy.sublime-project
-slidy.sublime-workspace
+/.editorconfig
+/.lintstagedrc.yml
+/.markdownlint.json
+/commitlint.config.js
+/jest.config.js
+/prettier.config.js
+/tsconfig.json
+/tsconfig.test.json
+/tslint.json

@@ -1,9 +1,8 @@
+import Emitter from 'tiny-emitter';
 import zeroFill from 'zero-fill';
-const forEach = require('lodash/forEach');
-const indexOf = require('lodash/indexOf');
-
-import parseTpl from './utils/parse-es6-template';
-import { parents } from './utils/$';
+import Slidy from '..';
+import { IObject, IOptions } from '../defs';
+import { parents, parseTpl } from '../utils';
 
 /**
  * Create navigation.
@@ -12,25 +11,54 @@ import { parents } from './utils/$';
  * @class Nav
  */
 export class Nav {
+
+  /**
+   * Create thumbnail.
+   */
+  private static createThumb(slide: HTMLElement) {
+    let thumb;
+
+    if ('slidyThumb' in slide.dataset) {
+      thumb = slide.dataset.slidyThumb;
+    } else {
+      const src = slide.querySelector('img').getAttribute('src');
+
+      thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
+    }
+
+    return `<img src="${thumb}">`;
+  }
+
+  private _slidy: Slidy;
+  private _opts: IOptions;
+  private _outer: HTMLDivElement;
+  private _items: HTMLElement[];
+  private _type: string;
+  private _template: string;
+  private _dispatcher: Emitter;
+  private _el: HTMLOListElement;
+
   /**
    * Creates an instance of Nav.
-   * @param {Slidy} slidy slidy instance
-   * @memberof Nav
    */
-  constructor(slidy) {
+  constructor(slidy: Slidy) {
     this._slidy = slidy;
     this._opts = slidy.options;
     this._outer = slidy.outer;
-    this._slides = slidy.items;
+    this._items = slidy.items;
 
-    const type = this._opts.nav;
+    if (!this._opts.nav) {
+      return;
+    }
+
+    const type = this._opts.nav === true ? 'number' : this._opts.nav;
 
     if ((/\${(number|thumb)}/).test(type)) {
       this._type = 'template';
       this._template = type;
     } else if (type === 'thumb') {
       this._type = 'thumb';
-    } else if (type === 'number' || type === true) {
+    } else if (type === 'number') {
       this._type = 'number';
     } else {
       console.error('Slidy: wrong value for "nav" option');
@@ -45,18 +73,22 @@ export class Nav {
   }
 
   /**
-   * Init component.
-   *
-   * @returns {undefined}
-   * @memberof Nav
+   * Destroy component.
    */
-  init() {
+  public destroy() {
+    this._el.parentNode.removeChild(this._el);
+  }
+
+  /**
+   * Init component.
+   */
+  private init() {
     this._el = document.createElement('ol');
     this._el.classList.add(`${this._slidy.namespace}-nav`);
 
     let html = '';
 
-    forEach(this._slides, (slide, i) => {
+    this._items.forEach((slide, i) => {
       let content;
 
       if ('slidyNav' in slide.dataset) {
@@ -78,11 +110,11 @@ export class Nav {
           </button>`;
         }
       } else {
-        let number;
+        let number; // tslint:disable-line:variable-name
         let thumb;
 
         // Check for template, thumb or number…
-        const dataTpl = {};
+        const dataTpl: IObject = {};
 
         switch (this._type) {
           case 'template':
@@ -126,41 +158,16 @@ export class Nav {
 
     this._el.innerHTML = html;
     this._outer.appendChild(this._el);
-    this._items = this._el.querySelectorAll('li');
+    this._items = Array.from(this._el.querySelectorAll('li'));
 
     this.setActive();
   }
 
   /**
-   * Create thumbnail.
-   *
-   * @static
-   * @param {HTMLElement} slide slide from slider
-   * @returns {string} Thumbnail HTML string
-   * @memberof Nav
-   */
-  static createThumb(slide) {
-    let thumb;
-
-    if ('slidyThumb' in slide.dataset) {
-      thumb = slide.dataset.slidyThumb;
-    } else {
-      const src = slide.querySelector('img').getAttribute('src');
-
-      thumb = src.replace(/(.*)(\.\w{3,4}$)/, '$1_thumb$2');
-    }
-
-    return `<img src="${thumb}">`;
-  }
-
-  /**
    * Format number (zerofill or not)
-   *
-   * @param {Number} number number to format
-   * @returns {Number} formatted number
-   * @memberof Nav
    */
-  format(number) {
+  // tslint:disable-next-line:variable-name
+  private format(number: number) {
     if (this._opts.zerofill === false) {
       return number;
     }
@@ -174,12 +181,9 @@ export class Nav {
 
   /**
    * Bind event handlers.
-   *
-   * @returns {undefined}
-   * @memberof Nav
    */
-  bind() {
-    this.onClick = this.click.bind(this);
+  private bind() {
+    this.onClick = this.onClick.bind(this);
     this._dispatcher.on('beforeSlide', this.clearActive.bind(this));
     this._dispatcher.on('beforeSlide', this.setActive.bind(this));
     this.bindNav();
@@ -187,21 +191,15 @@ export class Nav {
 
   /**
    * Bind nav handlers.
-   *
-   * @returns {undefined}
-   * @memberof Nav
    */
-  bindNav() {
+  private bindNav() {
     this._el.addEventListener('click', this.onClick);
   }
 
   /**
    * Clear active nav item.
-   *
-   * @returns {undefined}
-   * @memberof Nav
    */
-  clearActive() {
+  private clearActive() {
     const currentItem = this._el.querySelector('.is-active');
 
     if (currentItem) {
@@ -216,11 +214,8 @@ export class Nav {
 
   /**
    * Set active nav item.
-   *
-   * @returns {undefined}
-   * @memberof Nav
    */
-  setActive() {
+  private setActive() {
     const newItem = this._items[this._slidy.newIndex];
 
     newItem.classList.add('is-active');
@@ -234,28 +229,14 @@ export class Nav {
 
   /**
    * On nav item click
-   *
-   * @param {Event} e click event
-   * @returns {undefined}
-   * @memberof Nav
    */
-  click(e) {
-    const clicked = parents(e.target, `${this._slidy.namespace}-nav__item`);
+  private onClick(e: MouseEvent) {
+    const clicked = parents(e.target as HTMLElement, `${this._slidy.namespace}-nav__item`);
 
     if (clicked !== null) {
-      const newIndex = indexOf(this._el.children, clicked);
+      const newIndex = Array.from(this._el.children).indexOf(clicked);
 
       this._slidy.slideTo(newIndex);
     }
-  }
-
-  /**
-   * Destroy component.
-   *
-   * @returns {undefined}
-   * @memberof Nav
-   */
-  destroy() {
-    this._el.parentNode.removeChild(this._el);
   }
 }

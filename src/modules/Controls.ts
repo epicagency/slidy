@@ -1,19 +1,40 @@
-import parseTpl from './utils/parse-es6-template';
+import Emitter from 'tiny-emitter';
+import Slidy from '..';
+import { IControlsOptions } from '../defs';
+import { parseTpl } from '../utils';
 
 /**
-* Create controls.
-*
-* @export
-* @class Controls
-*/
+ * Create controls.
+ */
 export class Controls {
   /**
-   * Creates an instance of Controls.
-   * @param {Slidy}  slidy slidy instance
-   * @param {Object} opts  options
-   * @memberof Controls
+   * Disable control.
    */
-  constructor(slidy, opts) {
+  private static disable(el: HTMLButtonElement) {
+    el.setAttribute('disabled', '');
+    el.classList.add('is-disabled');
+  }
+
+  /**
+   * Enable control.
+   */
+  private static enable(el: HTMLButtonElement) {
+    el.removeAttribute('disabled');
+    el.classList.remove('is-disabled');
+  }
+
+  private _slidy: Slidy;
+  private _opts: IControlsOptions;
+  private _outer: HTMLDivElement;
+  private _dispatcher: Emitter;
+  private _el: HTMLDivElement;
+  private _prev: HTMLButtonElement;
+  private _next: HTMLButtonElement;
+
+  /**
+   * Creates an instance of Controls.
+   */
+  constructor(slidy: Slidy, opts: IControlsOptions) {
     this._slidy = slidy;
     this._opts = opts;
     this._outer = this._slidy.outer;
@@ -25,12 +46,16 @@ export class Controls {
   }
 
   /**
-   * Init component.
-   *
-   * @returns {undefined}
-   * @memberof Controls
+   * Destroy component.
    */
-  init() {
+  public destroy() {
+    this._el.parentNode.removeChild(this._el);
+  }
+
+  /**
+   * Init component.
+   */
+  private init() {
     this._el = document.createElement('div');
     this._el.classList.add(`${this._slidy.namespace}-controls`);
 
@@ -46,8 +71,8 @@ export class Controls {
       this._prev.textContent = '<';
       this._next.textContent = '>';
     } else {
-      this._prev.innerHTML = parseTpl(this._opts.controls, { label: 'previous slide' });
-      this._next.innerHTML = parseTpl(this._opts.controls, { label: 'next slide' });
+      this._prev.innerHTML = parseTpl(this._opts.controls as string, { label: 'previous slide' });
+      this._next.innerHTML = parseTpl(this._opts.controls as string, { label: 'next slide' });
     }
 
     this._el.appendChild(this._prev);
@@ -59,13 +84,10 @@ export class Controls {
 
   /**
    * Bind event handlers.
-   *
-   * @returns {undefined}
-   * @memberof Controls
    */
-  bind() {
-    this.onPrevClick = this.prevClick.bind(this);
-    this.onNextClick = this.nextClick.bind(this);
+  private bind() {
+    this.prevClick = this.prevClick.bind(this);
+    this.nextClick = this.nextClick.bind(this);
 
     this._dispatcher.on('beforeSlide', this.update.bind(this));
 
@@ -74,68 +96,30 @@ export class Controls {
 
   /**
    * Bind controls handlers
-   *
-   * @returns {undefined}
-   * @memberof Controls
    */
-  bindControls() {
-    this._prev.addEventListener('click', this.onPrevClick);
-    this._next.addEventListener('click', this.onNextClick);
+  private bindControls() {
+    this._prev.addEventListener('click', this.prevClick);
+    this._next.addEventListener('click', this.nextClick);
   }
 
   /**
    * On prev click.
-   *
-   * @returns {undefined}
-   * @memberof Controls
    */
-  prevClick() {
+  private prevClick() {
     this._slidy.slidePrev();
   }
 
   /**
    * On next click.
-   *
-   * @returns {undefined}
-   * @memberof Controls
    */
-  nextClick() {
+  private nextClick() {
     this._slidy.slideNext();
   }
 
   /**
-   * Disable control.
-   *
-   * @static
-   * @param {HTMLElement} el control to disable
-   * @returns {undefined}
-   * @memberof Controls
-   */
-  static disable(el) {
-    el.setAttribute('disabled', '');
-    el.classList.add('is-disabled');
-  }
-
-  /**
-   * Enable control.
-   *
-   * @static
-   * @param {HTMLElement} el control to enable
-   * @returns {undefined}
-   * @memberof Controls
-   */
-  static enable(el) {
-    el.removeAttribute('disabled');
-    el.classList.remove('is-disabled');
-  }
-
-  /**
    * Update controls.
-   *
-   * @returns {undefined}
-   * @memberof Controls
    */
-  update() {
+  private update() {
     if (!this._opts.loop) {
       const { newIndex } = this._slidy;
       const { length } = this._slidy.items;
@@ -151,15 +135,5 @@ export class Controls {
         Controls.disable(this._next);
       }
     }
-  }
-
-  /**
-   * Destroy component.
-   *
-   * @returns {undefined}
-   * @memberof Controls
-   */
-  destroy() {
-    this._el.parentNode.removeChild(this._el);
   }
 }

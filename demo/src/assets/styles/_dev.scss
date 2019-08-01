@@ -1,9 +1,0 @@
-/**
- * Dev, based on $env (from gulp)
- */
-$env: 'dev' !default;
-@if $env != 'build' {
-  // show all breakpoints
-  $mq-show-breakpoints: map-keys($mq-breakpoints);
-  @include mq-show-breakpoints($mq-show-breakpoints);
-}

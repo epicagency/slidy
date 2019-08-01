@@ -2,56 +2,64 @@
  * Slidy main file.
  */
 
-
-const Emitter = require('tiny-emitter');
-const Hammer = require('hammerjs');
-
-import bind from 'lodash/bind';
-import debounce from 'lodash/debounce';
-import forEach from 'lodash/forEach';
-import * as detect from './utils/detect';
-import { Controls } from './Controls';
-import { Nav } from './Nav';
-import { Pagination } from './Pagination';
-import { Queue } from './Queue';
+import Hammer from 'hammerjs';
+import debounce from 'lodash.debounce';
+import Emitter from 'tiny-emitter';
+import { Direction, IOptions, Move } from './defs';
+import { Controls, Nav, Pagination, Queue } from './modules';
+import { touchevents } from './utils';
 
 /**
  * Slidy main class.
- *
- * @export
- * @class Slidy
  */
-export class Slidy {
-  /**
-   * Creates an instance of Slidy.
-   * @param   {HTMLElement|string} el             Slider container (element or selector)
-   * @param   {Object}             opts           Configuration settings
-   * @param   {*}                  [context=null] Optional context, available through `this.context`
-   * @param   {Object}             [data=null]    Additional optional data
-   * @returns {undefined}
-   */
-  constructor(el, opts, context = null, data = null) {
-    /* eslint-disable no-param-reassign */
+export default class Slidy {
+  private _el: HTMLElement;
+  private _opts: IOptions;
+  private _context: any;
+  private _data: any;
+  private _debounceDelay: number;
+  private _currentIndex: number;
+  private _newIndex: number;
+  private _oldIndex: number;
+  private _items: HTMLElement[];
+  private _length: number;
+  private _hasPause: boolean;
+  private _dispatcher: Emitter;
+
+  private _outer: HTMLDivElement;
+  private _queue: Queue;
+  private _controls: Controls;
+  private _nav: Nav;
+  private _pagination: Pagination;
+
+  private _destroyed: boolean;
+  private _mc: HammerManager;
+  private _t1: number;
+  private _t2: NodeJS.Timeout;
+
+  constructor(element: HTMLElement | string, opts: IOptions, context: any = null, data: any = null) {
+    let el: NodeListOf<HTMLElement> | HTMLElement;
+
     // Check and get element(s).
-    if (typeof el === 'string') {
-      el = document.querySelectorAll(el);
+    if (typeof element === 'string') {
+      el = document.querySelectorAll(element as string);
     }
     /* eslint-enable no-param-reassign */
 
-    if (!el || el.length === 0) {
+    if (!el || (el as NodeListOf<HTMLElement>).length === 0) {
       console.error('Slidy: no element matching!');
 
       return;
     }
 
-    if (el.length > 1) {
+    if ((el as NodeListOf<HTMLElement>).length > 1) {
       console.warn('Slidy: multiple elements matching!');
     }
 
-    this._el = el[0] || el;
+    this._el = (el as NodeListOf<HTMLElement>)[0] || el as HTMLElement;
 
     // Check and get options.
-    this._opts = Object.assign({
+    this._opts = {
       auto: false, // Boolean: start slider automaticaly
       click: true, // Boolean: enable click on slider
       controls: false, // Boolean: create prev/next buttons
@@ -69,20 +77,15 @@ export class Slidy {
       reverse: false, // Boolean: reverse directions / controls
       swipe: false, // Boolean: enable swipe
       tap: false, // Boolean: enable tap
-      touch: false, // Boolean: enable BOTH tap/swipe (deprecated)
       transition: null, // Function: transition which returns a resolved promise
       zerofill: false, // Mixed(Boolean | number): '1' -> '01' for navigation/pagination
-    }, opts);
+      ...opts,
+    };
 
     if (this._opts.transition === null) {
       console.error('Slidy: you should define a transition!');
 
       return;
-    }
-
-    if (this._opts.touch) {
-      this._opts.swipe = true;
-      this._opts.tap = true;
     }
 
     this._context = context;
@@ -92,7 +95,7 @@ export class Slidy {
     this._currentIndex = this._opts.index;
     this._newIndex = this._currentIndex;
     this._oldIndex = null;
-    this._items = Array.prototype.map.call(this._el.children, item => item); // #TODO use Array.from ?
+    this._items = Array.from(this._el.children) as HTMLElement[];
     this._length = this._items.length;
     this._hasPause = false;
 
@@ -114,10 +117,10 @@ export class Slidy {
         this.afterResize();
       });
     }
-    this._dispatcher.on('beforeSlide', (direction, animate) => {
+    this._dispatcher.on('beforeSlide', (direction: Direction, animate: boolean) => {
       this.beforeSlide(direction, animate);
     });
-    this._dispatcher.on('afterSlide', (direction, animate) => {
+    this._dispatcher.on('afterSlide', (direction: Direction, animate: boolean) => {
       this.afterSlide(direction, animate);
     });
 
@@ -186,11 +189,8 @@ export class Slidy {
 
   /**
    * Init component.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  init() {
+  public init() {
     this._dispatcher.emit('beforeInit');
 
     // Set height.
@@ -210,7 +210,8 @@ export class Slidy {
     // Add CSS classes.
     this._outer.classList.add(`${this.namespace}-outer`);
     this._el.classList.add(this.namespace);
-    forEach(this._items, slide => {
+
+    this._items.forEach(slide => {
       slide.classList.add(`${this.namespace}__item`);
     });
 
@@ -219,9 +220,9 @@ export class Slidy {
 
     // Accessibility
     this._el.setAttribute('role', 'slider');
-    this._el.setAttribute('aria-valuemin', 1);
-    this._el.setAttribute('aria-valuemax', this._items.length);
-    this._el.setAttribute('aria-valuenow', this._currentIndex + 1);
+    this._el.setAttribute('aria-valuemin', `${1}`);
+    this._el.setAttribute('aria-valuemax', `${this._items.length}`);
+    this._el.setAttribute('aria-valuenow', `${this._currentIndex + 1}`);
 
     if (this._opts.click) {
       this._el.style.cursor = 'pointer';
@@ -232,8 +233,8 @@ export class Slidy {
     // Add controls.
     if (this._opts.controls) {
       this._controls = new Controls(this, {
-        loop: this._opts.loop,
         controls: this._opts.controls,
+        loop: this._opts.loop,
       });
     }
 
@@ -256,68 +257,13 @@ export class Slidy {
   }
 
   /**
-   * Bind event handlers.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
-   */
-  bind() {
-    this.onEnter = this.enter.bind(this);
-    this.onLeave = this.leave.bind(this);
-    this.onClick = this.click.bind(this);
-    this.onTap = this.tap.bind(this);
-    this.onSwipe = this.swipe.bind(this);
-
-    if (this._opts.resize) {
-      this.onResize = bind(debounce(this.resize, this._debounceDelay), this);
-
-      window.addEventListener('resize', this.onResize);
-    }
-
-    if (this._opts.pause && this._opts.auto) {
-      this._outer.addEventListener('mouseenter', this.onEnter);
-      this._hasPause = true;
-    }
-
-    if (this._opts.click && !detect.touchevents()) {
-      this._el.addEventListener('click', this.onClick);
-    }
-
-    if ((this._opts.tap || this._opts.swipe) && detect.touchevents()) {
-      const options = {
-        recognizers: [],
-      };
-
-      this._mc = new Hammer.Manager(this._el, options);
-    }
-
-    if (this._opts.tap && detect.touchevents()) {
-      const tap = new Hammer.Tap();
-
-      this._mc.add(tap);
-      this._mc.on('tap', this.onTap);
-    }
-
-    if (this._opts.swipe && detect.touchevents()) {
-      const swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
-
-      this._mc.add(swipe);
-      this._mc.on('swipeleft swiperight', this.onSwipe);
-    }
-  }
-
-  /**
    * API.
    */
 
   /**
    * Navigate to previous slide.
-   *
-   * @param {boolean} force force reverse
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  slidePrev(force = false) {
+  public slidePrev(force = false) {
     if (this._opts.reverse && !force) {
       this.slideNext(true);
 
@@ -337,12 +283,8 @@ export class Slidy {
 
   /**
    * Navigate to next slide.
-   *
-   * @param {boolean} force force reverse
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  slideNext(force = false) {
+  public slideNext(force = false) {
     if (this._opts.reverse && !force) {
       this.slidePrev(true);
 
@@ -362,26 +304,15 @@ export class Slidy {
 
   /**
    * Navigate to slide by index.
-   *
-   * @param {number} index slide index
-   * @param {boolean} [animate = true] should use transition ?
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  slideTo(index, animate = true) {
+  public slideTo(index: number, animate = true) {
     this.slide('to', index, animate);
   }
 
   /**
    * Add move to the queue.
-   *
-   * @param {string} move prev|next|to
-   * @param {number} [index=null] slide index
-   * @param {boolean} [animate = true] should use tranistion ?
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  slide(move, index = null, animate = true) {
+  public slide(move: Move, index: number = null, animate = true) {
     if (this._opts.auto) {
       clearInterval(this._t1);
       this._t1 = setInterval(this.slideNext, this._opts.interval);
@@ -396,51 +327,10 @@ export class Slidy {
   }
 
   /**
-   * Height calculation if auto.
-   * Called on 'init' and 'resize'.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
-   */
-  reset() {
-    if (this._opts.height === 'auto') {
-      // Reset inline height.
-      this._el.style.height = '';
-
-      // Check if items have height
-      // if not, check first node
-      // then remove 0 height, sort DESC, get the highest height.
-      const getMinHeight = function getMinHeight(arr) {
-        return arr
-          .filter(item => item > 0)
-          .sort((a, b) => b - a)
-          .slice(0, 1);
-      };
-
-      const heights = [];
-      const hasNoHeight = this._items[0].offsetHeight === 0;
-
-      forEach(this._items, item => {
-        if (hasNoHeight && item.hasChildNodes()) {
-          heights.push(item.firstElementChild.offsetHeight);
-        } else {
-          heights.push(item.offsetHeight);
-        }
-      });
-      this._el.style.height = `${getMinHeight(heights)}px`;
-    }
-  }
-
-  /**
    * Start autoplay.
    * Enabled via "auto" and used by "pause" options.
-   *
-   * @param {number} delay delay before slideNext
-   * @param {boolean} auto autoloop or not
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  start(delay = this._opts.interval, auto = this._opts.auto) {
+  public start(delay = this._opts.interval, auto = this._opts.auto) {
     this._t2 = setTimeout(() => {
       this.slideNext();
       if (!this._hasPause && this._opts.pause) {
@@ -456,11 +346,8 @@ export class Slidy {
   /**
    * Pause autoplay.
    * Used by "pause" options.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  stop() {
+  public stop() {
     if (this._hasPause) {
       this._outer.removeEventListener('mouseenter', this.onEnter);
     }
@@ -470,11 +357,8 @@ export class Slidy {
 
   /**
    * Destroy component.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  destroy() {
+  public destroy() {
     this._destroyed = true;
 
     // Remove interval.
@@ -526,10 +410,10 @@ export class Slidy {
 
     // Remove CSS classes.
     this._el.classList.remove(this.namespace);
-    forEach(this._items, slide => {
+    this._items.forEach(slide => {
       slide.classList.remove(`${this.namespace}__item`);
       slide.removeAttribute('style');
-      forEach(slide.children, child => {
+      Array.from(slide.children).forEach(child => {
         child.removeAttribute('style');
       });
     });
@@ -537,6 +421,83 @@ export class Slidy {
     this._el.removeAttribute('style');
   }
 
+  /**
+   * Bind event handlers.
+   */
+  private bind() {
+    this.onEnter = this.onEnter.bind(this);
+    this.onLeave = this.onLeave.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.onTap = this.onTap.bind(this);
+    this.onSwipe = this.onSwipe.bind(this);
+
+    if (this._opts.resize) {
+      this.onResize = debounce(this.onResize, this._debounceDelay).bind(this);
+
+      window.addEventListener('resize', this.onResize);
+    }
+
+    if (this._opts.pause && this._opts.auto) {
+      this._outer.addEventListener('mouseenter', this.onEnter);
+      this._hasPause = true;
+    }
+
+    if (this._opts.click && !touchevents()) {
+      this._el.addEventListener('click', this.onClick);
+    }
+
+    if ((this._opts.tap || this._opts.swipe) && touchevents()) {
+      const options: HammerOptions = {
+        recognizers: [],
+      };
+
+      this._mc = new Hammer.Manager(this._el, options);
+    }
+
+    if (this._opts.tap && touchevents()) {
+      const tap = new Hammer.Tap();
+
+      this._mc.add(tap);
+      this._mc.on('tap', this.onTap);
+    }
+
+    if (this._opts.swipe && touchevents()) {
+      const swipe = new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL });
+
+      this._mc.add(swipe);
+      this._mc.on('swipeleft swiperight', this.onSwipe);
+    }
+  }
+
+  /**
+   * Height calculation if auto.
+   */
+  private reset() {
+    if (this._opts.height === 'auto') {
+      // Reset inline height.
+      this._el.style.height = '';
+
+      // Check if items have height
+      // if not, check first node
+      // then remove 0 height, sort DESC, get the highest height.
+      const getMinHeight = (arr: number[]) => arr
+        .filter(item => item > 0)
+        .sort((a, b) => b - a)
+        .slice(0, 1);
+
+      const heights: number[] = [];
+      const hasNoHeight = this._items[0].offsetHeight === 0;
+
+      this._items.forEach(item => {
+        if (hasNoHeight && item.hasChildNodes()) {
+          heights.push((item.firstElementChild as HTMLElement).offsetHeight);
+        } else {
+          heights.push(item.offsetHeight);
+        }
+      });
+      this._el.style.height = `${getMinHeight(heights)}px`;
+    }
+  }
 
   /**
    * Events.
@@ -545,11 +506,8 @@ export class Slidy {
   /**
    * RWD reset.
    * Mainly for height…
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  resize() {
+  private onResize() {
     if (!this._destroyed) {
       this.reset();
       this._dispatcher.emit('afterResize');
@@ -559,34 +517,24 @@ export class Slidy {
   /**
    * Click on slider to go to the next slide.
    * Enabled via "click" option.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  click() {
+  private onClick() {
     this.slideNext();
   }
 
   /**
    * Same as click but for touch devices.
    * Enabled via "touch" option.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  tap() {
+  private onTap() {
     this.slideNext();
   }
 
   /**
    * Complement gesture for "tap".
    * Enabled via "touch" option.
-   *
-   * @param {TouchEvent} e touch event
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  swipe(e) {
+  private onSwipe(e: HammerInput) {
     if (e.direction === Hammer.DIRECTION_LEFT) {
       this.slideNext();
     }
@@ -598,47 +546,42 @@ export class Slidy {
   /**
    * Play/pause on hover.
    * Enabled via "auto" + "pause" options.
-   *
-   * @returns {undefined}
-   * @memberof Slidy
    */
-  enter() {
+  private onEnter() {
     this._outer.removeEventListener('mouseenter', this.onEnter);
     this.stop();
     this._outer.addEventListener('mouseleave', this.onLeave);
   }
 
-  leave() {
+  private onLeave() {
     this._outer.removeEventListener('mouseleave', this.onLeave);
     this.start();
     this._outer.addEventListener('mouseenter', this.onEnter);
   }
 
-
-
   /**
    * Callbacks.
    */
 
-  beforeInit() {
+  private beforeInit() {
     if (this._opts.beforeInit) {
       this._opts.beforeInit.call(this, this._el);
     }
   }
 
-  afterInit() {
+  private afterInit() {
     if (this._opts.afterInit) {
       this._opts.afterInit.call(this, this._el);
     }
   }
 
-  afterResize() {
+  private afterResize() {
     if (this._opts.afterResize) {
       this._opts.afterResize.call(this, this._el);
     }
   }
 
-  beforeSlide(direction, animate) {
+  private beforeSlide(direction: Direction, animate: boolean) {
     if (this._opts.beforeSlide) {
       this._opts.beforeSlide.call(
         this,
@@ -650,9 +593,9 @@ export class Slidy {
     }
   }
 
-  afterSlide(direction, animate) {
+  private afterSlide(direction: Direction, animate: boolean) {
     // Accessibility
-    this._el.setAttribute('aria-valuenow', this.currentIndex + 1);
+    this._el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`);
 
     if (this._opts.afterSlide) {
       this._opts.afterSlide.call(

@@ -1,43 +1,42 @@
+import Emitter from 'tiny-emitter';
+import Slidy from '..';
+import { Direction, IMove, Move, Transition } from '../defs';
+
 /**
  * Create queue.
- *
- * @export
- * @class Queue
  */
 export class Queue {
+  private _slidy: Slidy;
+  private _transition: Transition;
+  private _dispatcher: Emitter;
+  private _isAnimating = false;
+  private _max: number;
+  private _items: IMove[];
+
   /**
    * Creates an instance of Queue.
-   * @param {Slidy} slidy slidy instance
-   * @param {function} transition function that returns a promise
-   * @memberof Queue
    */
-  constructor(slidy, transition) {
+  constructor(slidy: Slidy, transition: Transition) {
     this._slidy = slidy;
     this._transition = transition;
     this._dispatcher = this._slidy.dispatcher;
     this._isAnimating = false;
-    this._max = this._slidy._opts.queue;
+    this._max = this._slidy.options.queue;
     this._items = [];
   }
 
   /**
    * Add "move" to queue.
-   *
-   * @param {string} move  prev|next|to
-   * @param {number} index slide index
-   * @param {boolean} animate should use transition
-   * @returns {undefined}
-   * @memberof Queue
    */
-  add(move, index, animate) {
+  public add(move: Move, index: number, animate: boolean) {
     if (this._items.length > this._max) {
       this._items.length = this._max;
     }
 
     this._items.push({
-      move,
-      index,
       animate,
+      index,
+      move,
     });
 
     if (!this._isAnimating) {
@@ -47,21 +46,15 @@ export class Queue {
 
   /**
    * Empty queue.
-   *
-   * @returns {undefined}
-   * @memberof Queue
    */
-  empty() {
+  public empty() {
     this._items = [];
   }
 
   /**
    * Play queue.
-   *
-   * @returns {undefined}
-   * @memberof Queue
    */
-  play() {
+  private play() {
     if (this._items.length === 0) {
       return;
     }
@@ -70,8 +63,8 @@ export class Queue {
     const { items } = this._slidy;
     const { length } = items;
     const { currentIndex } = this._slidy;
-    let newIndex;
-    let direction;
+    let newIndex: number;
+    let direction: Direction;
 
     // Get the newIndex according to "move type".
     if (move === 'to') {
@@ -80,7 +73,7 @@ export class Queue {
       if (move === 'prev') {
         newIndex = currentIndex - 1;
         if (newIndex < 0) {
-          if (this._slidy._opts.loop) {
+          if (this._slidy.options.loop) {
             newIndex = length - 1;
           } else {
             newIndex = currentIndex;
@@ -90,7 +83,7 @@ export class Queue {
       if (move === 'next') {
         newIndex = currentIndex + 1;
         if (newIndex === length) {
-          if (this._slidy._opts.loop) {
+          if (this._slidy.options.loop) {
             newIndex = 0;
           } else {
             newIndex = currentIndex;

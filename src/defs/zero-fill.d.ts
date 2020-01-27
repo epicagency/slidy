@@ -1,1 +1,1 @@
-declare module 'zero-fill';
+declare module 'zero-fill'

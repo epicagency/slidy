@@ -20,4 +20,4 @@ module.exports = {
   verbose: true,
   // DEV
   // watchPathIgnorePatterns: ['/entries/', '/data/', '/locales/'],
-};
+}

@@ -5,17 +5,7 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "lib": ["dom", "esnext"],
-    "target": "es5",
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "alwaysShowRuleFailuresAsWarnings": false,
-        "ignoreDefinitionFiles": true,
-        "configFile": "./tslint.json",
-        "suppressWhileTypeErrorsPresent": false,
-        "mockTypeScriptVersion": false
-      }
-    ]
+    "target": "es5"
   },
   "exclude": ["node_modules", "**/__*__/**/*"]
 }

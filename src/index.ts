@@ -197,7 +197,7 @@ export default class Slidy {
   }
 
   /**
-   * Init component
+   * Init component.
    */
 
   public init() {

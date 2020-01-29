@@ -3,7 +3,7 @@ module.exports = {
   env: {
     node: true,
   },
-  ignorePatterns: ['node_modules/', '*.vue'],
+  ignorePatterns: ['node_modules/', 'dist/', '*.html'],
   parserOptions: {
     parser: '@typescript-eslint/parser',
   },

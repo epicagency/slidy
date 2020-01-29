@@ -1,4 +1,3 @@
-import Emitter from 'tiny-emitter'
 import Slidy from '..'
 import { ControlsOptions } from '../defs'
 import { parseTpl } from '../utils'
@@ -28,7 +27,7 @@ export class Controls {
   private _slidy: Slidy
   private _opts: ControlsOptions
   private _outer: HTMLDivElement
-  private _dispatcher: Emitter
+  private _dispatcher: any
   private _el: HTMLDivElement
   private _prev: HTMLButtonElement
   private _next: HTMLButtonElement

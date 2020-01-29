@@ -2,12 +2,10 @@
  * Slidy main file.
  */
 
-import Hammer from 'hammerjs'
-import debounce from 'lodash.debounce'
 import Emitter from 'tiny-emitter'
 import { Direction, Options, Move } from './defs'
-import { Controls, Nav, Pagination, Queue } from './modules'
-import { touchevents } from './utils'
+import { Controls, Nav, Pagination, Queue, Events } from './modules'
+import { debounce, touchevents } from './utils'
 
 /**
  * Slidy main class.
@@ -24,7 +22,7 @@ export default class Slidy {
   private _items: HTMLElement[]
   private _length: number
   private _hasPause: boolean
-  private _dispatcher: Emitter
+  private _dispatcher: any
 
   private _outer: HTMLDivElement
   private _queue: Queue
@@ -33,7 +31,7 @@ export default class Slidy {
   private _pagination: Pagination
 
   private _destroyed: boolean
-  private _mc: HammerManager
+  private _eventManager: Events
   private _t1: number
   private _t2: NodeJS.Timeout
 
@@ -51,17 +49,17 @@ export default class Slidy {
     }
     /* eslint-enable no-param-reassign */
 
-    if (!element || el.length === 0) {
+    if (!element || (el && el.length === 0)) {
       console.error('Slidy: no element matching!')
 
       return
     }
 
-    if (el.length > 1) {
+    if (el && el.length > 1) {
       console.warn('Slidy: multiple elements matching!')
     }
 
-    this._el = el[0] || (element as HTMLElement)
+    this._el = el ? el[0] : (element as HTMLElement)
 
     // Check and get options.
     this._opts = {
@@ -398,9 +396,9 @@ export default class Slidy {
     this._el.removeEventListener('click', this.onClick)
 
     // Remove Hammer.manager.
-    if (this._mc) {
-      this._mc.destroy()
-      delete this._mc
+    if (this._eventManager) {
+      this._eventManager.destroy()
+      delete this._eventManager
     }
 
     // Remove controls.
@@ -466,28 +464,24 @@ export default class Slidy {
       this._el.addEventListener('click', this.onClick)
     }
 
-    if ((this._opts.tap || this._opts.swipe) && touchevents()) {
-      const options: HammerOptions = {
-        recognizers: [],
-      }
-
-      this._mc = new Hammer.Manager(this._el, options)
+    // DEV
+    // if ((this._opts.tap || this._opts.swipe) && touchevents()) {
+    if (this._opts.tap || this._opts.swipe) {
+      this._eventManager = new Events(this._el)
     }
 
-    if (this._opts.tap && touchevents()) {
-      const tap = new Hammer.Tap()
+    // DEV
+    // if (this._opts.tap && touchevents()) {
+    //   const tap = new Hammer.Tap()
 
-      this._mc.add(tap)
-      this._mc.on('tap', this.onTap)
-    }
+    //   this._mc.add(tap)
+    //   this._mc.on('tap', this.onTap)
+    // }
 
-    if (this._opts.swipe && touchevents()) {
-      const swipe = new Hammer.Swipe({
-        direction: Hammer.DIRECTION_HORIZONTAL,
-      })
-
-      this._mc.add(swipe)
-      this._mc.on('swipeleft swiperight', this.onSwipe)
+    // DEV
+    // if (this._opts.swipe && touchevents()) {
+    if (this._opts.swipe) {
+      this._eventManager.on('swipe', this.onSwipe)
     }
   }
 

@@ -46,19 +46,18 @@
     "commit": "npx git-cz || exit 0",
     "commit-retry": "npx git-cz --retry || exit 0",
     "coverage": "cat ./coverage/lcov.info | coveralls",
-    "lint": "eslint '**/*.{ts,js}'",
+    "lint": "eslint 'src/**/*.{ts,js}'",
     "prerelease": "npm run build",
     "publish": "git push --follow-tags && npm publish",
     "release": "npm test && standard-version",
     "start": "npm-run-all -p build:watch unit:watch",
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "jest",
     "unit": "jest --coverage",
     "unit:ci": "jest --coverage --maxWorkers=2",
     "unit:watch": "jest --watch --verbose false"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },

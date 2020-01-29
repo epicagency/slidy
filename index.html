@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <ul>
+    <li>Item1</li>
+    <li>Item2</li>
+    <li>Item3</li>
+  </ul>
+  <script type="module">
+    const list = document.querySelector('ul')
+    import('./dist/slidy.mjs').then(data => {
+      const Slidy = data.default
+
+      new Slidy(list, {
+        swipe: true,
+        transition: () => {
+          return Promise.resolve()
+        },
+      })
+    })
+  </script>
+</body>
+</html>

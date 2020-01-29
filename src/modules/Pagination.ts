@@ -1,7 +1,6 @@
-import Emitter from 'tiny-emitter'
-import zeroFill from 'zero-fill'
 import Slidy from '..'
 import { Options } from '../defs'
+import { zeroFill } from '../utils'
 
 /**
  * Create a pagination.
@@ -13,7 +12,7 @@ export class Pagination {
   private _slidy: Slidy
   private _opts: Options
   private _outer: HTMLDivElement
-  private _dispatcher: Emitter
+  private _dispatcher: any
   private _el: HTMLDivElement
   private _current: HTMLSpanElement
   private _separator: HTMLSpanElement
@@ -99,7 +98,7 @@ export class Pagination {
   // tslint:disable-next-line:variable-name
   private format(number: number) {
     if (this._opts.zerofill === false) {
-      return number
+      return String(number)
     }
 
     const length =

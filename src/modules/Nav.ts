@@ -1,8 +1,6 @@
-import Emitter from 'tiny-emitter'
-import zeroFill from 'zero-fill'
 import Slidy from '..'
 import { GenericObject, Options } from '../defs'
-import { parents, parseTpl } from '../utils'
+import { parents, parseTpl, zeroFill } from '../utils'
 
 /**
  * Create navigation.
@@ -35,7 +33,7 @@ export class Nav {
   private _items: HTMLElement[]
   private _type: string
   private _template: string
-  private _dispatcher: Emitter
+  private _dispatcher: any
   private _el: HTMLOListElement
 
   /**

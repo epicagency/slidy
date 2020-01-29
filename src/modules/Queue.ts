@@ -1,4 +1,3 @@
-import Emitter from 'tiny-emitter'
 import Slidy from '..'
 import { Direction, Action, Move, Transition } from '../defs'
 
@@ -8,7 +7,7 @@ import { Direction, Action, Move, Transition } from '../defs'
 export class Queue {
   private _slidy: Slidy
   private _transition: Transition
-  private _dispatcher: Emitter
+  private _dispatcher: any
   private _isAnimating = false
   private _max: number
   private _items: Action[]

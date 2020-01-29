@@ -24,14 +24,14 @@ Create a parent with children:
 then a Slidy instance with some options (including your transition animation):
 
 ```js
-import { Slidy } from 'epic-slidy';
+import { Slidy } from 'epic-slidy'
 
 // new instance with HTMLElement or CSS selector
 new Slidy('.if-you-want', {
   controls: true,
   nav: true,
   transition: myAmazingAnimation,
-});
+})
 
 const myAmazingAnimation = function myAmazingAnimation(
   currentSlide,
@@ -45,7 +45,7 @@ const myAmazingAnimation = function myAmazingAnimation(
    *
    * Do what you want here and return a promise…
    */
-};
+}
 ```
 
 and you will get this:
@@ -85,6 +85,9 @@ and you will get this:
 | ---------- | ----------------------------------------------- | ------- | -------------------------------------------------------------------------------- |
 | auto       | Boolean                                         | false   | Auto-start                                                                       |
 | click      | Boolean                                         | true    | Enable next slide on click                                                       |
+| tap        | Boolean                                         | false   | Enable next slide on tap                                                         |
+| drag       | Boolean                                         | false   | Enable horizontal mouse drag                                                     |
+| swipe      | Boolean                                         | false   | Enable horizontal swipe                                                          |
 | controls   | Boolean or 'template string'                    | false   | Next / prev buttons (see examples)                                               |
 | debounce   | [integer]                                       | 100     | Debounce delay on resize                                                         |
 | height     | 'auto' or [integer]                             | 'auto'  | Auto or pixel height                                                             |
@@ -98,9 +101,6 @@ and you will get this:
 | pause      | Boolean                                         | true    | Pause on hover                                                                   |
 | resize     | Boolean                                         | true    | Enable resize event and callback                                                 |
 | reverse    | Boolean                                         | false   | Reverse directions / controls                                                    |
-| swipe      | Boolean                                         | false   | Enable horizontal swipe                                                          |
-| tap        | Boolean                                         | false   | Enable next slide on tap                                                         |
-| touch      | Boolean                                         | false   | Enable BOTH tap/swipe (deprecated)                                               |
 | transition | Function                                        | null    | Animation function which returns a promise                                       |
 | zerofill   | Boolean, [integer]                              | false   | 'Zerofill' (1 -> 01) numbers for both nav or pagination                          |
 

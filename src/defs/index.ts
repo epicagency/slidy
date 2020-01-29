@@ -30,6 +30,7 @@ export interface Options extends OptionsCallbacks {
   click?: boolean
   controls?: boolean | string
   debounce?: number
+  drag?: boolean
   height?: 'auto' | number
   index?: number
   interval?: number
@@ -59,3 +60,5 @@ export type Transition = (
 
 export type Direction = 'prev' | 'next'
 export type Move = Direction | 'to'
+export type SupportedEvents = 'click' | 'tap' | 'drag' | 'swipe'
+export type GestureDirection = 'left' | 'right'

@@ -3,7 +3,7 @@
  */
 
 import Emitter from 'tiny-emitter'
-import { Direction, Options, Move } from './defs'
+import { Direction, GestureDirection, Options, Move } from './defs'
 import { Controls, Nav, Pagination, Queue, Events } from './modules'
 import { debounce, touchevents } from './utils'
 
@@ -67,6 +67,7 @@ export default class Slidy {
       click: true, // Boolean: enable click on slider
       controls: false, // Boolean: create prev/next buttons
       debounce: 100, // Integer: debounce delay on resize
+      drag: false, // Boolean: enable mouse drag
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
@@ -448,6 +449,7 @@ export default class Slidy {
     this.onClick = this.onClick.bind(this)
     this.onTap = this.onTap.bind(this)
     this.onSwipe = this.onSwipe.bind(this)
+    this.onDrag = this.onDrag.bind(this)
 
     if (this._opts.resize) {
       this.onResize = debounce(this.onResize, this._debounceDelay).bind(this)
@@ -460,28 +462,15 @@ export default class Slidy {
       this._hasPause = true
     }
 
-    if (this._opts.click && !touchevents()) {
-      this._el.addEventListener('click', this.onClick)
-    }
+    // Events binding
+    this._eventManager = new Events(this._el)
 
-    // DEV
-    // if ((this._opts.tap || this._opts.swipe) && touchevents()) {
-    if (this._opts.tap || this._opts.swipe) {
-      this._eventManager = new Events(this._el)
-    }
-
-    // DEV
-    // if (this._opts.tap && touchevents()) {
-    //   const tap = new Hammer.Tap()
-
-    //   this._mc.add(tap)
-    //   this._mc.on('tap', this.onTap)
-    // }
-
-    // DEV
-    // if (this._opts.swipe && touchevents()) {
-    if (this._opts.swipe) {
-      this._eventManager.on('swipe', this.onSwipe)
+    if (touchevents()) {
+      this._opts.tap && this._eventManager.on('tap', this.onTap)
+      this._opts.swipe && this._eventManager.on('swipe', this.onSwipe)
+    } else {
+      this._opts.click && this._eventManager.on('click', this.onClick)
+      this._opts.drag && this._eventManager.on('drag', this.onDrag)
     }
   }
 
@@ -544,7 +533,7 @@ export default class Slidy {
 
   /**
    * Same as click but for touch devices.
-   * Enabled via "touch" option.
+   * Enabled via "tap" option.
    */
 
   private onTap() {
@@ -552,15 +541,29 @@ export default class Slidy {
   }
 
   /**
-   * Complement gesture for "tap".
-   * Enabled via "touch" option.
+   * Complement gesture for horizontal mouse drag.
+   * Enabled via "drag" option.
    */
 
-  private onSwipe(e: HammerInput) {
-    if (e.direction === Hammer.DIRECTION_LEFT) {
+  private onDrag(direction: GestureDirection) {
+    if (direction === 'right') {
       this.slideNext()
     }
-    if (e.direction === Hammer.DIRECTION_RIGHT) {
+    if (direction === 'left') {
+      this.slidePrev()
+    }
+  }
+
+  /**
+   * Complement gesture for horizontal swipe.
+   * Enabled via "swipe" option.
+   */
+
+  private onSwipe(direction: GestureDirection) {
+    if (direction === 'right') {
+      this.slideNext()
+    }
+    if (direction === 'left') {
       this.slidePrev()
     }
   }

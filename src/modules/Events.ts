@@ -1,44 +1,58 @@
-type supportedEvents = 'tap' | 'swipe'
+import { GestureDirection, SupportedEvents } from '../defs'
 
 export class Events {
-  private _events: Map<supportedEvents, Function> = new Map()
+  private _events: Map<SupportedEvents, Function> = new Map()
   private _x0: number
+  private _isMoving: boolean
+  private _moveDelta = 50
+  private _moveDuration = 100
+  private _moveTimeout: number
 
   // eslint-disable-next-line no-useless-constructor, no-empty-function
   constructor(private _el: HTMLElement) {
-    console.log('EVENTS')
+    this._lock = this._lock.bind(this)
+    this._release = this._release.bind(this)
   }
 
-  public on(name: supportedEvents, cb: Function) {
+  public on(name: SupportedEvents, cb: Function) {
     this._events.set(name, cb)
 
     switch (name) {
+      case 'click':
+        console.log('click')
+        break
       case 'tap':
         console.log('tap')
         break
+      case 'drag':
+        this._el.addEventListener('mousedown', this._lock, false)
+        this._el.addEventListener('mouseup', this._release, false)
+        break
       case 'swipe':
-        console.log('swipe')
-        this._el.addEventListener('mousedown', this.lock, false)
-        this._el.addEventListener('touchstart', this.lock, false)
-        this._el.addEventListener('mouseup', this.move, false)
-        this._el.addEventListener('touchend', this.move, false)
+        this._el.addEventListener('touchstart', this._lock, false)
+        this._el.addEventListener('touchend', this._release, false)
         break
       default:
     }
   }
 
-  public off(name: supportedEvents) {
+  public off(name: SupportedEvents) {
     this._events.delete(name)
 
     switch (name) {
+      case 'click':
+        console.log('click')
+        break
       case 'tap':
         console.log('tap')
         break
+      case 'drag':
+        this._el.removeEventListener('mousedown', this._lock, false)
+        this._el.removeEventListener('mouseup', this._release, false)
+        break
       case 'swipe':
-        this._el.removeEventListener('mousedown', this.lock, false)
-        this._el.removeEventListener('touchstart', this.lock, false)
-        this._el.removeEventListener('mouseup', this.move, false)
-        this._el.removeEventListener('touchend', this.move, false)
+        this._el.removeEventListener('touchstart', this._lock, false)
+        this._el.removeEventListener('touchend', this._release, false)
         break
       default:
     }
@@ -56,17 +70,31 @@ export class Events {
       : (e as MouseEvent)
   }
 
-  private lock(e: TouchEvent | MouseEvent) {
+  private _lock(e: TouchEvent | MouseEvent) {
     this._x0 = Events.unify(e).clientX
+    this._isMoving = false
+    this._moveTimeout = window.setTimeout(() => {
+      this._isMoving = true
+    }, this._moveDuration)
   }
 
-  private move(e: TouchEvent | MouseEvent) {
+  private _release(e: TouchEvent | MouseEvent) {
+    if (!this._isMoving) {
+      return
+    }
+
     const dx = Events.unify(e).clientX - this._x0
 
-    if (dx >= 0) {
-      console.log('SWIPE:RIGHT', dx)
-    } else {
-      console.log('SWIPE:LEFT', dx)
+    if (Math.abs(dx) < this._moveDelta) {
+      return
     }
+
+    const direction: GestureDirection = dx >= 0 ? 'right' : 'left'
+
+    this._events.has('drag') && this._events.get('drag')(direction)
+    this._events.has('swipe') && this._events.get('swipe')(direction)
+
+    this._isMoving = false
+    window.clearTimeout(this._moveTimeout)
   }
 }

@@ -22,7 +22,7 @@ export default class Slidy {
   private _items: HTMLElement[]
   private _length: number
   private _hasPause: boolean
-  private _dispatcher: any
+  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private _outer: HTMLDivElement
   private _queue: Queue
@@ -547,10 +547,10 @@ export default class Slidy {
 
   private onDrag(direction: GestureDirection) {
     if (direction === 'right') {
-      this.slideNext()
+      this.slidePrev()
     }
     if (direction === 'left') {
-      this.slidePrev()
+      this.slideNext()
     }
   }
 
@@ -561,10 +561,10 @@ export default class Slidy {
 
   private onSwipe(direction: GestureDirection) {
     if (direction === 'right') {
-      this.slideNext()
+      this.slidePrev()
     }
     if (direction === 'left') {
-      this.slidePrev()
+      this.slideNext()
     }
   }
 

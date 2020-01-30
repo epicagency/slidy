@@ -7,7 +7,7 @@ import { Direction, Action, Move, Transition } from '../defs'
 export class Queue {
   private _slidy: Slidy
   private _transition: Transition
-  private _dispatcher: any
+  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
   private _isAnimating = false
   private _max: number
   private _items: Action[]

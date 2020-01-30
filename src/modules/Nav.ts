@@ -33,7 +33,7 @@ export class Nav {
   private _items: HTMLElement[]
   private _type: string
   private _template: string
-  private _dispatcher: any
+  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
   private _el: HTMLOListElement
 
   /**

@@ -5,7 +5,6 @@ import { Direction, Action, Move, Transition } from '../defs'
  * Create queue.
  */
 export class Queue {
-  private _slidy: Slidy
   private _transition: Transition
   private _isAnimating = false
   private _max: number
@@ -15,8 +14,7 @@ export class Queue {
    * Creates an instance of Queue.
    */
 
-  constructor(slidy: Slidy, transition: Transition) {
-    this._slidy = slidy
+  constructor(private _slidy: Slidy, transition: Transition) {
     this._transition = transition
     this._isAnimating = false
     this._max = this._slidy.options.queue

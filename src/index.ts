@@ -2,13 +2,7 @@
  * Slidy main file.
  */
 
-import {
-  Direction, // Check Direction ?
-  GestureDirection,
-  HooksNames,
-  Options,
-  Move,
-} from './defs'
+import { Direction, GestureDirection, HooksNames, Options, Move } from './defs'
 import { Controls, Events, Hooks, Nav, Pagination, Queue } from './modules'
 import { debounce, touchevents } from './utils'
 
@@ -231,7 +225,7 @@ export default class Slidy {
 
     // Add nav.
     if (this._opts.nav) {
-      this._nav = new Nav(this)
+      this._nav = new Nav(this, this._opts)
     }
 
     // Add pagination.

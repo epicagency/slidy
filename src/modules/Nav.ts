@@ -27,9 +27,6 @@ export class Nav {
     return `<img src="${thumb}">`
   }
 
-  private _slidy: Slidy
-  private _opts: Options
-  private _outer: HTMLDivElement
   private _items: HTMLElement[]
   private _type: string
   private _template: string
@@ -39,11 +36,8 @@ export class Nav {
    * Creates an instance of Nav.
    */
 
-  constructor(slidy: Slidy) {
-    this._slidy = slidy
-    this._opts = slidy.options
-    this._outer = slidy.outer
-    this._items = slidy.items
+  constructor(private _slidy: Slidy, private _opts: Options) {
+    this._items = _slidy.items
 
     if (!this._opts.nav) {
       return
@@ -158,7 +152,7 @@ export class Nav {
     })
 
     this._el.innerHTML = html
-    this._outer.appendChild(this._el)
+    this._slidy.outer.appendChild(this._el)
     this._items = Array.from(this._el.querySelectorAll('li'))
 
     this._setActive()

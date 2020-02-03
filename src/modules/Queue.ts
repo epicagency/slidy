@@ -7,7 +7,6 @@ import { Direction, Action, Move, Transition } from '../defs'
 export class Queue {
   private _slidy: Slidy
   private _transition: Transition
-  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
   private _isAnimating = false
   private _max: number
   private _items: Action[]
@@ -19,7 +18,6 @@ export class Queue {
   constructor(slidy: Slidy, transition: Transition) {
     this._slidy = slidy
     this._transition = transition
-    this._dispatcher = this._slidy.dispatcher
     this._isAnimating = false
     this._max = this._slidy.options.queue
     this._items = []
@@ -41,7 +39,7 @@ export class Queue {
     })
 
     if (!this._isAnimating) {
-      this.play()
+      this._play()
     }
   }
 
@@ -57,7 +55,7 @@ export class Queue {
    * Play queue.
    */
 
-  private play() {
+  private _play() {
     if (this._items.length === 0) {
       return
     }
@@ -98,7 +96,7 @@ export class Queue {
     // If same than current -> dequeue + next.
     if (newIndex === currentIndex) {
       this._items.shift()
-      this.play()
+      this._play()
 
       return
     }
@@ -118,7 +116,8 @@ export class Queue {
     this._slidy.newIndex = newIndex
 
     // Start slide.
-    this._dispatcher.emit('beforeSlide', direction, animate)
+    this._slidy.hooks.call('beforeSlide', this._slidy, direction, animate)
+
     // Update status and active class.
     this._isAnimating = true
     currentSlide.classList.remove('is-active')
@@ -133,9 +132,9 @@ export class Queue {
       this._isAnimating = false
       newSlide.classList.add('is-active')
       // End slide.
-      this._dispatcher.emit('afterSlide', direction, animate)
+      this._slidy.hooks.call('afterSlide', this._slidy, direction, animate)
       // Play next queued transition.
-      this.play()
+      this._play()
     })
   }
 }

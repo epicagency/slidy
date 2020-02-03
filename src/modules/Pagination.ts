@@ -1,6 +1,6 @@
 import Slidy from '..'
 import { Options } from '../defs'
-import { zeroFill } from '../utils'
+import { format } from '../utils'
 
 /**
  * Create a pagination.
@@ -9,10 +9,6 @@ import { zeroFill } from '../utils'
  * @class Pagination
  */
 export class Pagination {
-  private _slidy: Slidy
-  private _opts: Options
-  private _outer: HTMLDivElement
-  private _dispatcher: any
   private _el: HTMLDivElement
   private _current: HTMLSpanElement
   private _separator: HTMLSpanElement
@@ -22,19 +18,13 @@ export class Pagination {
    * Creates an instance of Pagination.
    */
 
-  constructor(slidy: Slidy) {
-    this._slidy = slidy
-    this._opts = slidy.options
-    this._outer = slidy.outer
-
-    this._dispatcher = slidy.dispatcher
-
+  constructor(private _slidy: Slidy, private _opts: Options) {
     if (!this._opts.pagination) {
       return
     }
 
-    this.init()
-    this.bind()
+    this._init()
+    this._bind()
   }
 
   /**
@@ -49,12 +39,16 @@ export class Pagination {
    * Init component.
    */
 
-  private init() {
+  private _init() {
     this._el = document.createElement('div')
     this._el.classList.add(`${this._slidy.namespace}-pagination`)
 
     this._current = document.createElement('span')
-    this._current.textContent = this.format(this._slidy.currentIndex + 1)
+    this._current.textContent = format(
+      this._slidy.currentIndex + 1,
+      this._slidy.items.length + 1,
+      this._opts.zerofill
+    )
     this._current.classList.add(`${this._slidy.namespace}-pagination__current`)
 
     this._separator = document.createElement('span')
@@ -65,47 +59,38 @@ export class Pagination {
     )
 
     this._total = document.createElement('span')
-    this._total.textContent = this.format(this._slidy.items.length)
+    this._total.textContent = format(
+      this._slidy.items.length,
+      this._slidy.items.length,
+      this._opts.zerofill
+    )
     this._total.classList.add(`${this._slidy.namespace}-pagination__total`)
 
     this._el.appendChild(this._current)
     this._el.appendChild(this._separator)
     this._el.appendChild(this._total)
-    this._outer.appendChild(this._el)
+    this._slidy.outer.appendChild(this._el)
 
-    this.update()
+    this._update()
   }
 
   /**
    * Bind event handlers.
    */
 
-  private bind() {
-    this._dispatcher.on('beforeSlide', this.update.bind(this))
+  private _bind() {
+    this._slidy.hooks.add('beforeSlide', this._update.bind(this))
   }
 
   /**
    * Update current index.
    */
 
-  private update() {
-    this._current.textContent = this.format(this._slidy.newIndex + 1)
-  }
-
-  /**
-   * Format number (zerofill or not)
-   */
-  // tslint:disable-next-line:variable-name
-  private format(number: number) {
-    if (this._opts.zerofill === false) {
-      return String(number)
-    }
-
-    const length =
-      this._opts.zerofill === true
-        ? this._slidy.items.length.toString(10).length
-        : this._opts.zerofill
-
-    return zeroFill(length, number)
+  private _update() {
+    this._current.textContent = format(
+      this._slidy.newIndex + 1,
+      this._slidy.items.length + 1,
+      this._opts.zerofill
+    )
   }
 }

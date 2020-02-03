@@ -1,6 +1,6 @@
 import Slidy from '..'
 import { GenericObject, Options } from '../defs'
-import { parents, parseTpl, zeroFill } from '../utils'
+import { parents, parseTpl, format } from '../utils'
 
 /**
  * Create navigation.
@@ -13,7 +13,7 @@ export class Nav {
    * Create thumbnail.
    */
 
-  private static createThumb(slide: HTMLElement) {
+  private static _createThumb(slide: HTMLElement) {
     let thumb
 
     if ('slidyThumb' in slide.dataset) {
@@ -33,7 +33,6 @@ export class Nav {
   private _items: HTMLElement[]
   private _type: string
   private _template: string
-  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
   private _el: HTMLOListElement
 
   /**
@@ -65,10 +64,8 @@ export class Nav {
       return
     }
 
-    this._dispatcher = this._slidy.dispatcher
-
-    this.init()
-    this.bind()
+    this._init()
+    this._bind()
   }
 
   /**
@@ -77,13 +74,16 @@ export class Nav {
 
   public destroy() {
     this._el.parentNode.removeChild(this._el)
+
+    this._slidy.hooks.remove('beforeSlide', this._clearActive)
+    this._slidy.hooks.remove('beforeSlide', this._setActive)
   }
 
   /**
    * Init component.
    */
 
-  private init() {
+  private _init() {
     this._el = document.createElement('ol')
     this._el.classList.add(`${this._slidy.namespace}-nav`)
 
@@ -119,18 +119,22 @@ export class Nav {
             // We can have both number and thumb into the template string
             // or nothing…
             if (/\${number}/.test(this._template)) {
-              dataTpl.number = this.format(i + 1)
+              dataTpl.number = format(
+                i + 1,
+                this._items.length,
+                this._opts.zerofill
+              )
             }
 
             if (/\${thumb}/.test(this._template)) {
-              dataTpl.thumb = Nav.createThumb(slide)
+              dataTpl.thumb = Nav._createThumb(slide)
             }
 
             content = parseTpl(this._template, dataTpl)
             break
 
           case 'thumb':
-            thumb = Nav.createThumb(slide)
+            thumb = Nav._createThumb(slide)
             content = `<button type="button">
               <span>
                 ${thumb}
@@ -140,7 +144,7 @@ export class Nav {
 
           case 'number':
           default:
-            number = this.format(i + 1)
+            number = format(i + 1, this._items.length, this._opts.zerofill)
             content = `<button type="button">
               <span>
                 ${number}
@@ -157,51 +161,37 @@ export class Nav {
     this._outer.appendChild(this._el)
     this._items = Array.from(this._el.querySelectorAll('li'))
 
-    this.setActive()
-  }
-
-  /**
-   * Format number (zerofill or not)
-   */
-
-  // tslint:disable-next-line:variable-name
-  private format(number: number) {
-    if (this._opts.zerofill === false) {
-      return number
-    }
-
-    const length =
-      this._opts.zerofill === true
-        ? this._slidy.items.length.toString(10).length
-        : this._opts.zerofill
-
-    return zeroFill(length, number)
+    this._setActive()
   }
 
   /**
    * Bind event handlers.
    */
 
-  private bind() {
-    this.onClick = this.onClick.bind(this)
-    this._dispatcher.on('beforeSlide', this.clearActive.bind(this))
-    this._dispatcher.on('beforeSlide', this.setActive.bind(this))
-    this.bindNav()
+  private _bind() {
+    this._onClick = this._onClick.bind(this)
+    this._clearActive = this._clearActive.bind(this)
+    this._setActive = this._setActive.bind(this)
+
+    this._slidy.hooks.add('beforeSlide', this._clearActive)
+    this._slidy.hooks.add('beforeSlide', this._setActive)
+
+    this._bindNav()
   }
 
   /**
    * Bind nav handlers.
    */
 
-  private bindNav() {
-    this._el.addEventListener('click', this.onClick)
+  private _bindNav() {
+    this._el.addEventListener('click', this._onClick)
   }
 
   /**
    * Clear active nav item.
    */
 
-  private clearActive() {
+  private _clearActive() {
     const currentItem = this._el.querySelector('.is-active')
 
     if (currentItem) {
@@ -218,7 +208,7 @@ export class Nav {
    * Set active nav item.
    */
 
-  private setActive() {
+  private _setActive() {
     const newItem = this._items[this._slidy.newIndex]
 
     newItem.classList.add('is-active')
@@ -234,7 +224,7 @@ export class Nav {
    * On nav item click
    */
 
-  private onClick(e: MouseEvent) {
+  private _onClick(e: MouseEvent) {
     const clicked = parents(
       e.target as HTMLElement,
       `${this._slidy.namespace}-nav__item`

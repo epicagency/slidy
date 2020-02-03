@@ -2,15 +2,23 @@
  * Slidy main file.
  */
 
-import Emitter from 'tiny-emitter'
-import { Direction, GestureDirection, Options, Move } from './defs'
-import { Controls, Nav, Pagination, Queue, Events } from './modules'
+import {
+  Direction, // Check Direction ?
+  GestureDirection,
+  HooksNames,
+  Options,
+  Move,
+} from './defs'
+import { Controls, Events, Hooks, Nav, Pagination, Queue } from './modules'
 import { debounce, touchevents } from './utils'
 
 /**
  * Slidy main class.
  */
 export default class Slidy {
+  // Hooks manager
+  public hooks = new Hooks()
+
   private _el: HTMLElement
   private _opts: Options
   private _context: any // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -22,7 +30,6 @@ export default class Slidy {
   private _items: HTMLElement[]
   private _length: number
   private _hasPause: boolean
-  private _dispatcher: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   private _outer: HTMLDivElement
   private _queue: Queue
@@ -99,43 +106,6 @@ export default class Slidy {
     this._currentIndex = this._opts.index
     this._newIndex = this._currentIndex
     this._oldIndex = null
-    this._items = Array.from(this._el.children) as HTMLElement[]
-    this._length = this._items.length
-    this._hasPause = false
-
-    this._dispatcher = new Emitter()
-
-    // Binding
-    this.start = this.start.bind(this)
-    this.slideNext = this.slideNext.bind(this)
-
-    // Public events.
-    this._dispatcher.on('beforeInit', () => {
-      this.beforeInit()
-    })
-    this._dispatcher.on('afterInit', () => {
-      this.afterInit()
-    })
-    if (this._opts.resize) {
-      this._dispatcher.on('afterResize', () => {
-        this.afterResize()
-      })
-    }
-    this._dispatcher.on(
-      'beforeSlide',
-      (direction: Direction, animate: boolean) => {
-        this.beforeSlide(direction, animate)
-      }
-    )
-    this._dispatcher.on(
-      'afterSlide',
-      (direction: Direction, animate: boolean) => {
-        this.afterSlide(direction, animate)
-      }
-    )
-
-    this.init()
-    this.bind()
   }
 
   /**
@@ -189,10 +159,6 @@ export default class Slidy {
     return this._opts
   }
 
-  get dispatcher() {
-    return this._dispatcher
-  }
-
   get namespace() {
     return this._opts.namespace
   }
@@ -202,7 +168,24 @@ export default class Slidy {
    */
 
   public init() {
-    this._dispatcher.emit('beforeInit')
+    this._items = Array.from(this._el.children) as HTMLElement[]
+    this._length = this._items.length
+    this._hasPause = false
+
+    // Binding
+    this.start = this.start.bind(this)
+    this.slideNext = this.slideNext.bind(this)
+
+    this.hooks.add('beforeSlide', (direction: Direction, animate: boolean) => {
+      this.beforeSlide(direction, animate)
+    })
+    this.hooks.add('afterSlide', (direction: Direction, animate: boolean) => {
+      this.afterSlide(direction, animate)
+    })
+
+    this.bind()
+
+    this.hooks.call('beforeInit', this, this._el)
 
     // Set height.
     // To get the most 'correct' auto-height,
@@ -243,10 +226,7 @@ export default class Slidy {
 
     // Add controls.
     if (this._opts.controls) {
-      this._controls = new Controls(this, {
-        controls: this._opts.controls,
-        loop: this._opts.loop,
-      })
+      this._controls = new Controls(this, this._opts)
     }
 
     // Add nav.
@@ -256,7 +236,7 @@ export default class Slidy {
 
     // Add pagination.
     if (this._opts.pagination) {
-      this._pagination = new Pagination(this)
+      this._pagination = new Pagination(this, this._opts)
     }
 
     // Start auto mode.
@@ -264,12 +244,21 @@ export default class Slidy {
       this.start()
     }
 
-    this._dispatcher.emit('afterInit')
+    this.hooks.call('afterInit', this, this._el)
   }
 
   /**
    * API.
    */
+
+  public on(hookName: HooksNames, cb: Function) {
+    console.log('ON')
+
+    this.hooks.add(hookName, cb)
+  }
+  public off(hookName: HooksNames, cb: Function) {
+    this.hooks.remove(hookName, cb)
+  }
 
   /**
    * Navigate to previous slide.
@@ -518,7 +507,7 @@ export default class Slidy {
   private onResize() {
     if (!this._destroyed) {
       this.reset()
-      this._dispatcher.emit('afterResize')
+      this.hooks.call('afterResize', this, this._el)
     }
   }
 
@@ -588,24 +577,6 @@ export default class Slidy {
   /**
    * Callbacks.
    */
-
-  private beforeInit() {
-    if (this._opts.beforeInit) {
-      this._opts.beforeInit.call(this, this._el)
-    }
-  }
-
-  private afterInit() {
-    if (this._opts.afterInit) {
-      this._opts.afterInit.call(this, this._el)
-    }
-  }
-
-  private afterResize() {
-    if (this._opts.afterResize) {
-      this._opts.afterResize.call(this, this._el)
-    }
-  }
 
   private beforeSlide(direction: Direction, animate: boolean) {
     if (this._opts.beforeSlide) {

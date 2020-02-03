@@ -1,5 +1,5 @@
 import Slidy from '..'
-import { ControlsOptions } from '../defs'
+import { Options } from '../defs'
 import { parseTpl } from '../utils'
 
 /**
@@ -24,10 +24,6 @@ export class Controls {
     el.classList.remove('is-disabled')
   }
 
-  private _slidy: Slidy
-  private _opts: ControlsOptions
-  private _outer: HTMLDivElement
-  private _dispatcher: any
   private _el: HTMLDivElement
   private _prev: HTMLButtonElement
   private _next: HTMLButtonElement
@@ -36,15 +32,9 @@ export class Controls {
    * Creates an instance of Controls.
    */
 
-  constructor(slidy: Slidy, opts: ControlsOptions) {
-    this._slidy = slidy
-    this._opts = opts
-    this._outer = this._slidy.outer
-
-    this._dispatcher = this._slidy.dispatcher
-
-    this.init()
-    this.bind()
+  constructor(private _slidy: Slidy, private _opts: Options) {
+    this._init()
+    this._bind()
   }
 
   /**
@@ -53,13 +43,14 @@ export class Controls {
 
   public destroy() {
     this._el.parentNode.removeChild(this._el)
+    this._slidy.hooks.remove('beforeSlide', this._update)
   }
 
   /**
    * Init component.
    */
 
-  private init() {
+  private _init() {
     this._el = document.createElement('div')
     this._el.classList.add(`${this._slidy.namespace}-controls`)
 
@@ -85,38 +76,39 @@ export class Controls {
 
     this._el.appendChild(this._prev)
     this._el.appendChild(this._next)
-    this._outer.appendChild(this._el)
+    this._slidy.outer.appendChild(this._el)
 
-    this.update()
+    this._update()
   }
 
   /**
    * Bind event handlers.
    */
 
-  private bind() {
-    this.prevClick = this.prevClick.bind(this)
-    this.nextClick = this.nextClick.bind(this)
+  private _bind() {
+    this._prevClick = this._prevClick.bind(this)
+    this._nextClick = this._nextClick.bind(this)
+    this._update = this._update.bind(this)
 
-    this._dispatcher.on('beforeSlide', this.update.bind(this))
+    this._slidy.hooks.add('beforeSlide', this._update)
 
-    this.bindControls()
+    this._bindControls()
   }
 
   /**
    * Bind controls handlers
    */
 
-  private bindControls() {
-    this._prev.addEventListener('click', this.prevClick)
-    this._next.addEventListener('click', this.nextClick)
+  private _bindControls() {
+    this._prev.addEventListener('click', this._prevClick)
+    this._next.addEventListener('click', this._nextClick)
   }
 
   /**
    * On prev click.
    */
 
-  private prevClick() {
+  private _prevClick() {
     this._slidy.slidePrev()
   }
 
@@ -124,7 +116,7 @@ export class Controls {
    * On next click.
    */
 
-  private nextClick() {
+  private _nextClick() {
     this._slidy.slideNext()
   }
 
@@ -132,7 +124,7 @@ export class Controls {
    * Update controls.
    */
 
-  private update() {
+  private _update() {
     if (!this._opts.loop) {
       const { newIndex } = this._slidy
       const { length } = this._slidy.items

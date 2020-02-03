@@ -47,10 +47,6 @@ export interface Options extends OptionsCallbacks {
   transition?: Transition
   zerofill?: boolean | number
 }
-export interface ControlsOptions {
-  controls?: boolean | string
-  loop?: boolean
-}
 
 export type Transition = (
   currentSlide: HTMLElement,
@@ -73,3 +69,10 @@ export type SupportedTypes =
   | 'pointerup'
   | 'pointermove'
 export type GestureDirection = 'left' | 'right'
+
+export type HooksNames =
+  | 'beforeInit'
+  | 'afterInit'
+  | 'afterResize'
+  | 'beforeSlide'
+  | 'afterSlide'

@@ -37,6 +37,40 @@ export function touchevents() {
 }
 
 /**
+ * Given a number, return a zero-filled string.
+ * Source: https://github.com/feross/zero-fill
+ */
+
+function zeroFill(width: number, number: number): string {
+  const pad = '0'
+  const fill = width - number.toString().length
+
+  if (fill > 0) {
+    return new Array(fill + 1).join(pad) + number
+  }
+
+  return String(number)
+}
+
+/**
+ * Format number (zerofill or not)
+ */
+
+export function format(
+  number: number,
+  nbItems: number,
+  zerofill: boolean | number
+) {
+  if (zerofill === false) {
+    return String(number)
+  }
+
+  const length = zerofill === true ? nbItems.toString(10).length : zerofill
+
+  return zeroFill(length, number)
+}
+
+/**
  * Source: https://gist.github.com/smeijer/6580740a0ff468960a5257108af1384e
  */
 
@@ -56,22 +90,6 @@ export function parseTpl(
 
     return get(path, map, fallback)
   })
-}
-
-/**
- * Given a number, return a zero-filled string.
- * Source: https://github.com/feross/zero-fill
- */
-
-export function zeroFill(width: number, number: number): string {
-  const pad = '0'
-  const fill = width - number.toString().length
-
-  if (fill > 0) {
-    return new Array(fill + 1).join(pad) + number
-  }
-
-  return String(number)
 }
 
 // Credit David Walsh (https://davidwalsh.name/javascript-debounce-function)

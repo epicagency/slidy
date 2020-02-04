@@ -1,4 +1,29 @@
-import { parseTpl, zeroFill, debounce } from '../src/utils'
+import { debounce, format, parents, parseTpl } from '../src/utils'
+
+/**
+ * Test Parents
+ */
+
+describe('parents', () => {
+  test('available', () => {
+    const container = document.createElement('div')
+
+    container.setAttribute('class', 'jest-test')
+    document.body.appendChild(container)
+
+    expect(parents(container, 'jest-test')).toBe(container)
+  })
+
+  test('not available', () => {
+    const container = document.createElement('div')
+
+    expect(parents(container, 'jest-test')).toBe(null)
+  })
+})
+
+/**
+ * Test ParseTPL
+ */
 
 describe('parseTpl', () => {
   test('do nothing with missing value', () => {
@@ -24,15 +49,31 @@ describe('parseTpl', () => {
   })
 })
 
-describe('zeroFill', () => {
+/**
+ * Test Format
+ */
+
+describe('format', () => {
+  test('is not needed', () => {
+    expect(format(1, 9, true)).toBe('1')
+  })
+
   test('is filled', () => {
-    expect(zeroFill(2, 1)).toBe('01')
+    expect(format(1, 10, true)).toBe('01')
   })
 
   test('is not filled', () => {
-    expect(zeroFill(2, 11)).toBe('11')
+    expect(format(1, 10, false)).toBe('1')
+  })
+
+  test('is forced', () => {
+    expect(format(1, 10, 3)).toBe('001')
   })
 })
+
+/**
+ * Test Debounce
+ */
 
 describe('debounce', () => {
   function waitFor(fn: Function, delay: number) {

@@ -72,6 +72,7 @@ export default class Slidy {
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
+      keyboard: true, // Boolean: enable/disable keyboard controls
       loop: true, // Boolean: enable/disable loop
       namespace: 'slidy', // String: custom namespace
       nav: false, // Mixed: create navigation (number, thumb, custom)
@@ -115,6 +116,10 @@ export default class Slidy {
 
   get items() {
     return this._items
+  }
+
+  set items(items) {
+    this._items = items
   }
 
   get context() {

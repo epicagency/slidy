@@ -42,6 +42,7 @@ export class Controls {
    */
 
   public destroy() {
+    this._el = document.querySelector('.slidy-controls')
     this._el.parentNode.removeChild(this._el)
     this._slidy.hooks.remove('beforeSlide', this._update)
   }
@@ -51,32 +52,33 @@ export class Controls {
    */
 
   private _init() {
-    this._el = document.createElement('div')
-    this._el.classList.add(`${this._slidy.namespace}-controls`)
+    const { namespace: ns, outer } = this._slidy
+    const { controls } = this._opts
 
-    this._prev = document.createElement('button')
-    this._prev.setAttribute('type', 'button')
-    this._prev.classList.add(`${this._slidy.namespace}-controls__item--prev`)
+    let prev = '<'
+    let next = '>'
 
-    this._next = document.createElement('button')
-    this._next.setAttribute('type', 'button')
-    this._next.classList.add(`${this._slidy.namespace}-controls__item--next`)
-
-    if (this._opts.controls === true) {
-      this._prev.textContent = '<'
-      this._next.textContent = '>'
-    } else {
-      this._prev.innerHTML = parseTpl(this._opts.controls as string, {
-        label: 'previous slide',
+    if (controls !== true) {
+      prev = parseTpl(controls as string, {
+        label: 'prev slide',
       })
-      this._next.innerHTML = parseTpl(this._opts.controls as string, {
+      next = parseTpl(controls as string, {
         label: 'next slide',
       })
     }
 
-    this._el.appendChild(this._prev)
-    this._el.appendChild(this._next)
-    this._slidy.outer.appendChild(this._el)
+    const tpl = document.createElement('template')
+    const html = `<div class="${ns}-controls">
+  <button type="button" class="${ns}-controls__item--prev">${prev}</button>
+  <button type="button class="${ns}-controls__item--next">${next}</button>
+</div>`
+
+    tpl.innerHTML = html
+
+    this._el = tpl.content.firstChild as HTMLDivElement
+    this._prev = this._el.querySelector('button:first-child')
+    this._next = this._el.querySelector('button:last-child')
+    outer.appendChild(this._el)
 
     this._update()
   }

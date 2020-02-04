@@ -34,6 +34,7 @@ export interface Options extends OptionsCallbacks {
   height?: 'auto' | number
   index?: number
   interval?: number
+  keyboard?: boolean
   loop?: boolean
   namespace?: string
   nav?: boolean | string

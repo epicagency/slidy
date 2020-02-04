@@ -40,36 +40,28 @@ export class Pagination {
    */
 
   private _init() {
-    this._el = document.createElement('div')
-    this._el.classList.add(`${this._slidy.namespace}-pagination`)
+    const { currentIndex, items, namespace: ns, outer } = this._slidy
+    const { length } = items
+    const { pagination, zerofill } = this._opts
 
-    this._current = document.createElement('span')
-    this._current.textContent = format(
-      this._slidy.currentIndex + 1,
-      this._slidy.items.length + 1,
-      this._opts.zerofill
-    )
-    this._current.classList.add(`${this._slidy.namespace}-pagination__current`)
+    const cur = format(currentIndex + 1, length + 1, zerofill)
+    const sep = pagination === true ? '/' : (pagination as string)
+    const tot = format(length, length, zerofill)
 
-    this._separator = document.createElement('span')
-    this._separator.textContent =
-      this._opts.pagination === true ? '/' : (this._opts.pagination as string)
-    this._separator.classList.add(
-      `${this._slidy.namespace}-pagination__separator`
-    )
+    const tpl = document.createElement('template')
+    const html = `<div class="${ns}-pagination">
+  <span class="${ns}--pagination__current">${cur}</span>
+  <span class="${ns}-pagination__separator">${sep}</span>
+  <span class="${ns}-pagination__total">${tot}</span>
+</div>`
 
-    this._total = document.createElement('span')
-    this._total.textContent = format(
-      this._slidy.items.length,
-      this._slidy.items.length,
-      this._opts.zerofill
-    )
-    this._total.classList.add(`${this._slidy.namespace}-pagination__total`)
+    tpl.innerHTML = html
 
-    this._el.appendChild(this._current)
-    this._el.appendChild(this._separator)
-    this._el.appendChild(this._total)
-    this._slidy.outer.appendChild(this._el)
+    this._el = tpl.content.firstChild as HTMLDivElement
+    this._current = this._el.querySelector('span:nth-child(1)')
+    this._separator = this._el.querySelector('span:nth-child(2)')
+    this._total = this._el.querySelector('span:nth-child(3)')
+    outer.appendChild(this._el)
 
     this._update()
   }

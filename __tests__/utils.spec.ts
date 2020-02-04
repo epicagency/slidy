@@ -5,19 +5,37 @@ import { debounce, format, parents, parseTpl } from '../src/utils'
  */
 
 describe('parents', () => {
-  test('available', () => {
-    const container = document.createElement('div')
+  const wrapper = document.createElement('div')
+  const container = document.createElement('div')
 
-    container.setAttribute('class', 'jest-test')
-    document.body.appendChild(container)
+  wrapper.appendChild(container)
+  document.body.appendChild(wrapper)
 
-    expect(parents(container, 'jest-test')).toBe(container)
+  test('itself', () => {
+    const target = document.createElement('div')
+
+    target.setAttribute('class', 'jest-test')
+    container.appendChild(target)
+
+    expect(parents(target, 'jest-test')).toBe(target)
+  })
+
+  test('ancestor', () => {
+    const target = document.createElement('div')
+
+    wrapper.setAttribute('class', 'jest-test')
+    container.appendChild(target)
+
+    expect(parents(target, 'jest-test')).toBe(wrapper)
   })
 
   test('not available', () => {
-    const container = document.createElement('div')
+    const target = document.createElement('div')
 
-    expect(parents(container, 'jest-test')).toBe(null)
+    wrapper.removeAttribute('class')
+    container.appendChild(target)
+
+    expect(parents(target, 'jest-test')).toBe(null)
   })
 })
 

@@ -95,6 +95,19 @@ export class Controls {
     this._slidy.hooks.add('beforeSlide', this._update)
 
     this._bindControls()
+
+    if (this._opts.keyboard) {
+      // DEV
+      addEventListener('keydown', event => {
+        if (event.keyCode === 37) {
+          console.log('arrow left!')
+          this._slidy.slidePrev()
+        } else if (event.keyCode === 39) {
+          console.log('arrow right!')
+          this._slidy.slideNext()
+        }
+      })
+    }
   }
 
   /**

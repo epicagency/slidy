@@ -2,7 +2,7 @@
  * Slidy main file.
  */
 
-import { Direction, GestureDirection, HooksNames, Options, Move } from './defs'
+import { Action, GestureDirection, HooksNames, Options, Trigger } from './defs'
 import { Controls, Events, Hooks, Nav, Pagination, Queue } from './modules'
 import { debounce, touchevents } from './utils'
 
@@ -17,11 +17,13 @@ export default class Slidy {
   private _opts: Options
   private _context: any // eslint-disable-line @typescript-eslint/no-explicit-any
   private _data: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  private _group: number
   private _debounceDelay: number
   private _currentIndex: number
   private _newIndex: number
   private _oldIndex: number
   private _items: HTMLElement[]
+  private _currentItems: HTMLElement[]
   private _length: number
   private _hasPause: boolean
 
@@ -69,6 +71,7 @@ export default class Slidy {
       controls: false, // Boolean: create prev/next buttons
       debounce: 100, // Integer: debounce delay on resize
       drag: false, // Boolean: enable mouse drag
+      group: () => 1, // Mixed(number | Function)
       height: 'auto', // Mixed: integer (px) or 'auto'
       index: 0, // Integer: initial index
       interval: 2000, // Integer: time between 2 transitions
@@ -96,9 +99,9 @@ export default class Slidy {
 
     this._context = context
     this._data = data
-
     this._debounceDelay = this._opts.debounce
     this._currentIndex = this._opts.index
+    this._group = Number(this._opts.group) || this._opts.group()
     this._newIndex = this._currentIndex
     this._oldIndex = null
   }
@@ -114,12 +117,24 @@ export default class Slidy {
     return this._el
   }
 
+  get group() {
+    return this._group
+  }
+
   get items() {
     return this._items
   }
 
   set items(items) {
     this._items = items
+  }
+
+  get currentItems() {
+    return this._currentItems
+  }
+
+  set currentItems(currentItems) {
+    this._currentItems = currentItems
   }
 
   get context() {
@@ -175,11 +190,9 @@ export default class Slidy {
     this.start = this.start.bind(this)
     this.slideNext = this.slideNext.bind(this)
 
-    this.hooks.add('beforeSlide', (direction: Direction, animate: boolean) => {
-      this.beforeSlide(direction, animate)
-    })
-    this.hooks.add('afterSlide', (direction: Direction, animate: boolean) => {
-      this.afterSlide(direction, animate)
+    this.hooks.add('afterSlide', () => {
+      // Accessibility
+      this._el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
     })
 
     this.bind()
@@ -209,7 +222,15 @@ export default class Slidy {
     })
 
     // Set active class on currentIndex.
-    this._items[this._currentIndex].classList.add('is-active')
+    // TODO: Mix with existing code
+    this._currentItems = this._items.slice(
+      this.currentIndex,
+      this.currentIndex + this._group
+    )
+    // Set active class on each element of currentItems.
+    this._currentItems.forEach(slide => {
+      slide.classList.add('is-active')
+    })
 
     // Accessibility
     this._el.setAttribute('role', 'slider')
@@ -251,10 +272,9 @@ export default class Slidy {
    */
 
   public on(hookName: HooksNames, cb: Function) {
-    console.log('ON')
-
     this.hooks.add(hookName, cb)
   }
+
   public off(hookName: HooksNames, cb: Function) {
     this.hooks.remove(hookName, cb)
   }
@@ -263,9 +283,9 @@ export default class Slidy {
    * Navigate to previous slide.
    */
 
-  public slidePrev(force = false) {
+  public slidePrev(trigger: Trigger, force = false) {
     if (this._opts.reverse && !force) {
-      this.slideNext(true)
+      this.slideNext(trigger, true)
 
       return
     }
@@ -278,16 +298,16 @@ export default class Slidy {
       }
       newIndex = this._length - 1
     }
-    this.slide('prev')
+    this.slide({ move: 'prev', trigger })
   }
 
   /**
    * Navigate to next slide.
    */
 
-  public slideNext(force = false) {
+  public slideNext(trigger: Trigger, force = false) {
     if (this._opts.reverse && !force) {
-      this.slidePrev(true)
+      this.slidePrev(trigger, true)
 
       return
     }
@@ -300,29 +320,33 @@ export default class Slidy {
       }
       newIndex = 0
     }
-    this.slide('next')
+    this.slide({ move: 'next', trigger })
   }
 
   /**
    * Navigate to slide by index.
    */
 
-  public slideTo(index: number, animate = true) {
-    this.slide('to', index, animate)
+  public slideTo(index: number, trigger: Trigger, animate = true) {
+    this.slide({ move: 'to', trigger, index, animate })
   }
 
   /**
    * Add move to the queue.
    */
 
-  public slide(move: Move, index: number = null, animate = true) {
+  public slide(action: Action) {
     if (this._opts.auto) {
       clearInterval(this._t1)
       this._t1 = setInterval(this.slideNext, this._opts.interval)
     }
 
     if (this._queue) {
-      this._queue.add(move, index, animate)
+      this._queue.add({
+        index: null,
+        animate: true,
+        ...action,
+      })
     } else {
       // Prevent 'persistent' auto
       this.stop()
@@ -336,7 +360,7 @@ export default class Slidy {
 
   public start(delay = this._opts.interval, auto = this._opts.auto) {
     this._t2 = setTimeout(() => {
-      this.slideNext()
+      this.slideNext('auto')
       if (!this._hasPause && this._opts.pause) {
         this._outer.addEventListener('mouseenter', this.onEnter)
       }
@@ -506,6 +530,11 @@ export default class Slidy {
   private onResize() {
     if (!this._destroyed) {
       this.reset()
+
+      if (!Number(this._opts.group)) {
+        this._group = this._opts.group()
+      }
+
       this.hooks.call('afterResize', this, this._el)
     }
   }
@@ -516,7 +545,7 @@ export default class Slidy {
    */
 
   private onClick() {
-    this.slideNext()
+    this.slideNext('click')
   }
 
   /**
@@ -525,7 +554,7 @@ export default class Slidy {
    */
 
   private onTap() {
-    this.slideNext()
+    this.slideNext('tap')
   }
 
   /**
@@ -535,10 +564,10 @@ export default class Slidy {
 
   private onDrag(direction: GestureDirection) {
     if (direction === 'right') {
-      this.slidePrev()
+      this.slidePrev('drag')
     }
     if (direction === 'left') {
-      this.slideNext()
+      this.slideNext('drag')
     }
   }
 
@@ -549,10 +578,10 @@ export default class Slidy {
 
   private onSwipe(direction: GestureDirection) {
     if (direction === 'right') {
-      this.slidePrev()
+      this.slidePrev('swipe')
     }
     if (direction === 'left') {
-      this.slideNext()
+      this.slideNext('swipe')
     }
   }
 
@@ -571,36 +600,5 @@ export default class Slidy {
     this._outer.removeEventListener('mouseleave', this.onLeave)
     this.start()
     this._outer.addEventListener('mouseenter', this.onEnter)
-  }
-
-  /**
-   * Callbacks.
-   */
-
-  private beforeSlide(direction: Direction, animate: boolean) {
-    if (this._opts.beforeSlide) {
-      this._opts.beforeSlide.call(
-        this,
-        this.currentIndex,
-        this.newIndex,
-        direction,
-        animate
-      )
-    }
-  }
-
-  private afterSlide(direction: Direction, animate: boolean) {
-    // Accessibility
-    this._el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
-
-    if (this._opts.afterSlide) {
-      this._opts.afterSlide.call(
-        this,
-        this.currentIndex,
-        this.oldIndex,
-        direction,
-        animate
-      )
-    }
   }
 }

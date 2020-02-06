@@ -29,7 +29,7 @@ export class Hooks {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public call(name: HooksNames, ctx: any, ...args: any[]) {
+  public call(name: HooksNames, ctx: any, ...args: any[]): void | boolean {
     if (!this._callbacksByName.has(name)) {
       return
     }

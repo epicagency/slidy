@@ -219,7 +219,7 @@ export class Nav {
     if (clicked !== null) {
       const newIndex = Array.from(this._el.children).indexOf(clicked)
 
-      this._slidy.slideTo(newIndex)
+      this._slidy.slideTo(newIndex, 'nav')
     }
   }
 }

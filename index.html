@@ -20,6 +20,9 @@
       <li>Item1</li>
       <li>Item2</li>
       <li>Item3</li>
+      <li>Item4</li>
+      <li>Item5</li>
+      <li>Item6</li>
     </ul>
     <script type="module">
       const list = document.querySelector('ul')
@@ -27,27 +30,35 @@
         const Slidy = data.default
         const slider = new Slidy(list, {
           drag: true,
-          transition: () => {
+          controls: true,
+          keyboard: true,
+          loop: false,
+          pagination: '---',
+          // nav: 'FOO-${number}',
+          zerofill: 3,
+          group: 4,
+          index: 1,
+          transition: (current, next) => {
             return Promise.resolve()
           },
         })
 
         console.log(slider)
-        slider.on('beforeInit', () => {
-          console.log('beforeInit')
-        })
-        slider.on('afterInit', () => {
-          console.log('afterInit')
-        })
-        slider.on('afterResize', () => {
-          console.log('afterResize')
-        })
-        slider.on('beforeSlide', () => {
-          console.log('beforeSlide')
-        })
-        slider.on('afterSlide', () => {
-          console.log('afterSlide')
-        })
+        // slider.on('beforeInit', () => {
+        //   console.log('beforeInit')
+        // })
+        // slider.on('afterInit', () => {
+        //   console.log('afterInit')
+        // })
+        // slider.on('afterResize', () => {
+        //   console.log('afterResize')
+        // })
+        // slider.on('beforeSlide', () => {
+        //   console.log('beforeSlide')
+        // })
+        // slider.on('afterSlide', () => {
+        //   console.log('afterSlide')
+        // })
         slider.init()
       })
     </script>

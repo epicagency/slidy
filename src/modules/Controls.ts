@@ -97,14 +97,11 @@ export class Controls {
     this._bindControls()
 
     if (this._opts.keyboard) {
-      // DEV
       addEventListener('keydown', event => {
         if (event.keyCode === 37) {
-          console.log('arrow left!')
-          this._slidy.slidePrev()
+          this._slidy.slidePrev('controls')
         } else if (event.keyCode === 39) {
-          console.log('arrow right!')
-          this._slidy.slideNext()
+          this._slidy.slideNext('controls')
         }
       })
     }
@@ -124,7 +121,7 @@ export class Controls {
    */
 
   private _prevClick() {
-    this._slidy.slidePrev()
+    this._slidy.slidePrev('controls')
   }
 
   /**
@@ -132,7 +129,7 @@ export class Controls {
    */
 
   private _nextClick() {
-    this._slidy.slideNext()
+    this._slidy.slideNext('controls')
   }
 
   /**
@@ -151,7 +148,7 @@ export class Controls {
         Controls.disable(this._prev)
       }
 
-      if (newIndex === length - 1) {
+      if (newIndex + this._slidy.group >= length) {
         Controls.disable(this._next)
       }
     }

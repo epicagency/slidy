@@ -1,5 +1,8 @@
+/* eslint-disable indent */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable max-depth */
 import Slidy from '..'
-import { Direction, Action, Move, Transition } from '../defs'
+import { Direction, Action, Transition } from '../defs'
 
 /**
  * Create queue.
@@ -8,7 +11,7 @@ export class Queue {
   private _transition: Transition
   private _isAnimating = false
   private _max: number
-  private _items: Action[]
+  private _actions: Action[]
 
   /**
    * Creates an instance of Queue.
@@ -18,23 +21,24 @@ export class Queue {
     this._transition = transition
     this._isAnimating = false
     this._max = this._slidy.options.queue
-    this._items = []
+    this._actions = []
   }
 
   /**
    * Add "move" to queue.
    */
 
-  public add(move: Move, index: number, animate: boolean) {
-    if (this._items.length > this._max) {
-      this._items.length = this._max
+  public add(action: Action) {
+    // Prevent slide ?
+    if (this._slidy.hooks.call('preventSlide', this._slidy, action)) {
+      return
     }
 
-    this._items.push({
-      animate,
-      index,
-      move,
-    })
+    if (this._actions.length > this._max) {
+      this._actions.length = this._max
+    }
+
+    this._actions.push(action)
 
     if (!this._isAnimating) {
       this._play()
@@ -46,7 +50,7 @@ export class Queue {
    */
 
   public empty() {
-    this._items = []
+    this._actions = []
   }
 
   /**
@@ -54,11 +58,11 @@ export class Queue {
    */
 
   private _play() {
-    if (this._items.length === 0) {
+    if (this._actions.length === 0) {
       return
     }
 
-    const [{ move, animate }] = this._items
+    const [{ move, trigger, index, animate }] = this._actions
     const { items } = this._slidy
     const { length } = items
     const { currentIndex } = this._slidy
@@ -67,23 +71,23 @@ export class Queue {
 
     // Get the newIndex according to "move type".
     if (move === 'to') {
-      newIndex = this._items[0].index
+      newIndex = index
     } else {
       if (move === 'prev') {
-        newIndex = currentIndex - 1
+        newIndex = currentIndex - this._slidy.group
         if (newIndex < 0) {
           if (this._slidy.options.loop) {
-            newIndex = length - 1
+            newIndex = length + (currentIndex - this._slidy.group)
           } else {
             newIndex = currentIndex
           }
         }
       }
       if (move === 'next') {
-        newIndex = currentIndex + 1
-        if (newIndex === length) {
+        newIndex = currentIndex + this._slidy.group
+        if (newIndex >= length) {
           if (this._slidy.options.loop) {
-            newIndex = 0
+            newIndex = currentIndex + this._slidy.group - length
           } else {
             newIndex = currentIndex
           }
@@ -91,9 +95,11 @@ export class Queue {
       }
     }
 
+    console.log(currentIndex, newIndex)
+
     // If same than current -> dequeue + next.
     if (newIndex === currentIndex) {
-      this._items.shift()
+      this._actions.shift()
       this._play()
 
       return
@@ -107,32 +113,70 @@ export class Queue {
     }
 
     // Get slides.
-    const currentSlide = items[currentIndex]
-    const newSlide = items[newIndex]
+    // TODO refactor (KISS) + comments
+    const hasGroup = this._slidy.group > 1
+    const currentSlides =
+      currentIndex + this._slidy.group >= length
+        ? this._slidy.options.loop === true
+          ? items
+              .slice(currentIndex, currentIndex + this._slidy.group)
+              .concat(
+                items.slice(0, this._slidy.group - (length - currentIndex))
+              )
+          : items.slice(currentIndex, currentIndex + this._slidy.group)
+        : items.slice(currentIndex, currentIndex + this._slidy.group)
+
+    const newSlides =
+      newIndex + this._slidy.group >= length
+        ? this._slidy.options.loop === true
+          ? items
+              .slice(newIndex, newIndex + this._slidy.group)
+              .concat(items.slice(0, this._slidy.group - (length - newIndex)))
+          : items.slice(newIndex, newIndex + this._slidy.group)
+        : items.slice(newIndex, newIndex + this._slidy.group)
 
     // Set new index.
     this._slidy.newIndex = newIndex
 
     // Start slide.
-    this._slidy.hooks.call('beforeSlide', this._slidy, direction, animate)
+    this._slidy.hooks.call('beforeSlide', this._slidy, { direction, animate })
 
     // Update status and active class.
     this._isAnimating = true
-    currentSlide.classList.remove('is-active')
+
+    currentSlides.forEach(s => {
+      s.classList.remove('is-active')
+    })
 
     const transition = animate ? this._transition : () => Promise.resolve()
 
-    transition.call(this._slidy, currentSlide, newSlide, direction).then(() => {
-      // Update indexes, queue, status and active class.
-      this._slidy.oldIndex = currentIndex
-      this._slidy.currentIndex = newIndex
-      this._items.shift()
-      this._isAnimating = false
-      newSlide.classList.add('is-active')
-      // End slide.
-      this._slidy.hooks.call('afterSlide', this._slidy, direction, animate)
-      // Play next queued transition.
-      this._play()
-    })
+    transition
+      .call(
+        this._slidy,
+        hasGroup ? currentSlides : currentSlides[0],
+        newSlides,
+        { direction, trigger }
+      )
+      .then(() => {
+        // Update indexes, queue, status and active class.
+        this._slidy.oldIndex = currentIndex
+        this._slidy.currentIndex = newIndex
+        this._actions.shift()
+        this._isAnimating = false
+
+        console.log(currentIndex, newIndex)
+
+        newSlides.forEach(s => {
+          s.classList.add('is-active')
+        })
+
+        // End slide.
+        this._slidy.hooks.call('afterSlide', this._slidy, {
+          direction,
+          animate,
+        })
+        // Play next queued transition.
+        this._play()
+      })
   }
 }

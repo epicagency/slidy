@@ -1,36 +1,32 @@
-export interface Action {
-  move: Move
-  index: number
-  animate: boolean
+interface BaseAction {
+  trigger: Trigger
+  index?: number
+  animate?: boolean
 }
+
+export interface Action extends BaseAction {
+  move: Move
+}
+
+export interface TransitionInfos extends BaseAction {
+  direction: Direction
+}
+
 export interface GenericObject {
   [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-export interface OptionsCallbacks {
-  beforeInit: (el: HTMLElement) => void
-  afterInit: (el: HTMLElement) => void
-  afterResize: (el: HTMLElement) => void
-  beforeSlide: (
-    currentIndex: number,
-    newIndex: number,
-    direction: Direction,
-    animate: boolean
-  ) => void
-  afterSlide: (
-    currentIndex: number,
-    newIndex: number,
-    direction: Direction,
-    animate: boolean
-  ) => void
+interface GroupFn {
+  (): number
 }
 
-export interface Options extends OptionsCallbacks {
+export interface Options {
   auto?: boolean
   click?: boolean
   controls?: boolean | string
   debounce?: number
   drag?: boolean
+  group?(): number
   height?: 'auto' | number
   index?: number
   interval?: number
@@ -50,13 +46,22 @@ export interface Options extends OptionsCallbacks {
 }
 
 export type Transition = (
-  currentSlide: HTMLElement,
-  newSlide: HTMLElement,
-  direction: Direction
+  currentSlides: HTMLElement | HTMLElement[],
+  newSlides: HTMLElement | HTMLElement[],
+  infos: TransitionInfos
 ) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export type Direction = 'prev' | 'next'
 export type Move = Direction | 'to'
+export type Trigger =
+  | 'auto'
+  | 'click'
+  | 'tap'
+  | 'drag'
+  | 'swipe'
+  | 'nav'
+  | 'pagination'
+  | 'controls'
 export type SupportedEvents = 'click' | 'tap' | 'drag' | 'swipe'
 export type SupportedTypes =
   | 'click'
@@ -75,5 +80,27 @@ export type HooksNames =
   | 'beforeInit'
   | 'afterInit'
   | 'afterResize'
+  | 'preventSlide'
   | 'beforeSlide'
   | 'afterSlide'
+
+export interface HooksCallbacks {
+  beforeInit: (el: HTMLElement) => void
+  afterInit: (el: HTMLElement) => void
+  afterResize: (el: HTMLElement) => void
+  preventSlide: (
+    currentIndex: number,
+    newIndex: number,
+    infos: TransitionInfos
+  ) => boolean
+  beforeSlide: (
+    currentIndex: number,
+    newIndex: number,
+    infos: TransitionInfos
+  ) => void
+  afterSlide: (
+    currentIndex: number,
+    newIndex: number,
+    infos: TransitionInfos
+  ) => void
+}

@@ -91,6 +91,7 @@ export class Nav {
     const tpl = document.createElement('template')
     const html = `<ol class="${ns}-nav">
   ${items
+    .filter((slide, i) => i % this._slidy.group === 0)
     .map((slide, i) => {
       if ('slidyNav' in slide.dataset) {
         const { slidyNav } = slide.dataset
@@ -195,7 +196,9 @@ export class Nav {
    */
 
   private _setActive() {
-    const newItem = this._items[this._slidy.newIndex]
+    const newItem = this._items[
+      Math.ceil(this._slidy.newIndex / this._slidy.group)
+    ]
 
     newItem.classList.add('is-active')
 

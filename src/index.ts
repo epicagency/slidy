@@ -25,7 +25,9 @@ export default class Slidy {
   private _items: HTMLElement[]
   private _currentItems: HTMLElement[]
   private _length: number
+  private _nbSlide: number
   private _hasPause: boolean
+  private _hasErrors: boolean
 
   private _outer: HTMLDivElement
   private _queue: Queue
@@ -53,6 +55,7 @@ export default class Slidy {
     /* eslint-enable no-param-reassign */
 
     if (!element || (el && el.length === 0)) {
+      this._hasErrors = true
       console.error('Slidy: no element matching!')
 
       return
@@ -92,6 +95,7 @@ export default class Slidy {
     }
 
     if (this._opts.transition === null) {
+      this._hasErrors = true
       console.error('Slidy: you should define a transition!')
 
       return
@@ -104,6 +108,11 @@ export default class Slidy {
     this._group = Number(this._opts.group) || this._opts.group()
     this._newIndex = this._currentIndex
     this._oldIndex = null
+
+    if (this._group !== 1 && this._currentIndex !== 0) {
+      this._hasErrors = true
+      console.error('Slidy: initial index with group should be 0')
+    }
   }
 
   /**
@@ -182,6 +191,11 @@ export default class Slidy {
    */
 
   public init() {
+    if (this._hasErrors) {
+      console.error('Slidy: fix errors!')
+
+      return
+    }
     this._items = Array.from(this._el.children) as HTMLElement[]
     this._length = this._items.length
     this._hasPause = false
@@ -327,8 +341,8 @@ export default class Slidy {
    * Navigate to slide by index.
    */
 
-  public slideTo(index: number, trigger: Trigger, animate = true) {
-    this.slide({ move: 'to', trigger, index, animate })
+  public slideTo(page: number, trigger: Trigger, animate = true) {
+    this.slide({ move: 'to', trigger, page, animate })
   }
 
   /**
@@ -343,7 +357,7 @@ export default class Slidy {
 
     if (this._queue) {
       this._queue.add({
-        index: null,
+        page: null,
         animate: true,
         ...action,
       })

@@ -62,7 +62,7 @@ export class Queue {
       return
     }
 
-    const [{ move, trigger, index, animate }] = this._actions
+    const [{ move, trigger, page, animate }] = this._actions
     const { items } = this._slidy
     const { length } = items
     const { currentIndex } = this._slidy
@@ -71,7 +71,7 @@ export class Queue {
 
     // Get the newIndex according to "move type".
     if (move === 'to') {
-      newIndex = index
+      newIndex = page * this._slidy.group
     } else {
       if (move === 'prev') {
         newIndex = currentIndex - this._slidy.group

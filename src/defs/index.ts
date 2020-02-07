@@ -1,6 +1,6 @@
 interface BaseAction {
   trigger: Trigger
-  index?: number
+  page?: number
   animate?: boolean
 }
 

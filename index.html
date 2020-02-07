@@ -6,12 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
     <style>
-      li {
+      .slidy__item {
         padding: 2rem;
         border: 1px dotted gold;
       }
       .is-active {
         background-color: lime;
+      }
+      .slidy-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        list-style: none;
       }
     </style>
   </head>
@@ -32,12 +39,12 @@
           drag: true,
           controls: true,
           keyboard: true,
-          loop: false,
+          loop: true,
           pagination: '---',
-          // nav: 'FOO-${number}',
+          nav: false,
           zerofill: 3,
           group: 4,
-          index: 1,
+          index: 0,
           transition: (current, next) => {
             return Promise.resolve()
           },

@@ -10,9 +10,8 @@ import { format } from '../utils'
  */
 export class Pagination {
   private _el: HTMLDivElement
-  private _current: HTMLSpanElement
-  private _separator: HTMLSpanElement
-  private _total: HTMLSpanElement
+  private _currentEl: HTMLSpanElement
+  private _total: number
 
   /**
    * Creates an instance of Pagination.
@@ -44,9 +43,15 @@ export class Pagination {
     const { length } = items
     const { pagination, zerofill } = this._opts
 
-    const cur = format(currentIndex + 1, length + 1, zerofill)
+    this._total = Math.ceil(length / this._slidy.group)
+
+    const cur = format(
+      Math.ceil((currentIndex + 1) / this._slidy.group),
+      length,
+      zerofill
+    )
     const sep = pagination === true ? '/' : (pagination as string)
-    const tot = format(length, length, zerofill)
+    const tot = format(this._total, this._total, zerofill)
 
     const tpl = document.createElement('template')
     const html = `<div class="${ns}-pagination">
@@ -58,9 +63,8 @@ export class Pagination {
     tpl.innerHTML = html
 
     this._el = tpl.content.firstChild as HTMLDivElement
-    this._current = this._el.querySelector('span:nth-child(1)')
-    this._separator = this._el.querySelector('span:nth-child(2)')
-    this._total = this._el.querySelector('span:nth-child(3)')
+    this._currentEl = this._el.querySelector('span:nth-child(1)')
+
     outer.appendChild(this._el)
 
     this._update()
@@ -79,9 +83,9 @@ export class Pagination {
    */
 
   private _update() {
-    this._current.textContent = format(
-      this._slidy.newIndex + 1,
-      this._slidy.items.length + 1,
+    this._currentEl.textContent = format(
+      Math.ceil((this._slidy.newIndex + 1) / this._slidy.group),
+      this._total,
       this._opts.zerofill
     )
   }

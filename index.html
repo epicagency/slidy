@@ -30,6 +30,7 @@
       <li>Item4</li>
       <li>Item5</li>
       <li>Item6</li>
+      <li>Item7</li>
     </ul>
     <script type="module">
       const list = document.querySelector('ul')
@@ -41,10 +42,11 @@
           keyboard: true,
           loop: true,
           pagination: '---',
-          nav: false,
+          nav: true,
           zerofill: 3,
-          group: 4,
-          index: 0,
+          group: 2,
+          index: 1,
+          preserveGroup: false,
           transition: (current, next) => {
             return Promise.resolve()
           },

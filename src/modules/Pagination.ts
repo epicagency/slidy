@@ -39,19 +39,13 @@ export class Pagination {
    */
 
   private _init() {
-    const { currentIndex, items, namespace: ns, outer } = this._slidy
+    const { currentGroup, groupsMax, items, namespace: ns, outer } = this._slidy
     const { length } = items
     const { pagination, zerofill } = this._opts
 
-    this._total = Math.ceil(length / this._slidy.group)
-
-    const cur = format(
-      Math.ceil((currentIndex + 1) / this._slidy.group),
-      length,
-      zerofill
-    )
+    const cur = format(currentGroup + 1, length, zerofill)
     const sep = pagination === true ? '/' : (pagination as string)
-    const tot = format(this._total, this._total, zerofill)
+    const tot = format(groupsMax, groupsMax, zerofill)
 
     const tpl = document.createElement('template')
     const html = `<div class="${ns}-pagination">
@@ -84,7 +78,7 @@ export class Pagination {
 
   private _update() {
     this._currentEl.textContent = format(
-      Math.ceil((this._slidy.newIndex + 1) / this._slidy.group),
+      this._slidy.newGroup + 1,
       this._total,
       this._opts.zerofill
     )

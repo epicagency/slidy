@@ -84,8 +84,7 @@ export class Nav {
    */
 
   private _init() {
-    const { items, namespace: ns, outer } = this._slidy
-    const { length } = items
+    const { items, groupsMax, namespace: ns, outer } = this._slidy
     const { zerofill } = this._opts
 
     const tpl = document.createElement('template')
@@ -119,7 +118,7 @@ export class Nav {
           // We can have both number and thumb into the template string
           // or nothing…
           if (/\${number}/.test(this._template)) {
-            dataTpl.number = format(i + 1, length, zerofill)
+            dataTpl.number = format(i + 1, groupsMax, zerofill)
           }
 
           if (/\${thumb}/.test(this._template)) {
@@ -135,7 +134,7 @@ export class Nav {
 
         case 'number':
         default:
-          number = format(i + 1, length, zerofill)
+          number = format(i + 1, groupsMax, zerofill)
 
           return Nav._createContent(number)
       }
@@ -196,9 +195,7 @@ export class Nav {
    */
 
   private _setActive() {
-    const newItem = this._items[
-      Math.ceil(this._slidy.newIndex / this._slidy.group)
-    ]
+    const newItem = this._items[this._slidy.newGroup]
 
     newItem.classList.add('is-active')
 
@@ -220,9 +217,9 @@ export class Nav {
     )
 
     if (clicked !== null) {
-      const newIndex = Array.from(this._el.children).indexOf(clicked)
+      const newGroup = Array.from(this._el.children).indexOf(clicked)
 
-      this._slidy.slideTo(newIndex, 'nav')
+      this._slidy.slideTo(newGroup, 'nav')
     }
   }
 }

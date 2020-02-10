@@ -3,7 +3,7 @@
  */
 
 import { Action, GestureDirection, HooksNames, Options, Trigger } from './defs'
-import { Controls, Events, Hooks, Nav, Pagination, Queue } from './modules'
+import { Controls, Events, Hooks, Nav, Pagination, Manager } from './modules'
 import { debounce, touchevents } from './utils'
 
 /**
@@ -12,25 +12,29 @@ import { debounce, touchevents } from './utils'
 export default class Slidy {
   // Hooks manager
   public hooks = new Hooks()
+  public el: HTMLElement
+  public outer: HTMLDivElement
 
-  private _el: HTMLElement
+  public context: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  public data: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  public group: number
+  public currentIndex: number
+  public newIndex: number
+  public oldIndex: number
+  public items: HTMLElement[]
+  public itemsMax: number
+  public currentGroup: number
+  public newGroup: number
+  public groupsMax: number
+
   private _opts: Options
-  private _context: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  private _data: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  private _group: number
   private _debounceDelay: number
-  private _currentIndex: number
-  private _newIndex: number
-  private _oldIndex: number
-  private _items: HTMLElement[]
   private _currentItems: HTMLElement[]
-  private _length: number
-  private _nbSlide: number
   private _hasPause: boolean
   private _hasErrors: boolean
 
-  private _outer: HTMLDivElement
-  private _queue: Queue
+  private _manager: Manager
   private _controls: Controls
   private _nav: Nav
   private _pagination: Pagination
@@ -65,7 +69,7 @@ export default class Slidy {
       console.warn('Slidy: multiple elements matching!')
     }
 
-    this._el = el ? el[0] : (element as HTMLElement)
+    this.el = el ? el[0] : (element as HTMLElement)
 
     // Check and get options.
     this._opts = {
@@ -84,7 +88,8 @@ export default class Slidy {
       nav: false, // Mixed: create navigation (number, thumb, custom)
       pagination: false, // Mixed: create pagination (1[separator]10)
       pause: true, // Boolean: pause on hover
-      queue: 1, // Integer: queue max items
+      preserveGroup: true, // Boolean: enable if group show
+      manager: 1, // Integer: manager max items
       resize: true, // Boolean: enable resize event and callback
       reverse: false, // Boolean: reverse directions / controls
       swipe: false, // Boolean: enable swipe
@@ -101,83 +106,24 @@ export default class Slidy {
       return
     }
 
-    this._context = context
-    this._data = data
+    this.context = context
+    this.data = data
     this._debounceDelay = this._opts.debounce
-    this._currentIndex = this._opts.index
-    this._group = Number(this._opts.group) || this._opts.group()
-    this._newIndex = this._currentIndex
-    this._oldIndex = null
+    this.currentIndex = this._opts.index
+    this.newIndex = this.currentIndex
+    this.group = Number(this._opts.group) || this._opts.group()
+    this.currentGroup = Math.ceil(this.currentIndex / this.group)
+    this.newGroup = this.currentGroup
+    this.oldIndex = null
 
-    if (this._group !== 1 && this._currentIndex !== 0) {
-      this._hasErrors = true
-      console.error('Slidy: initial index with group should be 0')
+    if (this.newIndex % this.group !== 0 && !this.options.preserveGroup) {
+      console.warn('Slidy: index does not match with group!')
     }
   }
 
   /**
    * Getters/setters.
    */
-  get outer() {
-    return this._outer
-  }
-
-  get el() {
-    return this._el
-  }
-
-  get group() {
-    return this._group
-  }
-
-  get items() {
-    return this._items
-  }
-
-  set items(items) {
-    this._items = items
-  }
-
-  get currentItems() {
-    return this._currentItems
-  }
-
-  set currentItems(currentItems) {
-    this._currentItems = currentItems
-  }
-
-  get context() {
-    return this._context
-  }
-
-  get data() {
-    return this._data
-  }
-
-  get currentIndex() {
-    return this._currentIndex
-  }
-
-  set currentIndex(i) {
-    this._currentIndex = i
-  }
-
-  get newIndex() {
-    return this._newIndex
-  }
-
-  set newIndex(i) {
-    this._newIndex = i
-  }
-
-  get oldIndex() {
-    return this._oldIndex
-  }
-
-  set oldIndex(i) {
-    this._oldIndex = i
-  }
-
   get options() {
     return this._opts
   }
@@ -196,8 +142,9 @@ export default class Slidy {
 
       return
     }
-    this._items = Array.from(this._el.children) as HTMLElement[]
-    this._length = this._items.length
+    this.items = Array.from(this.el.children) as HTMLElement[]
+    this.itemsMax = this.items.length
+    this.groupsMax = Math.ceil(this.itemsMax / this.group)
     this._hasPause = false
 
     // Binding
@@ -206,12 +153,12 @@ export default class Slidy {
 
     this.hooks.add('afterSlide', () => {
       // Accessibility
-      this._el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
+      this.el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
     })
 
     this.bind()
 
-    this.hooks.call('beforeInit', this, this._el)
+    this.hooks.call('beforeInit', this, this.el)
 
     // Set height.
     // To get the most 'correct' auto-height,
@@ -219,27 +166,27 @@ export default class Slidy {
     if (this._opts.height === 'auto') {
       this.reset()
     } else {
-      this._el.style.height = `${this._opts.height}px`
+      this.el.style.height = `${this._opts.height}px`
     }
 
     // Add HTML wrapper.
-    this._outer = document.createElement('div')
-    this._el.parentNode.insertBefore(this._outer, this._el)
-    this._outer.appendChild(this._el)
+    this.outer = document.createElement('div')
+    this.el.parentNode.insertBefore(this.outer, this.el)
+    this.outer.appendChild(this.el)
 
     // Add CSS classes.
-    this._outer.classList.add(`${this.namespace}-outer`)
-    this._el.classList.add(this.namespace)
+    this.outer.classList.add(`${this.namespace}-outer`)
+    this.el.classList.add(this.namespace)
 
-    this._items.forEach(slide => {
+    this.items.forEach(slide => {
       slide.classList.add(`${this.namespace}__item`)
     })
 
     // Set active class on currentIndex.
     // TODO: Mix with existing code
-    this._currentItems = this._items.slice(
+    this._currentItems = this.items.slice(
       this.currentIndex,
-      this.currentIndex + this._group
+      this.currentIndex + this.group
     )
     // Set active class on each element of currentItems.
     this._currentItems.forEach(slide => {
@@ -247,16 +194,17 @@ export default class Slidy {
     })
 
     // Accessibility
-    this._el.setAttribute('role', 'slider')
-    this._el.setAttribute('aria-valuemin', `${1}`)
-    this._el.setAttribute('aria-valuemax', `${this._items.length}`)
-    this._el.setAttribute('aria-valuenow', `${this._currentIndex + 1}`)
+    this.el.setAttribute('role', 'slider')
+    this.el.setAttribute('aria-valuemin', `${1}`)
+    this.el.setAttribute('aria-valuemax', `${this.items.length}`)
+    this.el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
+    this.el.setAttribute('aria-valuenow', `${this.currentGroup + 1}`)
 
     if (this._opts.click) {
-      this._el.style.cursor = 'pointer'
+      this.el.style.cursor = 'pointer'
     }
 
-    this._queue = new Queue(this, this._opts.transition)
+    this._manager = new Manager(this, this._opts.transition)
 
     // Add controls.
     if (this._opts.controls) {
@@ -278,7 +226,7 @@ export default class Slidy {
       this.start()
     }
 
-    this.hooks.call('afterInit', this, this._el)
+    this.hooks.call('afterInit', this, this.el)
   }
 
   /**
@@ -304,13 +252,19 @@ export default class Slidy {
       return
     }
 
-    let newIndex = this._currentIndex - 1
+    let newIndex
+
+    if (this.group === 1) {
+      newIndex = this.currentIndex - 1
+    } else {
+      newIndex = this.currentGroup - 1
+    }
 
     if (newIndex < 0) {
       if (!this._opts.loop) {
         return
       }
-      newIndex = this._length - 1
+      newIndex = this.groupsMax - 1
     }
     this.slide({ move: 'prev', trigger })
   }
@@ -326,9 +280,15 @@ export default class Slidy {
       return
     }
 
-    let newIndex = this._currentIndex + 1
+    let newIndex
 
-    if (newIndex === this._length) {
+    if (this.group === 1) {
+      newIndex = this.currentIndex + 1
+    } else {
+      newIndex = this.currentGroup + 1
+    }
+
+    if (newIndex === this.groupsMax) {
       if (!this._opts.loop) {
         return
       }
@@ -346,7 +306,7 @@ export default class Slidy {
   }
 
   /**
-   * Add move to the queue.
+   * Add move to the manager.
    */
 
   public slide(action: Action) {
@@ -355,8 +315,8 @@ export default class Slidy {
       this._t1 = setInterval(this.slideNext, this._opts.interval)
     }
 
-    if (this._queue) {
-      this._queue.add({
+    if (this._manager) {
+      this._manager.add({
         page: null,
         animate: true,
         ...action,
@@ -376,7 +336,7 @@ export default class Slidy {
     this._t2 = setTimeout(() => {
       this.slideNext('auto')
       if (!this._hasPause && this._opts.pause) {
-        this._outer.addEventListener('mouseenter', this.onEnter)
+        this.outer.addEventListener('mouseenter', this.onEnter)
       }
       if (auto) {
         clearInterval(this._t1)
@@ -392,7 +352,7 @@ export default class Slidy {
 
   public stop() {
     if (this._hasPause) {
-      this._outer.removeEventListener('mouseenter', this.onEnter)
+      this.outer.removeEventListener('mouseenter', this.onEnter)
     }
     clearTimeout(this._t2)
     clearInterval(this._t1)
@@ -408,19 +368,19 @@ export default class Slidy {
     // Remove interval.
     this.stop()
 
-    // Empty queue.
-    if (this._queue) {
-      this._queue.empty()
-      delete this._queue
+    // Empty manager.
+    if (this._manager) {
+      this._manager.empty()
+      delete this._manager
     }
 
     // Remove listeners.
     if (this._opts.resize) {
       window.removeEventListener('resize', this.onResize)
     }
-    this._el.removeEventListener('mouseenter', this.onEnter)
-    this._el.removeEventListener('mouseleave', this.onLeave)
-    this._el.removeEventListener('click', this.onClick)
+    this.el.removeEventListener('mouseenter', this.onEnter)
+    this.el.removeEventListener('mouseleave', this.onLeave)
+    this.el.removeEventListener('click', this.onClick)
 
     // Remove Hammer.manager.
     if (this._eventManager) {
@@ -447,14 +407,14 @@ export default class Slidy {
     }
 
     // Remove HTML wrapper.
-    this._outer.before(this._el)
-    if (this._outer.parentNode) {
-      this._outer.parentNode.removeChild(this._outer)
+    this.outer.before(this.el)
+    if (this.outer.parentNode) {
+      this.outer.parentNode.removeChild(this.outer)
     }
 
     // Remove CSS classes.
-    this._el.classList.remove(this.namespace)
-    this._items.forEach(slide => {
+    this.el.classList.remove(this.namespace)
+    this.items.forEach(slide => {
       slide.classList.remove(`${this.namespace}__item`)
       slide.removeAttribute('style')
       Array.from(slide.children).forEach(child => {
@@ -462,7 +422,7 @@ export default class Slidy {
       })
     })
 
-    this._el.removeAttribute('style')
+    this.el.removeAttribute('style')
   }
 
   /**
@@ -484,12 +444,12 @@ export default class Slidy {
     }
 
     if (this._opts.pause && this._opts.auto) {
-      this._outer.addEventListener('mouseenter', this.onEnter)
+      this.outer.addEventListener('mouseenter', this.onEnter)
       this._hasPause = true
     }
 
     // Events binding
-    this._eventManager = new Events(this._el)
+    this._eventManager = new Events(this.el)
 
     if (touchevents()) {
       this._opts.tap && this._eventManager.on('tap', this.onTap)
@@ -507,7 +467,7 @@ export default class Slidy {
   private reset() {
     if (this._opts.height === 'auto') {
       // Reset inline height.
-      this._el.style.height = ''
+      this.el.style.height = ''
 
       // Check if items have height
       // if not, check first node
@@ -519,16 +479,16 @@ export default class Slidy {
           .slice(0, 1)
 
       const heights: number[] = []
-      const hasNoHeight = this._items[0].offsetHeight === 0
+      const hasNoHeight = this.items[0].offsetHeight === 0
 
-      this._items.forEach(item => {
+      this.items.forEach(item => {
         if (hasNoHeight && item.hasChildNodes()) {
           heights.push((item.firstElementChild as HTMLElement).offsetHeight)
         } else {
           heights.push(item.offsetHeight)
         }
       })
-      this._el.style.height = `${getMinHeight(heights)}px`
+      this.el.style.height = `${getMinHeight(heights)}px`
     }
   }
 
@@ -546,10 +506,10 @@ export default class Slidy {
       this.reset()
 
       if (!Number(this._opts.group)) {
-        this._group = this._opts.group()
+        this.group = this._opts.group()
       }
 
-      this.hooks.call('afterResize', this, this._el)
+      this.hooks.call('afterResize', this, this.el)
     }
   }
 
@@ -605,14 +565,14 @@ export default class Slidy {
    */
 
   private onEnter() {
-    this._outer.removeEventListener('mouseenter', this.onEnter)
+    this.outer.removeEventListener('mouseenter', this.onEnter)
     this.stop()
-    this._outer.addEventListener('mouseleave', this.onLeave)
+    this.outer.addEventListener('mouseleave', this.onLeave)
   }
 
   private onLeave() {
-    this._outer.removeEventListener('mouseleave', this.onLeave)
+    this.outer.removeEventListener('mouseleave', this.onLeave)
     this.start()
-    this._outer.addEventListener('mouseenter', this.onEnter)
+    this.outer.addEventListener('mouseenter', this.onEnter)
   }
 }

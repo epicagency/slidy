@@ -5,27 +5,27 @@ import Slidy from '..'
 import { Direction, Action, Transition } from '../defs'
 
 /**
- * Create queue.
+ * Create manager.
  */
-export class Queue {
+export class Manager {
   private _transition: Transition
   private _isAnimating = false
   private _max: number
   private _actions: Action[]
 
   /**
-   * Creates an instance of Queue.
+   * Creates an instance of Manager.
    */
 
   constructor(private _slidy: Slidy, transition: Transition) {
     this._transition = transition
     this._isAnimating = false
-    this._max = this._slidy.options.queue
+    this._max = this._slidy.options.manager
     this._actions = []
   }
 
   /**
-   * Add "move" to queue.
+   * Add "move" to Manager.
    */
 
   public add(action: Action) {
@@ -46,7 +46,7 @@ export class Queue {
   }
 
   /**
-   * Empty queue.
+   * Empty manager.
    */
 
   public empty() {
@@ -54,7 +54,7 @@ export class Queue {
   }
 
   /**
-   * Play queue.
+   * Play manager.
    */
 
   private _play() {
@@ -65,78 +65,93 @@ export class Queue {
     const [{ move, trigger, page, animate }] = this._actions
     const { items } = this._slidy
     const { length } = items
-    const { currentIndex } = this._slidy
+    const {
+      currentIndex,
+      currentGroup,
+      groupsMax,
+      group,
+      options,
+    } = this._slidy
+    const { loop, preserveGroup } = options
+
     let newIndex: number
+    let newGroup: number
     let direction: Direction
 
-    // Get the newIndex according to "move type".
     if (move === 'to') {
-      newIndex = page * this._slidy.group
+      newGroup = page
+      // eslint-disable-next-line no-mixed-operators
+      newIndex = newGroup * group
     } else {
       if (move === 'prev') {
-        newIndex = currentIndex - this._slidy.group
-        if (newIndex < 0) {
-          if (this._slidy.options.loop) {
-            newIndex = length + (currentIndex - this._slidy.group)
-          } else {
-            newIndex = currentIndex
-          }
-        }
+        newGroup = currentGroup - 1
+        newIndex = currentIndex - group
       }
+
       if (move === 'next') {
-        newIndex = currentIndex + this._slidy.group
-        if (newIndex >= length) {
-          if (this._slidy.options.loop) {
-            newIndex = currentIndex + this._slidy.group - length
-          } else {
-            newIndex = currentIndex
-          }
-        }
+        newGroup = currentGroup + 1
+        newIndex = currentIndex + group
       }
     }
 
-    console.log(currentIndex, newIndex)
+    if (newGroup < 0) {
+      newGroup = loop ? groupsMax - 1 : currentGroup
+    }
+
+    if (newGroup >= groupsMax) {
+      newGroup = loop ? 0 : currentGroup
+    }
+
+    if (newIndex < 0) {
+      if (loop) {
+        newIndex = preserveGroup
+          ? length - Math.abs(newIndex)
+          : length - (length % group)
+      } else {
+        newIndex = currentIndex
+      }
+    }
+
+    if (newIndex >= length) {
+      if (loop) {
+        newIndex = preserveGroup ? newIndex - length : 0
+      } else {
+        newIndex = currentIndex
+      }
+    }
+
+    // Get direction.
+    if (move === 'to') {
+      direction = newGroup > currentGroup ? 'next' : 'prev'
+    } else {
+      direction = move
+    }
 
     // If same than current -> dequeue + next.
-    if (newIndex === currentIndex) {
+    if (newGroup === currentGroup) {
       this._actions.shift()
       this._play()
 
       return
     }
 
-    // Get direction.
-    if (move === 'to') {
-      direction = newIndex > currentIndex ? 'next' : 'prev'
-    } else {
-      direction = move
+    // Update slide indexes and get current/next slides.
+    let currentSlides = items.slice(currentIndex, currentIndex + group)
+    let newSlides = items.slice(newIndex, newIndex + group)
+
+    if (currentIndex + group >= length && loop && preserveGroup) {
+      currentSlides = currentSlides.concat(
+        items.slice(0, group - (length - currentIndex))
+      )
     }
 
-    // Get slides.
-    // TODO refactor (KISS) + comments
-    const hasGroup = this._slidy.group > 1
-    const currentSlides =
-      currentIndex + this._slidy.group >= length
-        ? this._slidy.options.loop === true
-          ? items
-              .slice(currentIndex, currentIndex + this._slidy.group)
-              .concat(
-                items.slice(0, this._slidy.group - (length - currentIndex))
-              )
-          : items.slice(currentIndex, currentIndex + this._slidy.group)
-        : items.slice(currentIndex, currentIndex + this._slidy.group)
-
-    const newSlides =
-      newIndex + this._slidy.group >= length
-        ? this._slidy.options.loop === true
-          ? items
-              .slice(newIndex, newIndex + this._slidy.group)
-              .concat(items.slice(0, this._slidy.group - (length - newIndex)))
-          : items.slice(newIndex, newIndex + this._slidy.group)
-        : items.slice(newIndex, newIndex + this._slidy.group)
+    if (newIndex + group >= length && loop && preserveGroup) {
+      newSlides = newSlides.concat(items.slice(0, group - (length - newIndex)))
+    }
 
     // Set new index.
     this._slidy.newIndex = newIndex
+    this._slidy.newGroup = newGroup
 
     // Start slide.
     this._slidy.hooks.call('beforeSlide', this._slidy, { direction, animate })
@@ -153,18 +168,19 @@ export class Queue {
     transition
       .call(
         this._slidy,
-        hasGroup ? currentSlides : currentSlides[0],
+        group > 1 ? currentSlides : currentSlides[0],
         newSlides,
         { direction, trigger }
       )
       .then(() => {
-        // Update indexes, queue, status and active class.
+        // Update indexes, manager, status and active class.
         this._slidy.oldIndex = currentIndex
         this._slidy.currentIndex = newIndex
+        this._slidy.currentGroup = newGroup
         this._actions.shift()
         this._isAnimating = false
 
-        console.log(currentIndex, newIndex)
+        // console.log(currentIndex, newIndex)
 
         newSlides.forEach(s => {
           s.classList.add('is-active')

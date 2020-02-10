@@ -34,9 +34,10 @@ export interface Options {
   loop?: boolean
   namespace?: string
   nav?: boolean | string
-  queue?: number
+  manager?: number
   pagination?: boolean | string
   pause?: boolean
+  preserveGroup?: boolean
   resize?: boolean
   reverse?: boolean
   swipe?: boolean

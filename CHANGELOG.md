@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/epicagency/slidy/compare/v1.0.0...v1.0.1) (2020-02-11)
+
+### Bug Fixes
+
+- :heavy_minus_sign: remove unused deps ([eb03aa5](https://github.com/epicagency/slidy/commit/eb03aa52cd7e3ab534563cd72cfdbbda1c3cbd97))
+
 ## [0.11.0](https://github.com/epicagency/slidy/compare/v0.10.0...v0.11.0) (2020-02-11)
 
 ### ⚠ BREAKING CHANGES

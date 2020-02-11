@@ -1,5 +1,5 @@
 import Slidy from '..'
-import { Direction, Action, Transition } from '../defs'
+import { Direction, Action, Transition, TransitionInfos } from '../defs'
 
 /**
  * Create manager.
@@ -94,7 +94,8 @@ export class Manager {
       return
     }
 
-    const [{ move, trigger, page, animate }] = this._actions
+    const [{ move, trigger, index, animate }] = this._actions
+    const infos: TransitionInfos = { trigger, index, animate }
     const { items } = this._slidy
     const { length } = items
     const {
@@ -112,7 +113,7 @@ export class Manager {
 
     // Get the newIndex according to "move type"
     if (move === 'to') {
-      newGroup = page
+      newGroup = index
       newIndex = newGroup * group
     } else {
       if (move === 'prev') {
@@ -167,6 +168,8 @@ export class Manager {
       direction = move
     }
 
+    infos.direction = direction
+
     // If same than current -> dequeue + next.
     if (newGroup === currentGroup) {
       this._actions.shift()
@@ -184,7 +187,7 @@ export class Manager {
     this._slidy.newGroup = newGroup
 
     // Start slide.
-    this._slidy.hooks.call('beforeSlide', this._slidy, { direction, animate })
+    this._slidy.hooks.call('beforeSlide', this._slidy, infos)
 
     // Update status and active class.
     this._isAnimating = true
@@ -214,10 +217,7 @@ export class Manager {
         })
 
         // End slide.
-        this._slidy.hooks.call('afterSlide', this._slidy, {
-          direction,
-          animate,
-        })
+        this._slidy.hooks.call('afterSlide', this._slidy, infos)
 
         // Play next queued transition.
         this._play()

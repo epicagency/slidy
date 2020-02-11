@@ -26,26 +26,35 @@ then a Slidy instance with some options (including your transition animation):
 ```js
 import { Slidy } from 'epic-slidy'
 
-// new instance with HTMLElement or CSS selector
-new Slidy('.if-you-want', {
+const transition = (
+  currentSlide: HTMLElement | HTMLElement[],
+  newSlide: HTMLElement | HTMLElement[],
+  {
+    animate: boolean,
+    direction: 'prev' | 'next',
+    index: number, // Group index
+    trigger:
+      'auto' |
+      'click' |
+      'tap' |
+      'drag' |
+      'swipe' |
+      'nav' |
+      'pagination' |
+      'controls',
+  }
+) => Promise.resolve() // Do what you want here and return a promise…
+
+// New slider with HTMLElement or CSS selector
+const slider = new Slidy('.if-you-want', {
   controls: true,
   nav: true,
-  transition: myAmazingAnimation,
+  transition,
 })
-
-const myAmazingAnimation = function myAmazingAnimation(
-  currentSlide,
-  newSlide,
-  direction
-) {
-  /**
-   * @param {HTMLElement} currentSlide - current slide (.slidy__item)
-   * @param {HTMLElement} newSlide - new slide (.slidy__item)
-   * @param {string} direction -  next or prev
-   *
-   * Do what you want here and return a promise…
-   */
-}
+// Use some hooks
+slider.on('beforeInit', cb)
+// Then init
+slider.init()
 ```
 
 and you will get this:
@@ -125,6 +134,33 @@ and you will get this:
 - `nav: '<div>${thumb}</div>'` -> custom "thumb" navigation
 
 > If slide elements have a `data-slidy-nav` attribute, this will override "number" or "thumb" content…
+
+## Hooks
+
+### Usage
+
+```js
+slider.on('hookName', function cb() {})
+```
+
+### List
+
+```typescript
+type beforeInit = (el: HTMLElement) => void
+type afterInit = (el: HTMLElement) => void
+type afterResize = (el: HTMLElement) => void
+type preventSlide: (action: Action) => boolean
+type beforeSlide = (
+    currentIndex: number,
+    newIndex: number,
+    infos: TransitionInfos
+  ) => void
+type afterSlide = (
+    currentIndex: number,
+    newIndex: number,
+    infos: TransitionInfos
+  ) => void
+```
 
 ---
 

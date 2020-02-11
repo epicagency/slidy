@@ -31,7 +31,7 @@ export interface Options {
 
 interface BaseAction {
   trigger: Trigger
-  page?: number
+  index?: number
   animate?: boolean
 }
 
@@ -46,7 +46,7 @@ export interface Action extends BaseAction {
  * Used by transition callback.
  */
 export interface TransitionInfos extends BaseAction {
-  direction: Direction
+  direction?: Direction
 }
 
 export type Direction = 'prev' | 'next'
@@ -93,11 +93,7 @@ export interface HooksCallbacks {
   beforeInit: (el: HTMLElement) => void
   afterInit: (el: HTMLElement) => void
   afterResize: (el: HTMLElement) => void
-  preventSlide: (
-    currentIndex: number,
-    newIndex: number,
-    infos: TransitionInfos
-  ) => boolean
+  preventSlide: (action: Action) => boolean
   beforeSlide: (
     currentIndex: number,
     newIndex: number,

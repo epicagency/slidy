@@ -121,7 +121,7 @@ export default class Slidy {
     this.newGroup = this.currentGroup
 
     // TODO: fix starting at index === 1 && group === 3 && !preserveGroup
-    // currentGroup (items, page, …) === 1 but
+    // currentGroup === 1 but
     // 'controls/prev' does not display group#0 (but loops to the end)
     if (this.newIndex % this.group !== 0 && !this.options.preserveGroup) {
       console.warn('Slidy: index does not match with group!')
@@ -252,21 +252,6 @@ export default class Slidy {
       return
     }
 
-    // TODO: delete…
-    // let newIndex
-
-    // if (this.group === 1) {
-    //   newIndex = this.currentIndex - 1
-    // } else {
-    //   newIndex = this.currentGroup - 1
-    // }
-
-    // if (newIndex < 0) {
-    //   if (!this._opts.loop) {
-    //     return
-    //   }
-    //   newIndex = this.groupsMax - 1
-    // }
     this.slide({ move: 'prev', trigger })
   }
 
@@ -280,29 +265,14 @@ export default class Slidy {
       return
     }
 
-    // TODO: delete…
-    // let newIndex
-
-    // if (this.group === 1) {
-    //   newIndex = this.currentIndex + 1
-    // } else {
-    //   newIndex = this.currentGroup + 1
-    // }
-
-    // if (newIndex === this.groupsMax) {
-    //   if (!this._opts.loop) {
-    //     return
-    //   }
-    //   newIndex = 0
-    // }
     this.slide({ move: 'next', trigger })
   }
 
   /**
    * Navigate to slide by index.
    */
-  public slideTo(page: number, trigger: Trigger, animate = true) {
-    this.slide({ move: 'to', trigger, page, animate })
+  public slideTo(index: number, trigger: Trigger, animate = true) {
+    this.slide({ move: 'to', trigger, index, animate })
   }
 
   /**
@@ -316,7 +286,7 @@ export default class Slidy {
 
     if (this._manager) {
       this._manager.add({
-        page: null,
+        index: null,
         animate: true,
         ...action,
       })

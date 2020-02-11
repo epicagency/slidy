@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "strict": true,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "lib": ["dom", "esnext"],
+    "target": "es5"
+  },
+  "exclude": ["node_modules", "**/__*__/**/*"]
+}

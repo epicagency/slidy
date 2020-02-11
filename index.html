@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      .slidy__item {
+        padding: 2rem;
+        border: 1px dotted gold;
+      }
+      .is-active {
+        background-color: lime;
+      }
+      .slidy-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <ul>
+      <li>Item1</li>
+      <li>Item2</li>
+      <li>Item3</li>
+      <li>Item4</li>
+      <li>Item5</li>
+      <li>Item6</li>
+      <li>Item7</li>
+    </ul>
+    <script type="module">
+      const list = document.querySelector('ul')
+      import('./dist/slidy.mjs').then(data => {
+        const Slidy = data.default
+        const slider = new Slidy(list, {
+          drag: true,
+          controls: true,
+          keyboard: true,
+          loop: true,
+          pagination: '---',
+          nav: true,
+          zerofill: 3,
+          group: 2,
+          index: 0,
+          preserveGroup: true,
+          transition: (current, next) => {
+            return Promise.resolve()
+          },
+        })
+
+        console.log(slider)
+        // slider.on('beforeInit', () => {
+        //   console.log('beforeInit')
+        // })
+        // slider.on('afterInit', () => {
+        //   console.log('afterInit')
+        // })
+        // slider.on('afterResize', () => {
+        //   console.log('afterResize')
+        // })
+        // slider.on('beforeSlide', () => {
+        //   console.log('beforeSlide')
+        // })
+        // slider.on('afterSlide', () => {
+        //   console.log('afterSlide')
+        // })
+        slider.init()
+      })
+    </script>
+  </body>
+</html>

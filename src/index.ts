@@ -2,7 +2,14 @@
  * Slidy main file.
  */
 
-import { Action, GestureDirection, HooksNames, Options, Trigger } from './defs'
+import {
+  Action,
+  GestureDirection,
+  HooksNames,
+  Options,
+  SupportedEvents,
+  Trigger,
+} from './defs'
 import { Controls, Events, Hooks, Nav, Pagination, Manager } from './modules'
 import { debounce, touchevents } from './utils'
 
@@ -10,37 +17,36 @@ import { debounce, touchevents } from './utils'
  * Slidy main class.
  */
 export default class Slidy {
-  // Hooks manager
   public hooks = new Hooks()
+
   public el: HTMLElement
   public outer: HTMLDivElement
+  public items: HTMLElement[]
 
   public context: any // eslint-disable-line @typescript-eslint/no-explicit-any
   public data: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  public group: number
   public currentIndex: number
   public newIndex: number
-  public oldIndex: number
-  public items: HTMLElement[]
   public itemsMax: number
+  public group: number
   public currentGroup: number
   public newGroup: number
   public groupsMax: number
 
-  private _opts: Options
-  private _debounceDelay: number
   private _currentItems: HTMLElement[]
-  private _hasPause: boolean
-  private _hasErrors: boolean
 
   private _manager: Manager
   private _controls: Controls
   private _nav: Nav
   private _pagination: Pagination
-
-  private _destroyed: boolean
   private _eventManager: Events
+
+  private _opts: Options
+  private _debounceDelay: number
+  private _hasPause: boolean
+  private _hasErrors: boolean
+  private _destroyed: boolean
   private _t1: number
   private _t2: NodeJS.Timeout
 
@@ -56,7 +62,6 @@ export default class Slidy {
     if (typeof element === 'string') {
       el = document.querySelectorAll(element as string)
     }
-    /* eslint-enable no-param-reassign */
 
     if (!element || (el && el.length === 0)) {
       this._hasErrors = true
@@ -89,7 +94,7 @@ export default class Slidy {
       pagination: false, // Mixed: create pagination (1[separator]10)
       pause: true, // Boolean: pause on hover
       preserveGroup: true, // Boolean: enable if group show
-      manager: 1, // Integer: manager max items
+      queue: 1, // Integer: queue max items
       resize: true, // Boolean: enable resize event and callback
       reverse: false, // Boolean: reverse directions / controls
       swipe: false, // Boolean: enable swipe
@@ -114,8 +119,10 @@ export default class Slidy {
     this.group = Number(this._opts.group) || this._opts.group()
     this.currentGroup = Math.ceil(this.currentIndex / this.group)
     this.newGroup = this.currentGroup
-    this.oldIndex = null
 
+    // TODO: fix starting at index === 1 && group === 3 && !preserveGroup
+    // currentGroup (items, page, …) === 1 but
+    // 'controls/prev' does not display group#0 (but loops to the end)
     if (this.newIndex % this.group !== 0 && !this.options.preserveGroup) {
       console.warn('Slidy: index does not match with group!')
     }
@@ -135,7 +142,6 @@ export default class Slidy {
   /**
    * Init component.
    */
-
   public init() {
     if (this._hasErrors) {
       console.error('Slidy: fix errors!')
@@ -158,7 +164,10 @@ export default class Slidy {
 
     this.bind()
 
+    // Start initialization
     this.hooks.call('beforeInit', this, this.el)
+
+    this._manager = new Manager(this, this._opts.transition)
 
     // Set height.
     // To get the most 'correct' auto-height,
@@ -174,20 +183,15 @@ export default class Slidy {
     this.el.parentNode.insertBefore(this.outer, this.el)
     this.outer.appendChild(this.el)
 
+    // Get current items.
+    this._currentItems = this._manager.getCurrentItems(this.currentIndex)
+
     // Add CSS classes.
     this.outer.classList.add(`${this.namespace}-outer`)
     this.el.classList.add(this.namespace)
-
     this.items.forEach(slide => {
       slide.classList.add(`${this.namespace}__item`)
     })
-
-    // Set active class on currentIndex.
-    // TODO: Mix with existing code
-    this._currentItems = this.items.slice(
-      this.currentIndex,
-      this.currentIndex + this.group
-    )
     // Set active class on each element of currentItems.
     this._currentItems.forEach(slide => {
       slide.classList.add('is-active')
@@ -203,8 +207,6 @@ export default class Slidy {
     if (this._opts.click) {
       this.el.style.cursor = 'pointer'
     }
-
-    this._manager = new Manager(this, this._opts.transition)
 
     // Add controls.
     if (this._opts.controls) {
@@ -230,9 +232,8 @@ export default class Slidy {
   }
 
   /**
-   * API.
+   * API (hooks)
    */
-
   public on(hookName: HooksNames, cb: Function) {
     this.hooks.add(hookName, cb)
   }
@@ -244,7 +245,6 @@ export default class Slidy {
   /**
    * Navigate to previous slide.
    */
-
   public slidePrev(trigger: Trigger, force = false) {
     if (this._opts.reverse && !force) {
       this.slideNext(trigger, true)
@@ -252,27 +252,27 @@ export default class Slidy {
       return
     }
 
-    let newIndex
+    // TODO: delete…
+    // let newIndex
 
-    if (this.group === 1) {
-      newIndex = this.currentIndex - 1
-    } else {
-      newIndex = this.currentGroup - 1
-    }
+    // if (this.group === 1) {
+    //   newIndex = this.currentIndex - 1
+    // } else {
+    //   newIndex = this.currentGroup - 1
+    // }
 
-    if (newIndex < 0) {
-      if (!this._opts.loop) {
-        return
-      }
-      newIndex = this.groupsMax - 1
-    }
+    // if (newIndex < 0) {
+    //   if (!this._opts.loop) {
+    //     return
+    //   }
+    //   newIndex = this.groupsMax - 1
+    // }
     this.slide({ move: 'prev', trigger })
   }
 
   /**
    * Navigate to next slide.
    */
-
   public slideNext(trigger: Trigger, force = false) {
     if (this._opts.reverse && !force) {
       this.slidePrev(trigger, true)
@@ -280,27 +280,27 @@ export default class Slidy {
       return
     }
 
-    let newIndex
+    // TODO: delete…
+    // let newIndex
 
-    if (this.group === 1) {
-      newIndex = this.currentIndex + 1
-    } else {
-      newIndex = this.currentGroup + 1
-    }
+    // if (this.group === 1) {
+    //   newIndex = this.currentIndex + 1
+    // } else {
+    //   newIndex = this.currentGroup + 1
+    // }
 
-    if (newIndex === this.groupsMax) {
-      if (!this._opts.loop) {
-        return
-      }
-      newIndex = 0
-    }
+    // if (newIndex === this.groupsMax) {
+    //   if (!this._opts.loop) {
+    //     return
+    //   }
+    //   newIndex = 0
+    // }
     this.slide({ move: 'next', trigger })
   }
 
   /**
    * Navigate to slide by index.
    */
-
   public slideTo(page: number, trigger: Trigger, animate = true) {
     this.slide({ move: 'to', trigger, page, animate })
   }
@@ -308,7 +308,6 @@ export default class Slidy {
   /**
    * Add move to the manager.
    */
-
   public slide(action: Action) {
     if (this._opts.auto) {
       clearInterval(this._t1)
@@ -331,13 +330,14 @@ export default class Slidy {
    * Start autoplay.
    * Enabled via "auto" and used by "pause" options.
    */
-
   public start(delay = this._opts.interval, auto = this._opts.auto) {
     this._t2 = setTimeout(() => {
       this.slideNext('auto')
+
       if (!this._hasPause && this._opts.pause) {
-        this.outer.addEventListener('mouseenter', this.onEnter)
+        this.outer.addEventListener('mouseenter', this._onEnter)
       }
+
       if (auto) {
         clearInterval(this._t1)
         this._t1 = setInterval(this.slideNext, this._opts.interval)
@@ -349,10 +349,9 @@ export default class Slidy {
    * Pause autoplay.
    * Used by "pause" options.
    */
-
   public stop() {
     if (this._hasPause) {
-      this.outer.removeEventListener('mouseenter', this.onEnter)
+      this.outer.removeEventListener('mouseenter', this._onEnter)
     }
     clearTimeout(this._t2)
     clearInterval(this._t1)
@@ -361,7 +360,6 @@ export default class Slidy {
   /**
    * Destroy component.
    */
-
   public destroy() {
     this._destroyed = true
 
@@ -378,11 +376,11 @@ export default class Slidy {
     if (this._opts.resize) {
       window.removeEventListener('resize', this.onResize)
     }
-    this.el.removeEventListener('mouseenter', this.onEnter)
-    this.el.removeEventListener('mouseleave', this.onLeave)
-    this.el.removeEventListener('click', this.onClick)
+    this.el.removeEventListener('mouseenter', this._onEnter)
+    this.el.removeEventListener('mouseleave', this._onLeave)
+    this.el.removeEventListener('click', this._onClick)
 
-    // Remove Hammer.manager.
+    // Remove event manager.
     if (this._eventManager) {
       this._eventManager.destroy()
       delete this._eventManager
@@ -428,14 +426,13 @@ export default class Slidy {
   /**
    * Bind event handlers.
    */
-
   private bind() {
-    this.onEnter = this.onEnter.bind(this)
-    this.onLeave = this.onLeave.bind(this)
-    this.onClick = this.onClick.bind(this)
-    this.onTap = this.onTap.bind(this)
-    this.onSwipe = this.onSwipe.bind(this)
-    this.onDrag = this.onDrag.bind(this)
+    this._onEnter = this._onEnter.bind(this)
+    this._onLeave = this._onLeave.bind(this)
+    this._onClick = this._onClick.bind(this)
+    this._onTap = this._onTap.bind(this)
+    this._onMove = this._onMove.bind(this)
+    // // this.onDrag = this.onDrag.bind(this)
 
     if (this._opts.resize) {
       this.onResize = debounce(this.onResize, this._debounceDelay).bind(this)
@@ -444,7 +441,7 @@ export default class Slidy {
     }
 
     if (this._opts.pause && this._opts.auto) {
-      this.outer.addEventListener('mouseenter', this.onEnter)
+      this.outer.addEventListener('mouseenter', this._onEnter)
       this._hasPause = true
     }
 
@@ -452,18 +449,17 @@ export default class Slidy {
     this._eventManager = new Events(this.el)
 
     if (touchevents()) {
-      this._opts.tap && this._eventManager.on('tap', this.onTap)
-      this._opts.swipe && this._eventManager.on('swipe', this.onSwipe)
+      this._opts.tap && this._eventManager.on('tap', this._onTap)
+      this._opts.swipe && this._eventManager.on('swipe', this._onMove)
     } else {
-      this._opts.click && this._eventManager.on('click', this.onClick)
-      this._opts.drag && this._eventManager.on('drag', this.onDrag)
+      this._opts.click && this._eventManager.on('click', this._onClick)
+      this._opts.drag && this._eventManager.on('drag', this._onMove)
     }
   }
 
   /**
    * Height calculation if auto.
    */
-
   private reset() {
     if (this._opts.height === 'auto') {
       // Reset inline height.
@@ -493,14 +489,9 @@ export default class Slidy {
   }
 
   /**
-   * Events.
-   */
-
-  /**
    * RWD reset.
-   * Mainly for height…
+   * Mainly for height… but also for "responsive" groups
    */
-
   private onResize() {
     if (!this._destroyed) {
       this.reset()
@@ -517,8 +508,7 @@ export default class Slidy {
    * Click on slider to go to the next slide.
    * Enabled via "click" option.
    */
-
-  private onClick() {
+  private _onClick() {
     this.slideNext('click')
   }
 
@@ -526,36 +516,20 @@ export default class Slidy {
    * Same as click but for touch devices.
    * Enabled via "tap" option.
    */
-
-  private onTap() {
+  private _onTap() {
     this.slideNext('tap')
   }
 
   /**
-   * Complement gesture for horizontal mouse drag.
+   * Complement gesture for horizontal mouse drag or swipe.
    * Enabled via "drag" option.
    */
-
-  private onDrag(direction: GestureDirection) {
+  private _onMove(direction: GestureDirection, type: SupportedEvents) {
     if (direction === 'right') {
-      this.slidePrev('drag')
+      this.slidePrev(type as Trigger)
     }
     if (direction === 'left') {
-      this.slideNext('drag')
-    }
-  }
-
-  /**
-   * Complement gesture for horizontal swipe.
-   * Enabled via "swipe" option.
-   */
-
-  private onSwipe(direction: GestureDirection) {
-    if (direction === 'right') {
-      this.slidePrev('swipe')
-    }
-    if (direction === 'left') {
-      this.slideNext('swipe')
+      this.slideNext(type as Trigger)
     }
   }
 
@@ -563,16 +537,15 @@ export default class Slidy {
    * Play/pause on hover.
    * Enabled via "auto" + "pause" options.
    */
-
-  private onEnter() {
-    this.outer.removeEventListener('mouseenter', this.onEnter)
+  private _onEnter() {
+    this.outer.removeEventListener('mouseenter', this._onEnter)
     this.stop()
-    this.outer.addEventListener('mouseleave', this.onLeave)
+    this.outer.addEventListener('mouseleave', this._onLeave)
   }
 
-  private onLeave() {
-    this.outer.removeEventListener('mouseleave', this.onLeave)
+  private _onLeave() {
+    this.outer.removeEventListener('mouseleave', this._onLeave)
     this.start()
-    this.outer.addEventListener('mouseenter', this.onEnter)
+    this.outer.addEventListener('mouseenter', this._onEnter)
   }
 }

@@ -1,6 +1,3 @@
-/* eslint-disable indent */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable max-depth */
 import Slidy from '..'
 import { Direction, Action, Transition } from '../defs'
 
@@ -20,14 +17,13 @@ export class Manager {
   constructor(private _slidy: Slidy, transition: Transition) {
     this._transition = transition
     this._isAnimating = false
-    this._max = this._slidy.options.manager
+    this._max = this._slidy.options.queue
     this._actions = []
   }
 
   /**
-   * Add "move" to Manager.
+   * Add "action" to Manager.
    */
-
   public add(action: Action) {
     // Prevent slide ?
     if (this._slidy.hooks.call('preventSlide', this._slidy, action)) {
@@ -48,15 +44,51 @@ export class Manager {
   /**
    * Empty manager.
    */
-
   public empty() {
     this._actions = []
   }
 
   /**
+   * Get current items.
+   * Used for transitions and CSS active styling
+   */
+  public getCurrentItems(currentIndex: number): HTMLElement[] {
+    const { group, items } = this._slidy
+    const { loop, preserveGroup } = this._slidy.options
+
+    let currentItems = items.slice(currentIndex, currentIndex + group)
+
+    if (currentIndex + group >= items.length && loop && preserveGroup) {
+      currentItems = currentItems.concat(
+        items.slice(0, group - (items.length - currentIndex))
+      )
+    }
+
+    return currentItems
+  }
+
+  /**
+   * Get new items.
+   * Used for transitions and CSS active styling
+   */
+  public getNewItems(newIndex: number): HTMLElement[] {
+    const { group, items } = this._slidy
+    const { loop, preserveGroup } = this._slidy.options
+
+    let newItems = items.slice(newIndex, newIndex + group)
+
+    if (newIndex + group >= items.length && loop && preserveGroup) {
+      newItems = newItems.concat(
+        items.slice(0, group - (items.length - newIndex))
+      )
+    }
+
+    return newItems
+  }
+
+  /**
    * Play manager.
    */
-
   private _play() {
     if (this._actions.length === 0) {
       return
@@ -78,9 +110,9 @@ export class Manager {
     let newGroup: number
     let direction: Direction
 
+    // Get the newIndex according to "move type"
     if (move === 'to') {
       newGroup = page
-      // eslint-disable-next-line no-mixed-operators
       newIndex = newGroup * group
     } else {
       if (move === 'prev') {
@@ -94,6 +126,8 @@ export class Manager {
       }
     }
 
+    // Manage group with loop option.
+    // If no loop, current is ok…
     if (newGroup < 0) {
       newGroup = loop ? groupsMax - 1 : currentGroup
     }
@@ -102,11 +136,14 @@ export class Manager {
       newGroup = loop ? 0 : currentGroup
     }
 
+    // Manage index with loop option.
+    // If no loop, current is ok…
     if (newIndex < 0) {
       if (loop) {
+        // Depending on `preserveGroup`…
         newIndex = preserveGroup
-          ? length - Math.abs(newIndex)
-          : length - (length % group)
+          ? length - Math.abs(newIndex) // Get some item at the end
+          : length - (length % group) // Get the last group
       } else {
         newIndex = currentIndex
       }
@@ -114,7 +151,10 @@ export class Manager {
 
     if (newIndex >= length) {
       if (loop) {
-        newIndex = preserveGroup ? newIndex - length : 0
+        // Depending on `preserveGroup`…
+        newIndex = preserveGroup
+          ? newIndex - length // Get some item in the begining
+          : 0 // Get the first group
       } else {
         newIndex = currentIndex
       }
@@ -136,18 +176,8 @@ export class Manager {
     }
 
     // Update slide indexes and get current/next slides.
-    let currentSlides = items.slice(currentIndex, currentIndex + group)
-    let newSlides = items.slice(newIndex, newIndex + group)
-
-    if (currentIndex + group >= length && loop && preserveGroup) {
-      currentSlides = currentSlides.concat(
-        items.slice(0, group - (length - currentIndex))
-      )
-    }
-
-    if (newIndex + group >= length && loop && preserveGroup) {
-      newSlides = newSlides.concat(items.slice(0, group - (length - newIndex)))
-    }
+    const currentSlides = this.getCurrentItems(currentIndex)
+    const newSlides = this.getNewItems(newIndex)
 
     // Set new index.
     this._slidy.newIndex = newIndex
@@ -174,13 +204,10 @@ export class Manager {
       )
       .then(() => {
         // Update indexes, manager, status and active class.
-        this._slidy.oldIndex = currentIndex
         this._slidy.currentIndex = newIndex
         this._slidy.currentGroup = newGroup
         this._actions.shift()
         this._isAnimating = false
-
-        // console.log(currentIndex, newIndex)
 
         newSlides.forEach(s => {
           s.classList.add('is-active')
@@ -191,6 +218,7 @@ export class Manager {
           direction,
           animate,
         })
+
         // Play next queued transition.
         this._play()
       })

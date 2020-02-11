@@ -1,23 +1,6 @@
-interface BaseAction {
-  trigger: Trigger
-  page?: number
-  animate?: boolean
-}
-
-export interface Action extends BaseAction {
-  move: Move
-}
-
-export interface TransitionInfos extends BaseAction {
-  direction: Direction
-}
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface GenericObject {
-  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
-interface GroupFn {
-  (): number
+  [key: string]: any
 }
 
 export interface Options {
@@ -34,10 +17,10 @@ export interface Options {
   loop?: boolean
   namespace?: string
   nav?: boolean | string
-  manager?: number
   pagination?: boolean | string
   pause?: boolean
   preserveGroup?: boolean
+  queue?: number
   resize?: boolean
   reverse?: boolean
   swipe?: boolean
@@ -46,11 +29,25 @@ export interface Options {
   zerofill?: boolean | number
 }
 
-export type Transition = (
-  currentSlides: HTMLElement | HTMLElement[],
-  newSlides: HTMLElement | HTMLElement[],
-  infos: TransitionInfos
-) => Promise<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+interface BaseAction {
+  trigger: Trigger
+  page?: number
+  animate?: boolean
+}
+
+/**
+ * Initiated by Slidy `slide` method, used by manager.
+ */
+export interface Action extends BaseAction {
+  move: Move
+}
+
+/**
+ * Used by transition callback.
+ */
+export interface TransitionInfos extends BaseAction {
+  direction: Direction
+}
 
 export type Direction = 'prev' | 'next'
 export type Move = Direction | 'to'
@@ -63,6 +60,7 @@ export type Trigger =
   | 'nav'
   | 'pagination'
   | 'controls'
+export type GestureDirection = 'left' | 'right'
 export type SupportedEvents = 'click' | 'tap' | 'drag' | 'swipe'
 export type SupportedTypes =
   | 'click'
@@ -75,7 +73,12 @@ export type SupportedTypes =
   | 'pointerdown'
   | 'pointerup'
   | 'pointermove'
-export type GestureDirection = 'left' | 'right'
+
+export type Transition = (
+  currentSlides: HTMLElement | HTMLElement[],
+  newSlides: HTMLElement | HTMLElement[],
+  infos: TransitionInfos
+) => Promise<any>
 
 export type HooksNames =
   | 'beforeInit'
@@ -85,6 +88,7 @@ export type HooksNames =
   | 'beforeSlide'
   | 'afterSlide'
 
+// TODO: definifions for callbacks with hooks…
 export interface HooksCallbacks {
   beforeInit: (el: HTMLElement) => void
   afterInit: (el: HTMLElement) => void

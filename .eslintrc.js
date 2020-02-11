@@ -280,7 +280,7 @@ module.exports = {
     strict: 2,
     'symbol-description': 2,
     'template-curly-spacing': 2,
-    'valid-jsdoc': 2,
+    'valid-jsdoc': 0,
     'vars-on-top': 2,
     'wrap-iife': 2,
     'wrap-regex': 0,

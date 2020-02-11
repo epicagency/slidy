@@ -81,29 +81,31 @@ and you will get this:
 
 ## Config / options
 
-| Option     | Values                                          | Default | Description                                                                      |
-| ---------- | ----------------------------------------------- | ------- | -------------------------------------------------------------------------------- |
-| auto       | Boolean                                         | false   | Auto-start                                                                       |
-| click      | Boolean                                         | true    | Enable next slide on click                                                       |
-| tap        | Boolean                                         | false   | Enable next slide on tap                                                         |
-| drag       | Boolean                                         | false   | Enable horizontal mouse drag                                                     |
-| swipe      | Boolean                                         | false   | Enable horizontal swipe                                                          |
-| controls   | Boolean or 'template string'                    | false   | Next / prev buttons (see examples)                                               |
-| debounce   | [integer]                                       | 100     | Debounce delay on resize                                                         |
-| height     | 'auto' or [integer]                             | 'auto'  | Auto or pixel height                                                             |
-| index      | [integer]                                       | 0       | Initial index                                                                    |
-| interval   | [integer]                                       | 2000    | Time (ms) betweeen 2 transitions                                                 |
-| keyboard   | Boolean                                         | false   | Enable keyboard arrows controls                                                  |
-| loop       | Boolean                                         | true    | loop … or not                                                                    |
-| namespace  | String                                          | 'slidy' | CSS custom [class]namespace                                                      |
-| nav        | Boolean, 'number', 'thumb' or 'template string' | false   | Display a navigation with numbers / thumbs within custom template (see examples) |
-| queue      | [integer]                                       | 1       | Queue max items                                                                  |
-| pagination | Boolean, 'separator string'                     | false   | Display a pagination                                                             |
-| pause      | Boolean                                         | true    | Pause on hover                                                                   |
-| resize     | Boolean                                         | true    | Enable resize event and callback                                                 |
-| reverse    | Boolean                                         | false   | Reverse directions / controls                                                    |
-| transition | Function                                        | null    | Animation function which returns a promise                                       |
-| zerofill   | Boolean, [integer]                              | false   | 'Zerofill' (1 -> 01) numbers for both nav or pagination                          |
+| Option        | Values                                            | Default | Description                                                                      |
+| ------------- | ------------------------------------------------- | ------- | -------------------------------------------------------------------------------- |
+| auto          | `boolean`                                         | false   | Auto-start                                                                       |
+| click         | `boolean`                                         | true    | Enable next slide on click                                                       |
+| controls      | `boolean` or 'template string'                    | false   | Next / prev buttons (see examples)                                               |
+| debounce      | `number`                                          | 100     | Debounce delay on resize                                                         |
+| drag          | `boolean`                                         | false   | Enable horizontal mouse drag                                                     |
+| group         | `number` or `() => number`                        | 'auto'  | Auto or pixel height                                                             |
+| height        | 'auto' or `number`                                | 'auto'  | Auto or pixel height                                                             |
+| index         | `number`                                          | 0       | Initial index                                                                    |
+| interval      | `number`                                          | 2000    | Time (ms) betweeen 2 transitions                                                 |
+| keyboard      | `boolean`                                         | false   | Enable keyboard arrows controls                                                  |
+| loop          | `boolean`                                         | true    | loop … or not                                                                    |
+| namespace     | `string`                                          | 'slidy' | CSS custom [class]namespace                                                      |
+| nav           | `boolean`, 'number', 'thumb' or 'template string' | false   | Display a navigation with numbers / thumbs within custom template (see examples) |
+| pagination    | `boolean` or 'separator string'                   | false   | Display a pagination                                                             |
+| pause         | `boolean`                                         | true    | Pause on hover                                                                   |
+| preserveGroup | `boolean`                                         | true    | On loop, force entire group (group: 2 -> **1** 2 3 4 **5**)                      |
+| queue         | `number`                                          | 1       | Queue max items                                                                  |
+| resize        | `boolean`                                         | true    | Enable resize event and callback                                                 |
+| reverse       | `boolean`                                         | false   | Reverse directions / controls                                                    |
+| swipe         | `boolean`                                         | false   | Enable horizontal swipe                                                          |
+| tap           | `boolean`                                         | false   | Enable next slide on tap                                                         |
+| transition    | `Function`                                        | null    | Animation function which returns a promise                                       |
+| zerofill      | `boolean` or `number`                             | false   | 'Zerofill' (1 -> 01) numbers for both nav or pagination                          |
 
 ### controls details
 

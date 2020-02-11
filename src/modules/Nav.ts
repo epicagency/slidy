@@ -49,6 +49,7 @@ export class Nav {
       return
     }
 
+    // Check nav 'type' (template | thumb | number)
     const type = this._opts.nav === true ? 'number' : this._opts.nav
 
     if (/\${(number|thumb)}/.test(type)) {
@@ -71,7 +72,6 @@ export class Nav {
   /**
    * Destroy component.
    */
-
   public destroy() {
     this._el.parentNode.removeChild(this._el)
 
@@ -82,11 +82,11 @@ export class Nav {
   /**
    * Init component.
    */
-
   private _init() {
     const { items, groupsMax, namespace: ns, outer } = this._slidy
     const { zerofill } = this._opts
 
+    // HTML elements.
     const tpl = document.createElement('template')
     const html = `<ol class="${ns}-nav">
   ${items
@@ -153,7 +153,6 @@ export class Nav {
   /**
    * Bind event handlers.
    */
-
   private _bind() {
     this._onClick = this._onClick.bind(this)
     this._clearActive = this._clearActive.bind(this)
@@ -168,7 +167,6 @@ export class Nav {
   /**
    * Bind nav handlers.
    */
-
   private _bindNav() {
     this._el.addEventListener('click', this._onClick)
   }
@@ -176,7 +174,6 @@ export class Nav {
   /**
    * Clear active nav item.
    */
-
   private _clearActive() {
     const currentItem = this._el.querySelector('.is-active')
 
@@ -193,7 +190,6 @@ export class Nav {
   /**
    * Set active nav item.
    */
-
   private _setActive() {
     const newItem = this._items[this._slidy.newGroup]
 
@@ -209,7 +205,6 @@ export class Nav {
   /**
    * On nav item click
    */
-
   private _onClick(e: MouseEvent) {
     const clicked = parents(
       e.target as HTMLElement,

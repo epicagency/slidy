@@ -16,7 +16,6 @@ export class Pagination {
   /**
    * Creates an instance of Pagination.
    */
-
   constructor(private _slidy: Slidy, private _opts: Options) {
     if (!this._opts.pagination) {
       return
@@ -29,7 +28,6 @@ export class Pagination {
   /**
    * Destroy component.
    */
-
   public destroy() {
     this._el.parentNode.removeChild(this._el)
   }
@@ -37,16 +35,17 @@ export class Pagination {
   /**
    * Init component.
    */
-
   private _init() {
     const { currentGroup, groupsMax, items, namespace: ns, outer } = this._slidy
     const { length } = items
     const { pagination, zerofill } = this._opts
 
+    // Text content.
     const cur = format(currentGroup + 1, length, zerofill)
     const sep = pagination === true ? '/' : (pagination as string)
     const tot = format(groupsMax, groupsMax, zerofill)
 
+    // HTML elements.
     const tpl = document.createElement('template')
     const html = `<div class="${ns}-pagination">
   <span class="${ns}--pagination__current">${cur}</span>
@@ -67,7 +66,6 @@ export class Pagination {
   /**
    * Bind event handlers.
    */
-
   private _bind() {
     this._slidy.hooks.add('beforeSlide', this._update.bind(this))
   }
@@ -75,7 +73,6 @@ export class Pagination {
   /**
    * Update current index.
    */
-
   private _update() {
     this._currentEl.textContent = format(
       this._slidy.newGroup + 1,

@@ -9,7 +9,6 @@ export class Controls {
   /**
    * Disable control.
    */
-
   private static disable(el: HTMLButtonElement) {
     el.setAttribute('disabled', '')
     el.classList.add('is-disabled')
@@ -18,7 +17,6 @@ export class Controls {
   /**
    * Enable control.
    */
-
   private static enable(el: HTMLButtonElement) {
     el.removeAttribute('disabled')
     el.classList.remove('is-disabled')
@@ -31,7 +29,6 @@ export class Controls {
   /**
    * Creates an instance of Controls.
    */
-
   constructor(private _slidy: Slidy, private _opts: Options) {
     this._init()
     this._bind()
@@ -40,7 +37,6 @@ export class Controls {
   /**
    * Destroy component.
    */
-
   public destroy() {
     this._el = document.querySelector('.slidy-controls')
     this._el.parentNode.removeChild(this._el)
@@ -50,7 +46,6 @@ export class Controls {
   /**
    * Init component.
    */
-
   private _init() {
     const { namespace: ns, outer } = this._slidy
     const { controls } = this._opts
@@ -86,7 +81,6 @@ export class Controls {
   /**
    * Bind event handlers.
    */
-
   private _bind() {
     this._prevClick = this._prevClick.bind(this)
     this._nextClick = this._nextClick.bind(this)
@@ -110,7 +104,6 @@ export class Controls {
   /**
    * Bind controls handlers
    */
-
   private _bindControls() {
     this._prev.addEventListener('click', this._prevClick)
     this._next.addEventListener('click', this._nextClick)
@@ -119,7 +112,6 @@ export class Controls {
   /**
    * On prev click.
    */
-
   private _prevClick() {
     this._slidy.slidePrev('controls')
   }
@@ -127,7 +119,6 @@ export class Controls {
   /**
    * On next click.
    */
-
   private _nextClick() {
     this._slidy.slideNext('controls')
   }
@@ -135,7 +126,6 @@ export class Controls {
   /**
    * Update controls.
    */
-
   private _update() {
     if (!this._opts.loop) {
       const { newIndex } = this._slidy

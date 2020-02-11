@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/epicagency/slidy/compare/v0.10.0...v0.11.0) (2020-02-11)
+
+### ⚠ BREAKING CHANGES
+
+- Hooks replace options. `init` method needs to be used…
+
+- :pencil: update doc + small fixes ([cb8c642](https://github.com/epicagency/slidy/commit/cb8c642b7fb383963765c8b6f74f9224736a326b))
+
 ## [0.10.0](https://github.com/epicagency/slidy/compare/v0.9.1...v0.10.0) (2020-02-11)
 
 ### ⚠ BREAKING CHANGES

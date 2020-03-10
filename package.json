@@ -18,7 +18,7 @@
   "browser": "dist/slidy.umd.js",
   "unpkg": "dist/slidy.umd.js",
   "module": "dist/slidy.mjs",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "source": "src/index.ts",
   "mangle": {
     "regex": "^_"

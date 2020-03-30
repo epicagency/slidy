@@ -65,7 +65,7 @@ export class Controls {
     const tpl = document.createElement('template')
     const html = `<div class="${ns}-controls">
   <button type="button" class="${ns}-controls__item--prev">${prev}</button>
-  <button type="button class="${ns}-controls__item--next">${next}</button>
+  <button type="button" class="${ns}-controls__item--next">${next}</button>
 </div>`
 
     tpl.innerHTML = html

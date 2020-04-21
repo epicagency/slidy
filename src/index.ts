@@ -449,7 +449,7 @@ export default class Slidy {
       const hasNoHeight = this.items[0].offsetHeight === 0
 
       this.items.forEach(item => {
-        if (hasNoHeight && item.hasChildNodes()) {
+        if (hasNoHeight && item.firstElementChild) {
           heights.push((item.firstElementChild as HTMLElement).offsetHeight)
         } else {
           heights.push(item.offsetHeight)

@@ -48,7 +48,7 @@ export default class Slidy {
   private _hasErrors: boolean
   private _destroyed: boolean
   private _t1: number
-  private _t2: NodeJS.Timeout
+  private _t2: number
 
   constructor(
     element: HTMLElement | string,
@@ -148,6 +148,7 @@ export default class Slidy {
 
       return
     }
+
     this.items = Array.from(this.el.children) as HTMLElement[]
     this.itemsMax = this.items.length
     this.groupsMax = Math.ceil(this.itemsMax / this.group)
@@ -280,8 +281,8 @@ export default class Slidy {
    */
   public slide(action: Action) {
     if (this._opts.auto) {
-      clearInterval(this._t1)
-      this._t1 = setInterval(this.slideNext, this._opts.interval)
+      window.clearInterval(this._t1)
+      this._t1 = window.setInterval(this.slideNext, this._opts.interval)
     }
 
     if (this._manager) {
@@ -301,7 +302,7 @@ export default class Slidy {
    * Enabled via "auto" and used by "pause" options.
    */
   public start(delay = this._opts.interval, auto = this._opts.auto) {
-    this._t2 = setTimeout(() => {
+    this._t2 = window.setTimeout(() => {
       this.slideNext('auto')
 
       if (!this._hasPause && this._opts.pause) {
@@ -309,8 +310,8 @@ export default class Slidy {
       }
 
       if (auto) {
-        clearInterval(this._t1)
-        this._t1 = setInterval(this.slideNext, this._opts.interval)
+        window.clearInterval(this._t1)
+        this._t1 = window.setInterval(this.slideNext, this._opts.interval)
       }
     }, delay)
   }
@@ -323,8 +324,8 @@ export default class Slidy {
     if (this._hasPause) {
       this.outer.removeEventListener('mouseenter', this._onEnter)
     }
-    clearTimeout(this._t2)
-    clearInterval(this._t1)
+    window.clearTimeout(this._t2)
+    window.clearInterval(this._t1)
   }
 
   /**

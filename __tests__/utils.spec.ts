@@ -1,4 +1,4 @@
-import { debounce, format, parents, parseTpl } from '../src/utils'
+import { debounce, format, parents, parseTpl, touchevents } from '../src/utils'
 
 /**
  * Test Parents
@@ -40,6 +40,44 @@ describe('parents', () => {
 })
 
 /**
+ * Test touchevents
+ */
+
+describe('touchevents', () => {
+  test('is false', () => {
+    expect(touchevents()).toBeFalsy()
+  })
+  test('is true', () => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, no-empty-function
+    window.ontouchstart = () => {}
+
+    expect(touchevents()).toBeTruthy()
+  })
+})
+
+/**
+ * Test Format
+ */
+
+describe('format', () => {
+  test('is not needed', () => {
+    expect(format(1, 9, true)).toBe('1')
+  })
+
+  test('is filled', () => {
+    expect(format(1, 10, true)).toBe('01')
+  })
+
+  test('is not filled', () => {
+    expect(format(1, 10, false)).toBe('1')
+  })
+
+  test('is forced', () => {
+    expect(format(1, 10, 3)).toBe('001')
+  })
+})
+
+/**
  * Test ParseTPL
  */
 
@@ -64,28 +102,6 @@ describe('parseTpl', () => {
     expect(parseTpl('foo-${bar}-baz-${qux}', { bar: '!!!', qux: '???' })).toBe(
       'foo-!!!-baz-???'
     )
-  })
-})
-
-/**
- * Test Format
- */
-
-describe('format', () => {
-  test('is not needed', () => {
-    expect(format(1, 9, true)).toBe('1')
-  })
-
-  test('is filled', () => {
-    expect(format(1, 10, true)).toBe('01')
-  })
-
-  test('is not filled', () => {
-    expect(format(1, 10, false)).toBe('1')
-  })
-
-  test('is forced', () => {
-    expect(format(1, 10, 3)).toBe('001')
   })
 })
 

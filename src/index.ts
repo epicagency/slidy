@@ -123,6 +123,7 @@ export default class Slidy {
     // TODO: fix starting at index === 1 && group === 3 && !preserveGroup
     // currentGroup === 1 but
     // 'controls/prev' does not display group#0 (but loops to the end)
+    /* istanbul ignore next */
     if (this.newIndex % this.group !== 0 && !this.options.preserveGroup) {
       console.warn('Slidy: index does not match with group!')
     }

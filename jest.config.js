@@ -16,7 +16,7 @@ module.exports = {
   },
   resetMocks: true,
   testEnvironment: 'jest-environment-jsdom-global',
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/__tests__/**/*.spec.ts', '**/?(*.)+(spec|test).ts'],
   verbose: true,
   // DEV
   // watchPathIgnorePatterns: ['/entries/', '/data/', '/locales/'],

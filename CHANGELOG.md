@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/epicagency/slidy/compare/v1.0.3...v1.0.4) (2020-04-21)
+
+### Bug Fixes
+
+- **root:** :bug: fix height auto when no child/content ([7faa709](https://github.com/epicagency/slidy/commit/7faa709df5732fb4d65c8db05d950a272e94e9e8))
+
 ### [1.0.3](https://github.com/epicagency/slidy/compare/v1.0.2...v1.0.3) (2020-03-30)
 
 ### Bug Fixes

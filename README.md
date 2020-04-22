@@ -24,7 +24,7 @@ Create a parent with children:
 then a Slidy instance with some options (including your transition animation):
 
 ```js
-import { Slidy } from 'epic-slidy'
+import Slidy from 'epic-slidy'
 
 const transition = (
   currentSlide: HTMLElement | HTMLElement[],
@@ -32,7 +32,10 @@ const transition = (
   {
     animate: boolean,
     direction: 'prev' | 'next',
-    index: number, // Group index
+    currentIndex: number,
+    currentGroup: number,
+    newIndex: number,
+    newGroup: number,
     trigger:
       'auto' |
       'click' |
@@ -42,7 +45,7 @@ const transition = (
       'nav' |
       'pagination' |
       'controls',
-  }
+  } as TransitionInfos
 ) => Promise.resolve() // Do what you want here and return a promise…
 
 // New slider with HTMLElement or CSS selector
@@ -150,16 +153,8 @@ type beforeInit = (el: HTMLElement) => void
 type afterInit = (el: HTMLElement) => void
 type afterResize = (el: HTMLElement) => void
 type preventSlide: (action: Action) => boolean
-type beforeSlide = (
-    currentIndex: number,
-    newIndex: number,
-    infos: TransitionInfos
-  ) => void
-type afterSlide = (
-    currentIndex: number,
-    newIndex: number,
-    infos: TransitionInfos
-  ) => void
+type beforeSlide = (infos: TransitionInfos) => void
+type afterSlide = (infos: TransitionInfos) => void
 ```
 
 ---

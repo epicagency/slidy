@@ -392,6 +392,13 @@ export default class Slidy {
     })
 
     this.el.removeAttribute('style')
+
+    // Removeccessibility
+    this.el.removeAttribute('role')
+    this.el.removeAttribute('aria-valuemin')
+    this.el.removeAttribute('aria-valuemax')
+    this.el.removeAttribute('aria-valuenow')
+    this.el.removeAttribute('aria-valuenow')
   }
 
   /**

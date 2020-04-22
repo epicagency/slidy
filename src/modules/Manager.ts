@@ -95,7 +95,7 @@ export class Manager {
     }
 
     const [{ move, trigger, index, animate }] = this._actions
-    const infos: TransitionInfos = { trigger, index, animate }
+    const infos: TransitionInfos = { trigger, animate } as TransitionInfos
     const { items } = this._slidy
     const { length } = items
     const {
@@ -168,7 +168,12 @@ export class Manager {
       direction = move
     }
 
+    // Add missing/calculated infos
     infos.direction = direction
+    infos.currentIndex = currentIndex
+    infos.newIndex = newIndex
+    infos.currentGroup = currentGroup
+    infos.newGroup = newGroup
 
     // If same than current -> dequeue + next.
     if (newGroup === currentGroup) {
@@ -187,7 +192,13 @@ export class Manager {
     this._slidy.newGroup = newGroup
 
     // Start slide.
-    this._slidy.hooks.call('beforeSlide', this._slidy, infos)
+    this._slidy.hooks.call(
+      'beforeSlide',
+      this._slidy,
+      infos,
+      this._slidy.context,
+      this._slidy.data
+    )
 
     // Update status and active class.
     this._isAnimating = true
@@ -202,8 +213,10 @@ export class Manager {
       .call(
         this._slidy,
         group > 1 ? currentSlides : currentSlides[0],
-        newSlides,
-        { direction, trigger }
+        group > 1 ? newSlides : newSlides[0],
+        infos,
+        this._slidy.context,
+        this._slidy.data
       )
       .then(() => {
         // Update indexes, manager, status and active class.
@@ -217,7 +230,13 @@ export class Manager {
         })
 
         // End slide.
-        this._slidy.hooks.call('afterSlide', this._slidy, infos)
+        this._slidy.hooks.call(
+          'afterSlide',
+          this._slidy,
+          infos,
+          this._slidy.context,
+          this._slidy.data
+        )
 
         // Play next queued transition.
         this._play()

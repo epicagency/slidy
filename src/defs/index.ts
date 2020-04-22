@@ -31,7 +31,6 @@ export interface Options {
 
 interface BaseAction {
   trigger: Trigger
-  index?: number
   animate?: boolean
 }
 
@@ -39,6 +38,7 @@ interface BaseAction {
  * Initiated by Slidy `slide` method, used by manager.
  */
 export interface Action extends BaseAction {
+  index?: number
   move: Move
 }
 
@@ -46,7 +46,11 @@ export interface Action extends BaseAction {
  * Used by transition callback.
  */
 export interface TransitionInfos extends BaseAction {
-  direction?: Direction
+  direction: Direction
+  currentIndex: number
+  newIndex: number
+  currentGroup: number
+  newGroup: number
 }
 
 export type Direction = 'prev' | 'next'
@@ -77,7 +81,9 @@ export type SupportedTypes =
 export type Transition = (
   currentSlides: HTMLElement | HTMLElement[],
   newSlides: HTMLElement | HTMLElement[],
-  infos: TransitionInfos
+  infos: TransitionInfos,
+  context?: any,
+  data?: any
 ) => Promise<any>
 
 export type HooksNames =
@@ -94,14 +100,6 @@ export interface HooksCallbacks {
   afterInit: (el: HTMLElement) => void
   afterResize: (el: HTMLElement) => void
   preventSlide: (action: Action) => boolean
-  beforeSlide: (
-    currentIndex: number,
-    newIndex: number,
-    infos: TransitionInfos
-  ) => void
-  afterSlide: (
-    currentIndex: number,
-    newIndex: number,
-    infos: TransitionInfos
-  ) => void
+  beforeSlide: (infos: TransitionInfos, context?: any, data?: any) => void
+  afterSlide: (infos: TransitionInfos, context?: any, data?: any) => void
 }

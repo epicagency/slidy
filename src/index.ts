@@ -23,8 +23,8 @@ export default class Slidy {
   public outer: HTMLDivElement
   public items: HTMLElement[]
 
-  public context: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  public data: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public context: any
 
   public currentIndex: number
   public newIndex: number
@@ -53,8 +53,8 @@ export default class Slidy {
   constructor(
     element: HTMLElement | string,
     opts: Options,
-    context: any = null, // eslint-disable-line @typescript-eslint/no-explicit-any
-    data: any = null // eslint-disable-line @typescript-eslint/no-explicit-any
+    _context: any = null, // eslint-disable-line @typescript-eslint/no-explicit-any
+    public data: any = null // eslint-disable-line @typescript-eslint/no-explicit-any
   ) {
     let el: NodeListOf<HTMLElement>
 
@@ -111,8 +111,7 @@ export default class Slidy {
       return
     }
 
-    this.context = context
-    this.data = data
+    this.context = _context || this
     this._debounceDelay = this._opts.debounce
     this.currentIndex = this._opts.index
     this.newIndex = this.currentIndex

@@ -1,7 +1,7 @@
 import Slidy from '../src'
 import { list, transition } from '../__mocks__/basics'
 
-describe('new', () => {
+describe('default', () => {
   test('error without element', () => {
     global.console.error = jest.fn()
 
@@ -47,7 +47,7 @@ describe('new', () => {
     } = slider
 
     expect(el).toBe(list)
-    expect(context).toBeNull()
+    expect(context).toBe(slider)
     expect(data).toBeNull()
     expect(currentIndex).toBe(0)
     expect(newIndex).toBe(0)

@@ -1,34 +1,38 @@
 import Slidy from '../src'
-import { list } from '../__mocks__/basics'
-import { tick } from './utils'
-import { TransitionInfos } from '../src/defs'
+import { list, transition } from '../__mocks__/basics'
 
-const b = (i: TransitionInfos) => {
-  console.info('BEFORE', i)
-}
+const slider = new Slidy(list, { transition })
 
-const t = (c: HTMLElement, n: HTMLElement, i: TransitionInfos) => {
-  console.info('T', i)
-
-  return Promise.resolve()
-}
-
-const a = (i: TransitionInfos) => {
-  console.info('AFTER', i)
-}
-
-const slider = new Slidy(list, { transition: t })
-
-slider.on('beforeSlide', b)
-slider.on('afterSlide', a)
 slider.init()
+slider.slide = jest.fn()
 
 describe('slide', () => {
-  test('fake', async () => {
+  test('next', () => {
     slider.slideNext('click')
 
-    await tick()
+    expect(slider.slide).toHaveBeenCalledWith({
+      move: 'next',
+      trigger: 'click',
+    })
+  })
 
-    expect(slider.currentIndex).toBe(1)
+  test('prev', () => {
+    slider.slidePrev('click')
+
+    expect(slider.slide).toHaveBeenCalledWith({
+      move: 'prev',
+      trigger: 'click',
+    })
+  })
+
+  test('to', () => {
+    slider.slideTo(1, 'click')
+
+    expect(slider.slide).toHaveBeenCalledWith({
+      move: 'to',
+      trigger: 'click',
+      index: 1,
+      animate: true,
+    })
   })
 })

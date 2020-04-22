@@ -4,7 +4,7 @@ import { list, transition } from '../__mocks__/basics'
 
 const slider = new Slidy(list, { transition })
 const hookName = 'beforeInit'
-const cb = () => {}
+const cb = jest.fn()
 
 describe('hooks', () => {
   test('on', () => {

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/epicagency/slidy/compare/v1.0.4...v1.1.0) (2020-04-22)
+
+### Features
+
+- **root:** :sparkles: more details/consistence w/hook params ([af41383](https://github.com/epicagency/slidy/commit/af413833793e7836482f829040f864e42f7f6da4))
+
 ### [1.0.4](https://github.com/epicagency/slidy/compare/v1.0.3...v1.0.4) (2020-04-21)
 
 ### Bug Fixes

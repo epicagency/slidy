@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/epicagency/slidy/compare/v1.1.0...v1.1.1) (2020-05-20)
+
+### Bug Fixes
+
+- **root:** :bug: fix + test destroy ([29aa852](https://github.com/epicagency/slidy/commit/29aa85263d81645d3558485c9fd39836195d78ed))
+- **root:** :checkered_flag: IE support ([9439eb8](https://github.com/epicagency/slidy/commit/9439eb849dacdd4e04c3aee3f435362c55786d7c))
+
 ## [1.1.0](https://github.com/epicagency/slidy/compare/v1.0.4...v1.1.0) (2020-04-22)
 
 ### Features

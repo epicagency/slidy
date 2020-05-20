@@ -2,7 +2,12 @@ import Slidy from '../src'
 import { list, transition } from '../__mocks__/basics'
 
 type El = HTMLElement | HTMLElement[]
-const slider = new Slidy(list, { transition })
+const slider = new Slidy(list, {
+  transition,
+  controls: true,
+  nav: true,
+  pagination: true,
+})
 const hasClass = (el: El, name: string) => {
   const items = Array.isArray(el) ? el : [el]
 

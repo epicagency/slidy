@@ -338,12 +338,14 @@ export default class Slidy {
     this.stop()
 
     // Empty manager.
+    /* istanbul ignore else */
     if (this._manager) {
       this._manager.empty()
       delete this._manager
     }
 
     // Remove listeners.
+    /* istanbul ignore else */
     if (this._opts.resize) {
       window.removeEventListener('resize', this.onResize)
     }
@@ -352,24 +354,28 @@ export default class Slidy {
     this.el.removeEventListener('click', this._onClick)
 
     // Remove event manager.
+    /* istanbul ignore else */
     if (this._eventManager) {
       this._eventManager.destroy()
       delete this._eventManager
     }
 
     // Remove controls.
+    /* istanbul ignore else */
     if (this._controls) {
       this._controls.destroy()
       delete this._controls
     }
 
     // Remove nav.
+    /* istanbul ignore else */
     if (this._nav) {
       this._nav.destroy()
       delete this._nav
     }
 
     // Remove pagination.
+    /* istanbul ignore else */
     if (this._pagination) {
       this._pagination.destroy()
       delete this._pagination
@@ -377,6 +383,7 @@ export default class Slidy {
 
     // Remove HTML wrapper.
     this.outer.before(this.el)
+    /* istanbul ignore else */
     if (this.outer.parentNode) {
       this.outer.parentNode.removeChild(this.outer)
     }

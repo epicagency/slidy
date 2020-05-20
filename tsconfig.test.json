@@ -3,7 +3,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "module": "commonjs",
-    "target": "es5",
+    "target": "es6",
     "plugins": [
       {
         "name": "typescript-tslint-plugin",

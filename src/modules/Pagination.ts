@@ -17,10 +17,6 @@ export class Pagination {
    * Creates an instance of Pagination.
    */
   constructor(private _slidy: Slidy, private _opts: Options) {
-    if (!this._opts.pagination) {
-      return
-    }
-
     this._init()
     this._bind()
   }
@@ -46,16 +42,17 @@ export class Pagination {
     const tot = format(groupsMax, groupsMax, zerofill)
 
     // HTML elements.
-    const tpl = document.createElement('template')
-    const html = `<div class="${ns}-pagination">
-  <span class="${ns}--pagination__current">${cur}</span>
+    const el = document.createElement('div')
+
+    el.classList.add(`${ns}-pagination`)
+
+    const html = `<span class="${ns}-pagination__current">${cur}</span>
   <span class="${ns}-pagination__separator">${sep}</span>
-  <span class="${ns}-pagination__total">${tot}</span>
-</div>`
+  <span class="${ns}-pagination__total">${tot}</span>`
 
-    tpl.innerHTML = html
+    el.innerHTML = html
 
-    this._el = tpl.content.firstChild as HTMLDivElement
+    this._el = el
     this._currentEl = this._el.querySelector('span:nth-child(1)')
 
     outer.appendChild(this._el)

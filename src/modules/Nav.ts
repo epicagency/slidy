@@ -87,63 +87,65 @@ export class Nav {
     const { zerofill } = this._opts
 
     // HTML elements.
-    const tpl = document.createElement('template')
-    const html = `<ol class="${ns}-nav">
-  ${items
-    .filter((slide, i) => i % this._slidy.group === 0)
-    .map((slide, i) => {
-      if ('slidyNav' in slide.dataset) {
-        const { slidyNav } = slide.dataset
+    const el = document.createElement('ol')
 
-        // Overrided content if data-slidy-nav attribute
-        // data-slidy-nav value will replace ${number} and ${thumb}
-        if (this._type === 'template') {
-          return parseTpl(this._template, {
-            number: slidyNav,
-            thumb: slidyNav,
-          })
+    el.classList.add(`${ns}-nav`)
+
+    const html = items
+      .filter((slide, i) => i % this._slidy.group === 0)
+      .map((slide, i) => {
+        if ('slidyNav' in slide.dataset) {
+          const { slidyNav } = slide.dataset
+
+          // Overrided content if data-slidy-nav attribute
+          // data-slidy-nav value will replace ${number} and ${thumb}
+          if (this._type === 'template') {
+            return parseTpl(this._template, {
+              number: slidyNav,
+              thumb: slidyNav,
+            })
+          }
+
+          return Nav._createContent(slidyNav)
         }
 
-        return Nav._createContent(slidyNav)
-      }
+        let number
+        let thumb
 
-      let number
-      let thumb
+        // Check for template, thumb or number…
+        const dataTpl: GenericObject = {}
 
-      // Check for template, thumb or number…
-      const dataTpl: GenericObject = {}
+        switch (this._type) {
+          case 'template':
+            // We can have both number and thumb into the template string
+            // or nothing…
+            if (/\${number}/.test(this._template)) {
+              dataTpl.number = format(i + 1, groupsMax, zerofill)
+            }
 
-      switch (this._type) {
-        case 'template':
-          // We can have both number and thumb into the template string
-          // or nothing…
-          if (/\${number}/.test(this._template)) {
-            dataTpl.number = format(i + 1, groupsMax, zerofill)
-          }
+            if (/\${thumb}/.test(this._template)) {
+              dataTpl.thumb = Nav._createThumb(slide)
+            }
 
-          if (/\${thumb}/.test(this._template)) {
-            dataTpl.thumb = Nav._createThumb(slide)
-          }
+            return parseTpl(this._template, dataTpl)
 
-          return parseTpl(this._template, dataTpl)
+          case 'thumb':
+            thumb = Nav._createThumb(slide)
 
-        case 'thumb':
-          thumb = Nav._createThumb(slide)
+            return Nav._createContent(thumb)
 
-          return Nav._createContent(thumb)
+          case 'number':
+          default:
+            number = format(i + 1, groupsMax, zerofill)
 
-        case 'number':
-        default:
-          number = format(i + 1, groupsMax, zerofill)
+            return Nav._createContent(number)
+        }
+      })
+      .map(content => `<li class="${ns}-nav__item">${content}</li>`)
+      .join('')
 
-          return Nav._createContent(number)
-      }
-    })
-    .map(content => `<li class="${ns}-nav__item">${content}</li>`)
-    .join('')}</ol>`
-
-    tpl.innerHTML = html
-    this._el = tpl.content.firstChild as HTMLOListElement
+    el.innerHTML = html
+    this._el = el
     outer.appendChild(this._el)
     this._items = Array.from(this._el.querySelectorAll('li'))
 

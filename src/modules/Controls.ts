@@ -55,22 +55,23 @@ export class Controls {
 
     if (controls !== true) {
       prev = parseTpl(controls as string, {
-        label: 'prev slide',
+        label: 'previous slide',
       })
       next = parseTpl(controls as string, {
         label: 'next slide',
       })
     }
 
-    const tpl = document.createElement('template')
-    const html = `<div class="${ns}-controls">
-  <button type="button" class="${ns}-controls__item--prev">${prev}</button>
-  <button type="button" class="${ns}-controls__item--next">${next}</button>
-</div>`
+    const el = document.createElement('div')
 
-    tpl.innerHTML = html
+    el.classList.add(`${ns}-controls`)
 
-    this._el = tpl.content.firstChild as HTMLDivElement
+    const html = `<button type="button" class="${ns}-controls__item--prev">${prev}</button>
+  <button type="button" class="${ns}-controls__item--next">${next}</button>`
+
+    el.innerHTML = html
+
+    this._el = el
     this._prev = this._el.querySelector('button:first-child')
     this._next = this._el.querySelector('button:last-child')
     outer.appendChild(this._el)

@@ -40,7 +40,7 @@
   },
   "license": "SEE LICENSE IN UNLICENSE",
   "scripts": {
-    "build": "microbundle --name Slidy --external none",
+    "build": "microbundle --no-sourcemap --name Slidy --external none",
     "build:watch": "microbundle watch --name Slidy --external none",
     "clean": "rimraf dist",
     "commit": "npx git-cz || exit 0",

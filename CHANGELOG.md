@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/epicagency/slidy/compare/v1.1.2...v1.1.3) (2020-06-25)
+
+
+### Bug Fixes
+
+* :label: export types ([418d343](https://github.com/epicagency/slidy/commit/418d34368ce5d268df5062805faf86e0d4b06650))
+
 ### [1.1.2](https://github.com/epicagency/slidy/compare/v1.1.1...v1.1.2) (2020-06-03)
 
 ### Bug Fixes

@@ -5,7 +5,7 @@ import { Direction, Action, Transition, TransitionInfos } from '../defs'
  * Create manager.
  */
 export class Manager {
-  private _transition: Transition
+  private _transition: Transition['cb']
   private _isAnimating = false
   private _max: number
   private _actions: Action[]
@@ -14,7 +14,7 @@ export class Manager {
    * Creates an instance of Manager.
    */
 
-  constructor(private _slidy: Slidy, transition: Transition) {
+  constructor(private _slidy: Slidy, transition: Transition['cb']) {
     this._transition = transition
     this._isAnimating = false
     this._max = this._slidy.options.queue

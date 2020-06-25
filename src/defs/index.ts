@@ -4,7 +4,7 @@ export interface GenericObject {
 }
 
 export interface Options {
-  transition: Transition
+  transition: Transition['cb']
   auto?: boolean
   click?: boolean
   controls?: boolean | string
@@ -78,14 +78,15 @@ export type SupportedTypes =
   | 'pointerup'
   | 'pointermove'
 
-export type TransitionElement = HTMLElement | HTMLElement[]
-export type Transition = (
-  currentSlides: TransitionElement,
-  newSlides: TransitionElement,
-  infos: TransitionInfos,
-  context?: any,
-  data?: any
-) => Promise<any>
+export interface Transition {
+  cb(
+    currentSlides: HTMLElement | HTMLElement[],
+    newSlides: HTMLElement | HTMLElement[],
+    infos: TransitionInfos,
+    context?: any,
+    data?: any
+  ): Promise<any>
+}
 
 export type HooksNames =
   | 'beforeInit'

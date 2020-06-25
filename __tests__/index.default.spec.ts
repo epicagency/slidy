@@ -1,4 +1,4 @@
-import Slidy from '../src'
+import Slidy, { Options } from '../src'
 import { list, transition } from '../__mocks__/basics'
 
 describe('default', () => {
@@ -25,7 +25,7 @@ describe('default', () => {
   test('error without transition', () => {
     global.console.error = jest.fn()
 
-    const slider = new Slidy(list, {})
+    const slider = new Slidy(list, {} as Options)
 
     // eslint-disable-next-line dot-notation
     expect(slider['_hasErrors']).toBeTruthy()

@@ -1,11 +1,11 @@
-import Slidy from '../src'
+import Slidy, { Options } from '../src'
 import { list, transition } from '../__mocks__/basics'
 
 describe('init', () => {
   test('with errors', () => {
     global.console.error = jest.fn()
 
-    const slider = new Slidy(list, {})
+    const slider = new Slidy(list, {} as Options)
     const { items } = slider
 
     slider.init()

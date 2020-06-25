@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { GestureDirection, SupportedEvents, SupportedTypes } from '../defs'
 
 type Cb = (e: TouchEvent | MouseEvent) => void
@@ -20,7 +21,7 @@ export class Events {
     this._release = this._release.bind(this)
   }
 
-  public on(name: SupportedEvents, cb: Function) {
+  public on(name: SupportedEvents, cb: Function): void {
     let eventIn
     let eventOut
     let eventMove
@@ -74,7 +75,7 @@ export class Events {
     eventMove && this._bind(eventMove as SupportedTypes, this._prevent)
   }
 
-  public destroy() {
+  public destroy(): void {
     this._events.forEach((cb, name) => {
       this._events.delete(name)
     })

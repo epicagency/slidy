@@ -9,6 +9,6 @@ for (let i = 0, l = 5; i < l; i++) {
 
 document.body.appendChild(list)
 
-const transition = () => Promise.resolve()
+const transition = (): Promise<void> => Promise.resolve()
 
 export { list, transition }

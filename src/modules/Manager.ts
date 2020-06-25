@@ -24,7 +24,7 @@ export class Manager {
   /**
    * Add "action" to Manager.
    */
-  public add(action: Action) {
+  public add(action: Action): void {
     // Prevent slide ?
     if (this._slidy.hooks.call('preventSlide', this._slidy, action)) {
       return
@@ -44,7 +44,7 @@ export class Manager {
   /**
    * Empty manager.
    */
-  public empty() {
+  public empty(): void {
     this._actions = []
   }
 

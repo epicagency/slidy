@@ -131,18 +131,18 @@ export default class Slidy {
   /**
    * Getters/setters.
    */
-  get options() {
+  get options(): Options {
     return this._opts
   }
 
-  get namespace() {
+  get namespace(): string {
     return this._opts.namespace
   }
 
   /**
    * Init component.
    */
-  public init() {
+  public init(): void {
     if (this._hasErrors) {
       console.error('Slidy: fix errors!')
 
@@ -235,18 +235,20 @@ export default class Slidy {
   /**
    * API (hooks)
    */
-  public on(hookName: HooksNames, cb: Function) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public on(hookName: HooksNames, cb: Function): void {
     this.hooks.add(hookName, cb)
   }
 
-  public off(hookName: HooksNames, cb: Function) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  public off(hookName: HooksNames, cb: Function): void {
     this.hooks.remove(hookName, cb)
   }
 
   /**
    * Navigate to previous slide.
    */
-  public slidePrev(trigger: Trigger, force = false) {
+  public slidePrev(trigger: Trigger, force = false): void {
     if (this._opts.reverse && !force) {
       this.slideNext(trigger, true)
 
@@ -259,7 +261,7 @@ export default class Slidy {
   /**
    * Navigate to next slide.
    */
-  public slideNext(trigger: Trigger, force = false) {
+  public slideNext(trigger: Trigger, force = false): void {
     if (this._opts.reverse && !force) {
       this.slidePrev(trigger, true)
 
@@ -272,14 +274,14 @@ export default class Slidy {
   /**
    * Navigate to slide by index.
    */
-  public slideTo(index: number, trigger: Trigger, animate = true) {
+  public slideTo(index: number, trigger: Trigger, animate = true): void {
     this.slide({ move: 'to', trigger, index, animate })
   }
 
   /**
    * Add move to the manager.
    */
-  public slide(action: Action) {
+  public slide(action: Action): void {
     if (this._opts.auto) {
       window.clearInterval(this._t1)
       this._t1 = window.setInterval(this.slideNext, this._opts.interval)
@@ -301,7 +303,7 @@ export default class Slidy {
    * Start autoplay.
    * Enabled via "auto" and used by "pause" options.
    */
-  public start(delay = this._opts.interval, auto = this._opts.auto) {
+  public start(delay = this._opts.interval, auto = this._opts.auto): void {
     this._t2 = window.setTimeout(() => {
       this.slideNext('auto')
 
@@ -320,7 +322,7 @@ export default class Slidy {
    * Pause autoplay.
    * Used by "pause" options.
    */
-  public stop() {
+  public stop(): void {
     if (this._hasPause) {
       this.outer.removeEventListener('mouseenter', this._onEnter)
     }
@@ -331,7 +333,7 @@ export default class Slidy {
   /**
    * Destroy component.
    */
-  public destroy() {
+  public destroy(): void {
     this._destroyed = true
 
     // Remove interval.

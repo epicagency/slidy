@@ -24,7 +24,7 @@ export class Pagination {
   /**
    * Destroy component.
    */
-  public destroy() {
+  public destroy(): void {
     this._el.parentNode.removeChild(this._el)
   }
 

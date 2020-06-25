@@ -110,7 +110,7 @@ describe('parseTpl', () => {
  */
 
 describe('debounce', () => {
-  function waitFor(fn: Function, delay: number) {
+  function waitFor(fn: () => void, delay: number) {
     return new Promise(resolve => {
       setTimeout(() => {
         fn()

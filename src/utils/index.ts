@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { GenericObject } from '../defs'
 
 /**
  * Get nearest ancestor by classname
  */
 
-export function parents(element: HTMLElement, className: string) {
+export function parents(
+  element: HTMLElement,
+  className: string
+): HTMLElement | null {
   for (
     let el = element;
     el && ((el as unknown) as Document) !== document;
@@ -22,7 +26,7 @@ export function parents(element: HTMLElement, className: string) {
  * Check for touchevents.
  */
 
-export function touchevents() {
+export function touchevents(): boolean {
   if ('ontouchstart' in window) {
     return true
   }
@@ -54,7 +58,7 @@ export function format(
   number: number,
   nbItems: number,
   zerofill: boolean | number
-) {
+): string {
   if (zerofill === false) {
     return String(number)
   }
@@ -78,7 +82,7 @@ export function parseTpl(
   template: string,
   map: GenericObject,
   fallback?: string
-) {
+): string {
   return template.replace(/\$\{.+?}/g, (match: string) => {
     const path = match.substr(2, match.length - 3).trim()
 
@@ -93,7 +97,11 @@ export function parseTpl(
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
 
-export function debounce(func: Function, wait: number) {
+export function debounce(
+  func: Function,
+  wait: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): (...args: any[]) => void {
   /* eslint-disable no-invalid-this */
   let timeout: number
 

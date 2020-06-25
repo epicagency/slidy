@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { HooksNames } from '../defs'
 
 export class Hooks {
   private _callbacksByName: Map<HooksNames, Set<Function>> = new Map()
 
-  public add(name: HooksNames, cb: Function) {
+  public add(name: HooksNames, cb: Function): void {
     const callbacks = this._callbacksByName.has(name)
       ? this._callbacksByName.get(name)
       : new Set<Function>()
@@ -12,7 +13,7 @@ export class Hooks {
     this._callbacksByName.set(name, callbacks)
   }
 
-  public remove(name: HooksNames, cb: Function) {
+  public remove(name: HooksNames, cb: Function): void {
     if (!this._callbacksByName.has(name)) {
       return
     }
@@ -28,7 +29,7 @@ export class Hooks {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   public call(name: HooksNames, ctx: any, ...args: any[]): void | boolean {
     if (!this._callbacksByName.has(name)) {
       return

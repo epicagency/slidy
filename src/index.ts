@@ -16,7 +16,7 @@ import { debounce, touchevents } from './utils'
 /**
  * Slidy main class.
  */
-export default class Slidy {
+class Slidy {
   public hooks = new Hooks()
 
   public el: HTMLElement
@@ -536,3 +536,6 @@ export default class Slidy {
     this.outer.addEventListener('mouseenter', this._onEnter)
   }
 }
+
+export default Slidy
+export * from './defs'

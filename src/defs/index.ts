@@ -4,6 +4,7 @@ export interface GenericObject {
 }
 
 export interface Options {
+  transition: Transition
   auto?: boolean
   click?: boolean
   controls?: boolean | string
@@ -25,7 +26,6 @@ export interface Options {
   reverse?: boolean
   swipe?: boolean
   tap?: boolean
-  transition?: Transition
   zerofill?: boolean | number
 }
 

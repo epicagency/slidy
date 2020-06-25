@@ -78,9 +78,10 @@ export type SupportedTypes =
   | 'pointerup'
   | 'pointermove'
 
+export type TransitionElement = HTMLElement | HTMLElement[]
 export type Transition = (
-  currentSlides: HTMLElement | HTMLElement[],
-  newSlides: HTMLElement | HTMLElement[],
+  currentSlides: TransitionElement,
+  newSlides: TransitionElement,
   infos: TransitionInfos,
   context?: any,
   data?: any

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/epicagency/slidy/compare/v1.1.3...v1.1.4) (2020-06-25)
+
+
+### Bug Fixes
+
+* :label: fix transition element ([fb14ea6](https://github.com/epicagency/slidy/commit/fb14ea6d78ad525fa9fd0232929a02449d0413e7))
+
 ### [1.1.3](https://github.com/epicagency/slidy/compare/v1.1.2...v1.1.3) (2020-06-25)
 
 

@@ -9,6 +9,7 @@ export class Manager {
   private _isAnimating = false
   private _max: number
   private _actions: Action[]
+  public shouldPrevent = false
 
   /**
    * Creates an instance of Manager.
@@ -26,9 +27,15 @@ export class Manager {
    */
   public add(action: Action): void {
     // Prevent slide ?
-    if (this._slidy.hooks.call('preventSlide', this._slidy, action)) {
+    this._slidy.hooks.call('preventSlide', this._slidy, action, this)
+
+    if (this.shouldPrevent) {
+      this.shouldPrevent = false
+
       return
     }
+
+    this.shouldPrevent = false
 
     if (this._actions.length > this._max) {
       this._actions.length = this._max

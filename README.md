@@ -152,7 +152,7 @@ slider.on('hookName', function cb() {})
 type beforeInit = (el: HTMLElement) => void
 type afterInit = (el: HTMLElement) => void
 type afterResize = (el: HTMLElement) => void
-type preventSlide: (action: Action) => boolean
+type preventSlide: (action: Action, manager: Manager) => void // You can acces and modify `manager.shouldPrevent` (boolean)
 type beforeSlide = (infos: TransitionInfos) => void
 type afterSlide = (infos: TransitionInfos) => void
 ```

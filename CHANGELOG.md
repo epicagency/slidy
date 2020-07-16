@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.6](https://github.com/epicagency/slidy/compare/v1.1.5...v1.1.6) (2020-07-16)
+
+
+### Bug Fixes
+
+* :bug: fix preventSlide hook ([4c00941](https://github.com/epicagency/slidy/commit/4c00941431dbd770ac462c45fe5c56377e3b5d69))
+
 ### [1.1.5](https://github.com/epicagency/slidy/compare/v1.1.4...v1.1.5) (2020-06-25)
 
 

@@ -100,7 +100,7 @@ and you will get this:
 | controls      | `boolean` or 'template string'                    | false   | Next / prev buttons (see examples)                                               |
 | debounce      | `number`                                          | 100     | Debounce delay on resize                                                         |
 | drag          | `boolean`                                         | false   | Enable horizontal mouse drag                                                     |
-| group         | `number` or `() => number`                        | 'auto'  | Auto or pixel height                                                             |
+| group         | `number` or `() => number`                        | 1       | Enable groups                                                                     |
 | height        | 'auto' or `number`                                | 'auto'  | Auto or pixel height                                                             |
 | index         | `number`                                          | 0       | Initial index                                                                    |
 | interval      | `number`                                          | 2000    | Time (ms) betweeen 2 transitions                                                 |

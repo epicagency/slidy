@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.7](https://github.com/epicagency/slidy/compare/v1.1.6...v1.1.7) (2020-07-24)
+
+
+### Bug Fixes
+
+* :bug: allow vertical scroll with swipe option ([c75a262](https://github.com/epicagency/slidy/commit/c75a26244a61a7691cd1ee9c00cd0b8ed40df020))
+* :bug: clean active items on destroy ([19c0cee](https://github.com/epicagency/slidy/commit/19c0cee69f7951af61f5b9f19d35947f7fcff1be))
+
 ### [1.1.6](https://github.com/epicagency/slidy/compare/v1.1.5...v1.1.6) (2020-07-16)
 
 

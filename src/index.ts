@@ -355,6 +355,10 @@ class Slidy {
     this.el.removeEventListener('mouseleave', this._onLeave)
     this.el.removeEventListener('click', this._onClick)
 
+    this.items.forEach(s => {
+      s.classList.remove('is-active')
+    })
+
     // Remove event manager.
     /* istanbul ignore else */
     if (this._eventManager) {

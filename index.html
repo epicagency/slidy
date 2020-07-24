@@ -6,6 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
     <style>
+      body {
+        height: 200vh;
+      }
+      .slidy {
+        min-height: 100vh;
+        /* touch-action: pan-y; */
+      }
       .slidy__item {
         padding: 2rem;
         border: 1px dotted gold;
@@ -37,12 +44,12 @@
       import('./dist/slidy.mjs').then(data => {
         const Slidy = data.default
         const slider = new Slidy(list, {
-          drag: true,
-          controls: true,
+          swipe: true,
+          controls: false,
           keyboard: true,
           loop: true,
           pagination: '---',
-          nav: true,
+          nav: false,
           zerofill: 3,
           group: 2,
           index: 0,
@@ -69,6 +76,7 @@
         //   console.log('afterSlide')
         // })
         slider.init()
+        slider.destroy()
       })
     </script>
   </body>

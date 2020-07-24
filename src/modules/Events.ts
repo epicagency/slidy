@@ -19,6 +19,7 @@ export class Events {
   constructor(private _el: HTMLElement) {
     this._lock = this._lock.bind(this)
     this._release = this._release.bind(this)
+    this._move = this._move.bind(this)
   }
 
   public on(name: SupportedEvents, cb: Function): void {
@@ -64,6 +65,10 @@ export class Events {
             Events._defaultType('touchmove') ||
             Events._pointerType('PointerMove')
           this._hasTouchListener = true
+
+          if (name === 'swipe') {
+            this._el.style.touchAction = 'pan-y'
+          }
         }
         break
       default:
@@ -72,7 +77,7 @@ export class Events {
     // Binding
     eventIn && this._bind(eventIn as SupportedTypes, this._lock)
     eventOut && this._bind(eventOut as SupportedTypes, this._release)
-    eventMove && this._bind(eventMove as SupportedTypes, this._prevent)
+    eventMove && this._bind(eventMove as SupportedTypes, this._move)
   }
 
   public destroy(): void {
@@ -163,8 +168,9 @@ export class Events {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private _prevent(e: TouchEvent | MouseEvent) {
-    e.preventDefault()
+  // eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars
+  private _move(e: TouchEvent | MouseEvent) {
+    // Bad code, replace with `touch-action: pan-y;`
+    // e.preventDefault()
   }
 }

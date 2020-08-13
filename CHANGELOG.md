@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.8](https://github.com/epicagency/slidy/compare/v1.1.7...v1.1.8) (2020-08-13)
+
+
+### Bug Fixes
+
+* :bug: fix auto w/ event binding ([7be9a03](https://github.com/epicagency/slidy/commit/7be9a0378fbcfee3356f38c26cc480463894405a))
+
 ### [1.1.7](https://github.com/epicagency/slidy/compare/v1.1.6...v1.1.7) (2020-07-24)
 
 

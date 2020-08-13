@@ -44,22 +44,23 @@
       import('./dist/slidy.mjs').then(data => {
         const Slidy = data.default
         const slider = new Slidy(list, {
-          swipe: true,
-          controls: false,
-          keyboard: true,
-          loop: true,
-          pagination: '---',
-          nav: false,
-          zerofill: 3,
-          group: 2,
-          index: 0,
-          preserveGroup: true,
+          auto: true,
+          // swipe: true,
+          // controls: false,
+          // keyboard: true,
+          // loop: true,
+          // pagination: '---',
+          // nav: false,
+          // zerofill: 3,
+          // group: 2,
+          // index: 0,
+          // preserveGroup: true,
           transition: (current, next) => {
             return Promise.resolve()
           },
         })
 
-        console.log(slider)
+        console.log('SLIDY', Slidy, slider)
         // slider.on('beforeInit', () => {
         //   console.log('beforeInit')
         // })
@@ -76,7 +77,6 @@
         //   console.log('afterSlide')
         // })
         slider.init()
-        slider.destroy()
       })
     </script>
   </body>

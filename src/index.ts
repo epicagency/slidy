@@ -163,8 +163,6 @@ class Slidy {
       this.el.setAttribute('aria-valuenow', `${this.currentIndex + 1}`)
     })
 
-    this.bind()
-
     // Start initialization
     this.hooks.call('beforeInit', this, this.el)
 
@@ -223,6 +221,9 @@ class Slidy {
     if (this._opts.pagination) {
       this._pagination = new Pagination(this, this._opts)
     }
+
+    // Bind events
+    this.bind()
 
     // Start auto mode.
     if (this._opts.auto) {

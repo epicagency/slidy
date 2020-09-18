@@ -38,7 +38,6 @@ export class Controls {
    * Destroy component.
    */
   public destroy(): void {
-    this._el = document.querySelector('.slidy-controls')
     this._el.parentNode.removeChild(this._el)
     this._slidy.hooks.remove('beforeSlide', this._update)
   }

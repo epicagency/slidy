@@ -82,7 +82,7 @@ export interface Transition {
   cb(
     currentSlides: HTMLElement | HTMLElement[],
     newSlides: HTMLElement | HTMLElement[],
-    infos: TransitionInfos,
+    infos?: TransitionInfos,
     context?: any,
     data?: any
   ): Promise<any>
